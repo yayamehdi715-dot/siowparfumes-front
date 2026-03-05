@@ -1,9 +1,16 @@
 import { useState, useCallback } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, CreditCard, Truck, Smartphone } from 'lucide-react'
 import wilayas from '../../data/wilayas'
 
 function CheckoutForm({ onSubmit, loading }) {
-  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', wilaya: '', commune: '' })
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    wilaya: '',
+    commune: '',
+    paymentMethod: 'livraison', // 'livraison' | 'CIB' | 'EDAHABIA'
+  })
   const [errors, setErrors] = useState({})
 
   const validate = () => {
@@ -30,6 +37,27 @@ function CheckoutForm({ onSubmit, loading }) {
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
     onSubmit(form)
   }
+
+  const paymentOptions = [
+    {
+      value: 'livraison',
+      label: 'Paiement à la livraison',
+      desc: 'Payez en cash à la réception',
+      icon: <Truck size={18} />,
+    },
+    {
+      value: 'CIB',
+      label: 'Carte CIB',
+      desc: 'Paiement sécurisé par carte bancaire',
+      icon: <CreditCard size={18} />,
+    },
+    {
+      value: 'EDAHABIA',
+      label: 'Carte EDAHABIA',
+      desc: 'Paiement via votre carte Edahabia',
+      icon: <Smartphone size={18} />,
+    },
+  ]
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -87,6 +115,56 @@ function CheckoutForm({ onSubmit, loading }) {
         {errors.commune && <p className="mt-1 text-red-400 text-xs">{errors.commune}</p>}
       </div>
 
+      {/* Mode de paiement */}
+      <div>
+        <label className="block font-body text-sf-text-soft text-xs font-600
+                           uppercase tracking-wider mb-3">Mode de paiement</label>
+        <div className="space-y-2">
+          {paymentOptions.map((opt) => (
+            <label
+              key={opt.value}
+              className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all
+                ${form.paymentMethod === opt.value
+                  ? 'border-sf-text bg-sf-rose-soft/30'
+                  : 'border-sf-beige hover:border-sf-beige-dark'
+                }`}
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                value={opt.value}
+                checked={form.paymentMethod === opt.value}
+                onChange={handleChange}
+                className="sr-only"
+              />
+              <span className={`flex-shrink-0 ${form.paymentMethod === opt.value ? 'text-sf-text' : 'text-sf-text-soft'}`}>
+                {opt.icon}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className={`font-body text-sm font-600 ${form.paymentMethod === opt.value ? 'text-sf-text' : 'text-sf-text-soft'}`}>
+                  {opt.label}
+                </p>
+                <p className="font-body text-xs text-sf-text-light">{opt.desc}</p>
+              </div>
+              <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center
+                ${form.paymentMethod === opt.value ? 'border-sf-text' : 'border-sf-beige-dark'}`}>
+                {form.paymentMethod === opt.value && (
+                  <div className="w-2 h-2 rounded-full bg-sf-text" />
+                )}
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {(form.paymentMethod === 'CIB' || form.paymentMethod === 'EDAHABIA') && (
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">
+          <p className="text-xs font-body text-blue-600">
+            🔒 Vous serez redirigé vers la plateforme sécurisée <strong>Chargily ePay</strong> pour finaliser votre paiement.
+          </p>
+        </div>
+      )}
+
       <button type="submit" disabled={loading} className="btn-primary w-full mt-2 py-4">
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -94,7 +172,9 @@ function CheckoutForm({ onSubmit, loading }) {
                              rounded-full animate-spin" />
             Traitement...
           </span>
-        ) : '🛍️ Confirmer la commande'}
+        ) : form.paymentMethod === 'livraison'
+            ? '🛍️ Confirmer la commande'
+            : '💳 Payer maintenant'}
       </button>
     </form>
   )

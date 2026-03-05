@@ -15,20 +15,48 @@ function CartPage() {
   const handleOrder = async (customerInfo) => {
     if (items.length === 0) { toast.error('Votre panier est vide'); return }
     setSubmitting(true)
+
+    const { paymentMethod, ...shippingInfo } = customerInfo
+    const orderItems = items.map((item) => ({
+      product: item.productId,
+      name: item.name,
+      size: item.size,
+      quantity: item.quantity,
+      price: item.price,
+    }))
+
     try {
-      await api.post('/orders', {
-        customerInfo,
-        items: items.map((item) => ({
-          product: item.productId, name: item.name, size: item.size,
-          quantity: item.quantity, price: item.price,
-        })),
-        total,
-      })
-      clearCart()
-      navigate('/confirmation', { replace: true })
+      if (paymentMethod === 'livraison') {
+        // Flux existant — paiement à la livraison
+        await api.post('/orders', {
+          customerInfo: shippingInfo,
+          items: orderItems,
+          total,
+        })
+        clearCart()
+        navigate('/confirmation', { replace: true })
+      } else {
+        // Flux Chargily — CIB ou EDAHABIA
+        const { data } = await api.post('/payment/create', {
+          customerInfo: shippingInfo,
+          items: orderItems,
+          total,
+          paymentMode: paymentMethod,
+        })
+
+        if (data.checkout_url) {
+          clearCart()
+          // Redirection vers la page de paiement Chargily
+          window.location.href = data.checkout_url
+        } else {
+          toast.error("Impossible d'obtenir l'URL de paiement.")
+        }
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
-    } finally { setSubmitting(false) }
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (items.length === 0) return (
@@ -109,9 +137,6 @@ function CartPage() {
                     {total.toLocaleString('fr-DZ')} DA
                   </span>
                 </div>
-                <p className="text-sf-text-light text-xs font-body mt-1 text-right">
-                  Paiement à la livraison
-                </p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-soft p-6">
