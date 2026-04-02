@@ -31,8 +31,8 @@ const translations = {
     deliveryInfo: 'الجزائر — التوصيل في 69 ولاية',
     paymentInfo: 'الدفع عند الاستلام',
 
-    // HomePage
-    heroTitle: 'صحوة\nالحواس',
+    // HomePage hero — titre modifié
+    heroTitle: 'سحر\nالعطور',
     heroDesc: 'مجموعة حصرية من القطع الاستثنائية، بين الأناقة الخالدة والمعاصرة المتقنة.',
     discoverAtelier: 'اكتشف المجموعة',
     scroll: 'مرر',
@@ -79,14 +79,12 @@ const translations = {
     payDeliveryDesc: 'نقداً عند الاستلام',
     confirmOrder: 'تأكيد الطلب',
     processing: 'جاري المعالجة...',
-    // Validation errors
     errFirstName: 'الاسم الأول مطلوب',
     errLastName: 'اللقب مطلوب',
     errPhone: 'الهاتف مطلوب',
     errPhoneInvalid: 'رقم غير صالح (مثال: 0551234567)',
     errWilaya: 'الولاية مطلوبة',
     errCommune: 'البلدية مطلوبة',
-    // Toast
     toastEmptyCart: 'سلة التسوق فارغة',
     toastPaymentUrlError: 'تعذر الحصول على رابط الدفع.',
     toastOrderError: 'حدث خطأ أثناء تقديم الطلب.',
@@ -118,8 +116,9 @@ const translations = {
     back: 'رجوع',
     purchaseMode: 'طريقة الشراء',
     fullBottle: 'قارورة كاملة',
-    extraits: 'مقتطفات',
+    extraits: 'تقسيمات',           // ← modifié
     chooseVolume: 'اختر الحجم',
+    buyNow: 'شراء مباشر',          // ← nouveau
     size: 'المقاس',
     quantity: 'الكمية',
     addToCart: 'أضف إلى السلة',
@@ -266,6 +265,7 @@ const translations = {
     fullBottle: 'Flacon complet',
     extraits: 'Extraits',
     chooseVolume: 'Choisissez votre volume',
+    buyNow: 'Acheter directement',   // ← nouveau
     size: 'Taille',
     quantity: 'Quantité',
     addToCart: 'Ajouter au Panier',
@@ -306,11 +306,9 @@ const translations = {
 const LanguageContext = createContext(null)
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState('ar') // Langue par défaut : arabe
-
+  const [lang, setLang] = useState('ar')
   const toggleLang = () => setLang((l) => (l === 'ar' ? 'fr' : 'ar'))
   const t = translations[lang]
-
   return (
     <LanguageContext.Provider value={{ lang, toggleLang, t }}>
       {children}

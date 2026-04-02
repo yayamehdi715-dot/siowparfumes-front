@@ -14,7 +14,10 @@ const EMPTY = {
   images: [], tags: [], bestSeller: false,
 }
 
-// FieldSet HORS du composant → évite le re-mount à chaque frappe
+// ─── IMPORTANT : FieldSet est HORS du composant ───────────────────────────────
+// Si FieldSet était défini à l'intérieur, React le recrée à chaque frappe,
+// démonte l'input et le focus est perdu → on ne peut taper qu'une lettre à la fois.
+// ─────────────────────────────────────────────────────────────────────────────
 function FieldSet({ label, error, children }) {
   return (
     <div>
@@ -27,7 +30,8 @@ function FieldSet({ label, error, children }) {
 
 function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const isEditing = !!initialData
-  const [form, setForm] = useState(
+
+  const [form, setForm] = useState(() =>
     initialData ? {
       ...initialData,
       price:    initialData.price?.toString() ?? '',
@@ -40,8 +44,9 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
       images:     initialData.images     || [],
       tags:       initialData.tags       || [],
       bestSeller: initialData.bestSeller || false,
-    } : EMPTY
+    } : { ...EMPTY }
   )
+
   const [errors, setErrors]       = useState({})
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving]       = useState(false)
@@ -53,7 +58,13 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     setForm((p) => ({ ...p, [key]: val }))
     setErrors((p) => ({ ...p, [key]: '' }))
   }
-  const handleChange = (e) => set(e.target.name, e.target.value)
+
+  // handleChange stable — ne recrée pas de composants
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setForm((p) => ({ ...p, [name]: value }))
+    setErrors((p) => ({ ...p, [name]: '' }))
+  }
 
   const handleCategoryChange = (e) => {
     const cat = e.target.value
@@ -66,13 +77,11 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     setErrors({})
   }
 
-  // Tailles (Montres / Essentiels) — sans stock
   const addSize    = () => setForm((p) => ({ ...p, sizes: [...p.sizes, { size: '' }] }))
   const removeSize = (i) => setForm((p) => ({ ...p, sizes: p.sizes.filter((_, idx) => idx !== i) }))
   const updateSize = (i, val) =>
     setForm((p) => ({ ...p, sizes: p.sizes.map((s, idx) => idx === i ? { size: val } : s) }))
 
-  // Extraits (Parfums) — ml + price, sans stock
   const addExtrait    = () => setForm((p) => ({ ...p, extraits: [...p.extraits, { ml: '', price: '' }] }))
   const removeExtrait = (i) => setForm((p) => ({ ...p, extraits: p.extraits.filter((_, idx) => idx !== i) }))
   const updateExtrait = (i, field, val) =>
@@ -99,8 +108,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     if (!isEditing && form.images.length === 0) e.images = 'Au moins une image requise'
     if (!isParfum) {
       if (form.sizes.length === 0) e.sizes = 'Ajoutez au moins une taille'
-      const ok = form.sizes.every((s) => s.size.toString().trim())
-      if (!ok) e.sizes = 'Toutes les tailles doivent avoir un nom'
+      else if (!form.sizes.every((s) => s.size.toString().trim())) e.sizes = 'Toutes les tailles doivent avoir un nom'
     } else if (form.extraits.length > 0) {
       const ok = form.extraits.every(
         (ex) => ex.ml.toString().trim() && !isNaN(+ex.ml) && +ex.ml > 0
@@ -167,30 +175,57 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <FieldSet label="Nom du produit *" error={errors.name}>
-            <input name="name" value={form.name} onChange={handleChange}
-              placeholder="Ex: Oud Royal..." className="admin-input" autoComplete="off" />
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Ex: Oud Royal..."
+              className="admin-input"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
+            />
           </FieldSet>
 
           <FieldSet label="Marque">
-            <input name="brand" value={form.brand} onChange={handleChange}
-              placeholder="Ex: Amouage..." className="admin-input" autoComplete="off" />
+            <input
+              name="brand"
+              value={form.brand}
+              onChange={handleChange}
+              placeholder="Ex: Amouage..."
+              className="admin-input"
+              autoComplete="off"
+            />
           </FieldSet>
 
           <FieldSet label="Prix (DZD) *" error={errors.price}>
-            <input name="price" value={form.price} onChange={handleChange}
-              type="number" min="0" placeholder="Ex: 4500" className="admin-input" />
+            <input
+              name="price"
+              value={form.price}
+              onChange={handleChange}
+              type="number"
+              min="0"
+              placeholder="Ex: 4500"
+              className="admin-input"
+            />
           </FieldSet>
 
         </div>
         <div className="mt-4">
           <FieldSet label="Description">
-            <textarea name="description" value={form.description} onChange={handleChange}
-              rows={3} placeholder="Décrivez le produit..." className="admin-input resize-none" />
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              rows={3}
+              placeholder="Décrivez le produit..."
+              className="admin-input resize-none"
+            />
           </FieldSet>
         </div>
       </div>
 
-      {/* ── 3a. Tailles (Montres / Essentiels) — sans stock ───── */}
+      {/* ── 3a. Tailles (Montres / Essentiels) ───────────────── */}
       {!isParfum && (
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -259,7 +294,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
                   inputMode="numeric"
                 />
                 <input
-                  type="number" min="0"
+                  type="number"
+                  min="0"
                   value={ex.price}
                   onChange={(e) => updateExtrait(i, 'price', e.target.value)}
                   placeholder="Ex: 800"
@@ -290,7 +326,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         <label
           className={`flex flex-col items-center justify-center gap-3 border-2 border-dashed
                        p-10 cursor-pointer transition-all duration-200
-                       ${dragOver ? 'border-[#8C495F]/60 bg-[#8C495F]/8'
+                       ${dragOver ? 'border-amber-400/40 bg-amber-400/5'
                                   : 'border-white/10 hover:border-white/25 bg-white/[0.02]'}
                        ${uploading ? 'pointer-events-none opacity-50' : ''}`}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
@@ -299,7 +335,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           <input type="file" accept="image/*" multiple className="hidden"
             onChange={(e) => uploadFiles(e.target.files)} />
           {uploading
-            ? <Loader2 size={24} className="text-[#8C495F] animate-spin" />
+            ? <Loader2 size={24} className="text-amber-400 animate-spin" />
             : <Upload size={22} className="text-white/25" />}
           <p className="font-label text-[0.6875rem] uppercase tracking-[0.15rem] text-white/30">
             {uploading ? 'Upload en cours…' : 'Glisser ou cliquer pour uploader'}
@@ -326,7 +362,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
 
       {/* ── Actions ───────────────────────────────────────────── */}
       <div className="flex gap-3 pt-4 border-t border-white/8">
-        <button type="submit" disabled={saving || uploading} className="admin-btn-primary flex-1 justify-center">
+        <button type="submit" disabled={saving || uploading}
+          className="admin-btn-primary flex-1 justify-center">
           {saving && <Loader2 size={13} className="animate-spin" />}
           {saving ? 'Enregistrement…' : isEditing ? 'Mettre à jour' : 'Créer le produit'}
         </button>

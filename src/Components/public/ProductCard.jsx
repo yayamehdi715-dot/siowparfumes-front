@@ -13,6 +13,10 @@ function ProductCard({ product }) {
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
+        {/* Accent doré au bas de l'image au hover */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px]
+                        bg-gradient-to-r from-amber-400/0 via-amber-400/70 to-amber-400/0
+                        translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
 
         {/* Category tag */}
         <div className="absolute top-3 left-3">
@@ -36,8 +40,14 @@ function ProductCard({ product }) {
                        group-hover:text-secondary transition-colors duration-300">
           {product.name}
         </h3>
-        <p className="font-label text-[0.6875rem] uppercase tracking-[0.05rem] text-secondary font-semibold">
-          {(product.price ?? 0).toLocaleString('fr-DZ')} DZD
+        {/* Prix avec accent doré */}
+        <p className="font-label text-[0.6875rem] uppercase tracking-[0.05rem] font-semibold
+                      flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+          <span className="text-on-surface">
+            {(product.price ?? 0).toLocaleString('fr-DZ')}
+            <span className="text-outline font-normal ml-1">DZD</span>
+          </span>
         </p>
       </div>
     </Link>

@@ -33,16 +33,19 @@ function DropCard({ product }) {
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy" />
         <button onClick={handleQuickAdd}
-          className="absolute bottom-0 left-0 right-0 bg-primary text-on-primary
-                     font-label text-[0.6rem] uppercase tracking-[0.15rem] py-2.5
+          className="absolute bottom-0 left-0 right-0 bg-amber-400 text-black
+                     font-label text-[0.6rem] uppercase tracking-[0.15rem] py-2.5 font-bold
                      translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           {t.addToCartShort}
         </button>
       </div>
       <p className="font-body text-[0.6875rem] uppercase tracking-[0.1rem] text-on-surface
                     leading-snug mb-1 truncate">{product.name}</p>
-      <p className="font-label text-[0.6875rem] text-secondary font-semibold">
-        {(product.price ?? 0).toLocaleString('fr-DZ')} DZD
+      <p className="font-label text-[0.6875rem] font-semibold flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+        <span className="text-on-surface">{(product.price ?? 0).toLocaleString('fr-DZ')}
+          <span className="text-outline font-normal ml-1 text-[0.6rem]">DZD</span>
+        </span>
       </p>
     </Link>
   )
@@ -87,7 +90,10 @@ function HomePage() {
         <img src="/heroPC.webp" alt="Collection SIOW"
           className="absolute inset-0 w-full h-full object-cover hidden lg:block" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+
         <div className="absolute bottom-16 left-6 lg:left-16 xl:left-24 z-10 max-w-sm lg:max-w-xl">
+          {/* Ligne dorée décorative */}
+          <div className="w-12 h-[2px] bg-amber-400 mb-6 animate-fade-up" />
           <h2 className="text-5xl lg:text-7xl xl:text-8xl font-headline font-bold text-white
                          leading-[0.9] tracking-tighter mb-6 animate-fade-up">
             {t.heroTitle.split('\n').map((line, i) => (
@@ -100,12 +106,13 @@ function HomePage() {
           </p>
           <Link to="/products"
             className="bg-white text-black px-8 lg:px-12 py-4 text-[0.6875rem] uppercase
-                       tracking-[0.2rem] font-bold active:scale-95 transition-transform
-                       inline-block animate-fade-up hover:bg-surface-container-highest"
+                       tracking-[0.2rem] font-bold active:scale-95 transition-all duration-200
+                       inline-block animate-fade-up hover:bg-amber-400"
             style={{ animationDelay: '240ms' }}>
             {t.discoverAtelier}
           </Link>
         </div>
+
         <div className="absolute right-6 lg:right-12 bottom-16 flex flex-col gap-3 items-center text-white/40">
           <div className="h-12 w-[1px] bg-white/30" />
           <span className="[writing-mode:vertical-lr] text-[10px] uppercase tracking-[0.2rem]">{t.scroll}</span>
@@ -116,13 +123,18 @@ function HomePage() {
       <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="px-6 lg:px-16 xl:px-24 mb-10 flex justify-between items-end">
           <div>
-            <h3 className="text-3xl lg:text-4xl font-headline font-bold tracking-tight text-on-surface">
-              {t.nouveautes}
-            </h3>
-            <p className="stitch-label mt-2">{t.selection2024}</p>
+            {/* Accent doré sur le titre */}
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-6 h-[2px] bg-amber-400" />
+              <h3 className="text-3xl lg:text-4xl font-headline font-bold tracking-tight text-on-surface">
+                {t.nouveautes}
+              </h3>
+            </div>
+            <p className="stitch-label mt-1 ml-9">{t.selection2024}</p>
           </div>
           <Link to="/products"
-            className="stitch-label border-b border-primary pb-1 hover:text-secondary transition-colors">
+            className="stitch-label border-b border-amber-400/50 pb-1 hover:text-amber-500
+                       hover:border-amber-400 transition-colors">
             {t.seeAll}
           </Link>
         </div>
@@ -147,13 +159,17 @@ function HomePage() {
       <section className="py-16 lg:py-24 bg-surface">
         <div className="px-6 lg:px-16 xl:px-24 mb-10 flex justify-between items-end">
           <div>
-            <h3 className="text-3xl lg:text-4xl font-headline font-bold tracking-tight text-on-surface">
-              {t.bestSellers}
-            </h3>
-            <p className="stitch-label mt-2">{t.mostPopular}</p>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-6 h-[2px] bg-amber-400" />
+              <h3 className="text-3xl lg:text-4xl font-headline font-bold tracking-tight text-on-surface">
+                {t.bestSellers}
+              </h3>
+            </div>
+            <p className="stitch-label mt-1 ml-9">{t.mostPopular}</p>
           </div>
           <Link to="/products"
-            className="stitch-label border-b border-primary pb-1 hover:text-secondary transition-colors">
+            className="stitch-label border-b border-amber-400/50 pb-1 hover:text-amber-500
+                       hover:border-amber-400 transition-colors">
             {t.seeAll}
           </Link>
         </div>
@@ -184,24 +200,28 @@ function HomePage() {
             className="col-span-1 row-span-2 relative flex items-end p-5 overflow-hidden group bg-surface-container"
             style={{ backgroundImage: "url('/montreMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent group-hover:from-black/75 transition-all duration-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400/0 group-hover:bg-amber-400/60 transition-colors duration-300" />
             <span className="relative z-10 stitch-label text-white">{t.categoryLabels?.['Watches'] ?? 'Watches'}</span>
           </Link>
           <Link to="/products?category=Fragrances"
             className="col-span-1 row-span-1 relative flex items-end p-5 overflow-hidden group bg-surface-container-high"
             style={{ backgroundImage: "url('/parfumMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent group-hover:from-black/65 transition-all duration-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400/0 group-hover:bg-amber-400/60 transition-colors duration-300" />
             <span className="relative z-10 stitch-label text-white">{t.categoryLabels?.['Fragrances'] ?? 'Fragrances'}</span>
           </Link>
           <Link to="/products?category=Saudi Coll."
             className="col-span-1 row-span-2 relative flex items-end p-5 overflow-hidden group bg-surface-container-highest"
             style={{ backgroundImage: "url('/saoudiMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent group-hover:from-black/75 transition-all duration-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400/0 group-hover:bg-amber-400/60 transition-colors duration-300" />
             <span className="relative z-10 stitch-label text-white">{t.categoryLabels?.['Saudi Coll.'] ?? 'Saudi Coll.'}</span>
           </Link>
           <Link to="/products?category=Essentials"
             className="col-span-1 row-span-1 relative flex items-end p-5 overflow-hidden group bg-surface-container-low"
             style={{ backgroundImage: "url('/essencialMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent group-hover:from-black/65 transition-all duration-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400/0 group-hover:bg-amber-400/60 transition-colors duration-300" />
             <span className="relative z-10 stitch-label text-white">{t.categoryLabels?.['Essentials'] ?? 'Essentials'}</span>
           </Link>
         </div>
@@ -214,9 +234,11 @@ function HomePage() {
                          hover:shadow-float transition-shadow duration-300 animate-fade-up"
               style={{ animationDelay: `${i * 60}ms`, backgroundImage: `url('${imgPC}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent group-hover:from-black/80 transition-all duration-500" />
+              {/* Ligne dorée bas de carte au hover */}
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400/0 group-hover:bg-amber-400/70 transition-colors duration-300" />
               <div className="relative z-10">
                 <p className="stitch-label text-white mb-1">{t.categoryLabels?.[slug] ?? slug}</p>
-                <p className="font-headline italic text-white/60 text-sm">{t.explore}</p>
+                <p className="font-headline italic text-amber-400/70 text-sm group-hover:text-amber-400 transition-colors">{t.explore}</p>
               </div>
             </Link>
           ))}

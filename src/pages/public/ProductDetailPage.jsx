@@ -30,11 +30,9 @@ function ProductDetailPage() {
         const p = res.data
         setProduct(p)
         if (!PARFUM_CATS.includes(p.category)) {
-          // Sélectionner la première taille disponible
           const first = p.sizes?.[0]
           if (first) setSelectedSize(first.size)
         } else {
-          // Sélectionner le premier extrait disponible
           const firstExtrait = p.extraits?.[0]
           if (firstExtrait) setSelectedExtrait(firstExtrait)
         }
@@ -45,7 +43,7 @@ function ProductDetailPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-surface flex items-center justify-center pt-20">
-      <div className="w-8 h-8 border border-outline-variant border-t-primary rounded-full animate-spin" />
+      <div className="w-8 h-8 border border-outline-variant border-t-amber-400 rounded-full animate-spin" />
     </div>
   )
   if (!product) return null
@@ -59,6 +57,7 @@ function ProductDetailPage() {
     ? (achatMode === 'extrait' && selectedExtrait ? selectedExtrait.price : product.price)
     : product.price
 
+  // Ajouter au panier sans redirection
   const handleAddToCart = () => {
     if (isParfum) {
       if (achatMode === 'flacon') {
@@ -74,6 +73,24 @@ function ProductDetailPage() {
       addToCart(product, selectedSize, quantity)
     }
     toast.success(t.toastAdded(product.name))
+  }
+
+  // Acheter directement → panier puis checkout
+  const handleBuyNow = () => {
+    if (isParfum) {
+      if (achatMode === 'flacon') {
+        addToCart(product, 'Flacon complet', quantity, { type: 'flacon', price: product.price })
+      } else {
+        if (!selectedExtrait) { toast.error(t.toastSelectVolume); return }
+        addToCart(product, `${selectedExtrait.ml} ml`, quantity, {
+          type: 'extrait', ml: selectedExtrait.ml, price: selectedExtrait.price,
+        })
+      }
+    } else {
+      if (!selectedSize) { toast.error(t.toastSelectSize); return }
+      addToCart(product, selectedSize, quantity)
+    }
+    navigate('/cart')
   }
 
   return (
@@ -98,6 +115,9 @@ function ProductDetailPage() {
             <div className="relative aspect-[3/4] bg-surface-container overflow-hidden group">
               <img src={images[currentImage]} alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+
+              {/* Accent doré en bas de l'image */}
+              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-amber-400/0 via-amber-400/60 to-amber-400/0" />
 
               <div className="absolute top-4 left-4">
                 <span className="stitch-label bg-surface-container-lowest/90 px-3 py-1.5 text-on-surface">
@@ -131,7 +151,7 @@ function ProductDetailPage() {
                   <button key={i} onClick={() => setCurrentImage(i)}
                     className={`aspect-[3/4] overflow-hidden border transition-all
                                 ${i === currentImage
-                                  ? 'border-primary'
+                                  ? 'border-amber-400'
                                   : 'border-transparent opacity-60 hover:opacity-100'}`}>
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
@@ -144,19 +164,26 @@ function ProductDetailPage() {
           <div className="flex flex-col gap-8 animate-fade-up lg:pt-4">
 
             <div>
-              {product.brand && <p className="stitch-label mb-2">{product.brand}</p>}
+              {product.brand && (
+                <p className="stitch-label mb-2 text-amber-500/70">{product.brand}</p>
+              )}
               <h1 className="font-headline text-on-surface text-4xl lg:text-5xl xl:text-6xl
                              font-bold leading-tight tracking-tighter mb-5">
                 {product.name}
               </h1>
-              <p className="font-label text-[1.25rem] lg:text-[1.5rem] uppercase tracking-[0.05rem]
-                             text-secondary font-semibold">
-                {(prixAffiche ?? 0).toLocaleString('fr-DZ')}
-                <span className="text-sm text-on-surface-variant font-normal ml-2">DZD</span>
-              </p>
+
+              {/* Prix avec accent doré */}
+              <div className="flex items-baseline gap-2">
+                <span className="text-amber-400 text-[0.6rem] font-bold uppercase tracking-widest">DZD</span>
+                <p className="font-label text-[1.5rem] lg:text-[1.75rem] tracking-tight
+                               text-on-surface font-bold">
+                  {(prixAffiche ?? 0).toLocaleString('fr-DZ')}
+                </p>
+              </div>
             </div>
 
-            <div className="h-px bg-surface-container-high" />
+            {/* Ligne décorative dorée */}
+            <div className="h-px bg-gradient-to-r from-amber-400/40 via-amber-400/10 to-transparent" />
 
             {/* ── Sélection PARFUMS ───────────────────────────── */}
             {isParfum ? (
@@ -170,7 +197,7 @@ function ProductDetailPage() {
                         className={`px-5 py-3 font-label text-[0.6875rem] uppercase tracking-[0.1rem]
                                     transition-all duration-200
                                     ${achatMode === 'flacon'
-                                      ? 'bg-primary text-on-primary border-primary'
+                                      ? 'bg-primary text-on-primary'
                                       : 'text-on-surface-variant hover:text-on-surface'}`}>
                         <span className="material-symbols-outlined text-[14px] align-middle mr-1.5"
                           style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>water_drop</span>
@@ -181,7 +208,7 @@ function ProductDetailPage() {
                         className={`px-5 py-3 font-label text-[0.6875rem] uppercase tracking-[0.1rem]
                                     transition-all duration-200 border-l border-outline-variant
                                     ${achatMode === 'extrait'
-                                      ? 'bg-primary text-on-primary border-primary'
+                                      ? 'bg-primary text-on-primary'
                                       : 'text-on-surface-variant hover:text-on-surface'}`}>
                         <span className="material-symbols-outlined text-[14px] align-middle mr-1.5"
                           style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>science</span>
@@ -192,13 +219,11 @@ function ProductDetailPage() {
                 )}
 
                 {achatMode === 'flacon' && (
-                  <div className="bg-surface-container-low p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="font-label text-[0.75rem] uppercase tracking-[0.1rem] text-on-surface">
-                        {t.fullBottle}
-                      </p>
-                    </div>
-                    <p className="font-label text-[1.125rem] text-secondary font-semibold">
+                  <div className="bg-surface-container-low p-5 border-l-2 border-amber-400/40">
+                    <p className="font-label text-[0.75rem] uppercase tracking-[0.1rem] text-on-surface mb-2">
+                      {t.fullBottle}
+                    </p>
+                    <p className="font-label text-[1.125rem] font-bold text-amber-400">
                       {(product.price ?? 0).toLocaleString('fr-DZ')}
                       <span className="text-xs text-on-surface-variant font-normal ml-1.5">DZD</span>
                     </p>
@@ -218,11 +243,11 @@ function ProductDetailPage() {
                             className={`flex flex-col items-center px-4 py-3 border min-w-[72px]
                                         font-label transition-all duration-200
                                         ${isSelected
-                                          ? 'bg-primary text-on-primary border-primary'
-                                          : 'border-outline-variant text-on-surface hover:border-primary bg-transparent'}`}>
+                                          ? 'bg-amber-400 text-black border-amber-400'
+                                          : 'border-outline-variant text-on-surface hover:border-amber-400/50 bg-transparent'}`}>
                             <span className="text-[0.875rem] font-semibold">{ex.ml} ml</span>
                             <span className={`text-[0.6rem] uppercase tracking-widest mt-0.5
-                                              ${isSelected ? 'text-on-primary/70' : 'text-outline'}`}>
+                                              ${isSelected ? 'text-black/60' : 'text-outline'}`}>
                               {ex.price.toLocaleString('fr-DZ')} DZD
                             </span>
                           </button>
@@ -238,7 +263,7 @@ function ProductDetailPage() {
                 <p className="stitch-label mb-4">
                   {t.size}
                   {selectedSize && (
-                    <span className="ml-3 text-secondary normal-case tracking-normal font-semibold">
+                    <span className="ml-3 text-amber-400 normal-case tracking-normal font-semibold">
                       {selectedSize}
                     </span>
                   )}
@@ -256,12 +281,27 @@ function ProductDetailPage() {
               <QuantitySelector value={quantity} min={1} max={99} onChange={setQuantity} />
             </div>
 
-            <button onClick={handleAddToCart}
-              className="btn-primary w-full py-5 justify-center text-sm lg:text-base">
-              <span className="material-symbols-outlined text-[18px]"
-                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>shopping_bag</span>
-              {t.addToCart}
-            </button>
+            {/* ── Boutons d'action ─────────────────────────────── */}
+            <div className="flex flex-col gap-3">
+              {/* Ajouter au panier */}
+              <button onClick={handleAddToCart}
+                className="btn-primary w-full py-4 justify-center text-sm lg:text-base">
+                <span className="material-symbols-outlined text-[18px]"
+                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>shopping_bag</span>
+                {t.addToCart}
+              </button>
+
+              {/* Acheter directement — bouton doré */}
+              <button onClick={handleBuyNow}
+                className="w-full py-4 flex items-center justify-center gap-2
+                           bg-amber-400 hover:bg-amber-300 active:scale-[0.98]
+                           text-black font-label text-[0.6875rem] uppercase tracking-[0.2rem]
+                           transition-all duration-200 font-bold">
+                <span className="material-symbols-outlined text-[18px]"
+                  style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}>bolt</span>
+                {t.buyNow}
+              </button>
+            </div>
 
             {product.description && (
               <>
@@ -275,8 +315,10 @@ function ProductDetailPage() {
               </>
             )}
 
-            <div className="bg-surface-container-low p-5 flex items-start gap-4">
-              <span className="material-symbols-outlined text-on-surface-variant mt-0.5"
+            {/* Info livraison avec accent doré */}
+            <div className="bg-surface-container-low p-5 flex items-start gap-4
+                            border-l-2 border-amber-400/30">
+              <span className="material-symbols-outlined text-amber-400/70 mt-0.5"
                 style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>local_shipping</span>
               <div>
                 <p className="font-body font-semibold text-on-surface text-sm mb-0.5">
@@ -287,8 +329,8 @@ function ProductDetailPage() {
                 </p>
               </div>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </div>
