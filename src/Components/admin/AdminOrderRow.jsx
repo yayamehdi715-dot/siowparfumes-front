@@ -67,7 +67,7 @@ function AdminOrderRow({ order, onUpdated }) {
         </div>
       </td>
       <td className="px-4 py-3 text-right whitespace-nowrap">
-        <span className="font-display text-lg text-brand-white">
+        <span className="font-headline text-lg text-brand-white">
           {(order.total ?? 0).toLocaleString('fr-DZ')}
           <span className="text-xs text-brand-gray-500 font-body ml-1">DA</span>
         </span>

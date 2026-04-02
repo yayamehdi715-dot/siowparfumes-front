@@ -1,135 +1,163 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { ShoppingBag, Search, Menu, X } from 'lucide-react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
-
-const NAV_LINKS = [
-  { to: '/products?category=Bébé', label: 'Bébé' },
-  { to: '/products?category=Enfants', label: 'Enfants' },
-  { to: '/products?category=Femme', label: 'Femme' },
-  { to: '/products?category=Homme', label: 'Homme' },
-  { to: '/products?category=Lingerie', label: 'Lingerie' },
-  { to: '/products?category=Accessoires', label: 'Accessoires' },
-  { to: '/about', label: 'Qui sommes-nous' },
-]
 
 function Navbar() {
   const { itemCount } = useCart()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchVal, setSearchVal] = useState('')
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchVal.trim()) {
-      navigate(`/products?search=${searchVal}`)
+      navigate(`/products?search=${encodeURIComponent(searchVal)}`)
       setSearchOpen(false)
       setSearchVal('')
     }
   }
 
+  // Determine active nav tab
+  const path = location.pathname
+  const isHome     = path === '/'
+  const isCatalog  = path.startsWith('/products') || path.startsWith('/tag')
+  const isCart     = path === '/cart'
+  const isAbout    = path === '/about'
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500
-                     ${scrolled ? 'bg-white/95 backdrop-blur-sm shadow-soft' : 'bg-sf-cream/90 backdrop-blur-sm'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-18 py-3">
+    <>
+      {/* ── Top App Bar ─────────────────────────────────────────────── */}
+      <header className="fixed top-0 w-full z-50 bg-[#F9F9F9]/80 backdrop-blur-xl">
+        <div className="flex justify-between items-center px-6 py-4 w-full">
+
+          {/* Search */}
+          <div>
+            {searchOpen ? (
+              <form onSubmit={handleSearch} className="flex items-center gap-2">
+                <input
+                  autoFocus
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  placeholder="Rechercher..."
+                  className="bg-surface-container text-on-surface font-body text-sm
+                             px-4 py-2 outline-none w-44 border-b border-primary"
+                />
+                <button
+                  type="button"
+                  onClick={() => { setSearchOpen(false); setSearchVal('') }}
+                  className="material-symbols-outlined text-on-surface text-[20px]"
+                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24" }}
+                >
+                  close
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="cursor-pointer active:scale-95 transition-transform text-on-surface"
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24" }}
+                >
+                  search
+                </span>
+              </button>
+            )}
+          </div>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-9 h-9 bg-sf-rose rounded-full flex items-center justify-center">
-              <span className="font-display text-sf-text text-sm font-600">S</span>
-            </div>
-            <div>
-              <p className="font-display text-sf-text text-lg leading-none">SheinMe</p>
-              <p className="font-body text-sf-text-light text-[10px] tracking-widest uppercase">Store</p>
-            </div>
+          <Link to="/">
+            <h1 className="text-xl font-headline italic tracking-tighter text-on-surface">
+              SIOW PARFUMES
+            </h1>
           </Link>
 
-          {/* Nav desktop */}
-          <div className="hidden lg:flex items-center gap-6">
-            {NAV_LINKS.map(({ to, label }) => (
-              <NavLink key={label} to={to}
-                className="font-body text-sf-text-soft text-sm hover:text-sf-text
-                           transition-colors duration-200 relative group whitespace-nowrap">
-                {label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-sf-rose rounded-full
-                                 group-hover:w-full transition-all duration-300" />
-              </NavLink>
-            ))}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            {/* Recherche */}
-            <div className="relative">
-              {searchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center">
-                  <input
-                    autoFocus value={searchVal}
-                    onChange={(e) => setSearchVal(e.target.value)}
-                    placeholder="Rechercher..."
-                    className="bg-sf-beige border border-sf-beige-dark rounded-full
-                               px-4 py-1.5 text-sm font-body outline-none w-40
-                               focus:border-sf-rose transition-all"
-                  />
-                  <button type="button" onClick={() => setSearchOpen(false)}
-                    className="ml-2 text-sf-text-soft hover:text-sf-text">
-                    <X size={16} />
-                  </button>
-                </form>
-              ) : (
-                <button onClick={() => setSearchOpen(true)}
-                  className="p-2 text-sf-text-soft hover:text-sf-text transition-colors">
-                  <Search size={20} strokeWidth={1.5} />
-                </button>
-              )}
-            </div>
-
-            {/* Panier */}
-            <button onClick={() => navigate('/cart')}
-              className="relative p-2 text-sf-text-soft hover:text-sf-text transition-colors">
-              <ShoppingBag size={20} strokeWidth={1.5} />
-              {itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-sf-rose
-                                 text-sf-text text-[10px] font-body font-700
-                                 flex items-center justify-center rounded-full">
-                  {itemCount}
-                </span>
-              )}
-            </button>
-
-            {/* Burger mobile */}
-            <button onClick={() => setMenuOpen(!menuOpen)}
-              className="lg:hidden p-2 text-sf-text-soft hover:text-sf-text transition-colors">
-              {menuOpen ? <X size={20} /> : <Menu size={20} strokeWidth={1.5} />}
-            </button>
-          </div>
+          {/* Cart */}
+          <button
+            onClick={() => navigate('/cart')}
+            className="relative cursor-pointer active:scale-95 transition-transform text-on-surface"
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24" }}
+            >
+              shopping_bag
+            </span>
+            {itemCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-on-secondary
+                               text-[9px] font-body font-bold flex items-center justify-center rounded-full">
+                {itemCount}
+              </span>
+            )}
+          </button>
         </div>
-      </div>
+        {/* Subtle bottom rule */}
+        <div className="bg-surface-container-low h-[1px] w-full" />
+      </header>
 
-      {/* Menu mobile */}
-      {menuOpen && (
-        <div className="lg:hidden bg-white border-t border-sf-beige animate-fade-in">
-          <div className="px-6 py-6 flex flex-col gap-4">
-            {NAV_LINKS.map(({ to, label }) => (
-              <NavLink key={label} to={to} onClick={() => setMenuOpen(false)}
-                className="font-body text-sf-text-soft text-base hover:text-sf-rose
-                           transition-colors py-1 border-b border-sf-beige">
-                {label}
-              </NavLink>
-            ))}
-          </div>
-        </div>
-      )}
-    </nav>
+      {/* ── Bottom Navigation (mobile) ──────────────────────────────── */}
+      <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center
+                      px-4 pb-8 pt-2
+                      bg-[#F9F9F9]/90 backdrop-blur-2xl
+                      border-t border-black/5">
+
+        {/* Home */}
+        <Link to="/" className={`flex flex-col items-center justify-center pt-2 transition-all duration-300
+          ${isHome ? 'text-on-surface font-bold border-t-2 border-on-surface' : 'text-outline hover:text-on-surface'}`}>
+          <span
+            className="material-symbols-outlined mb-1 text-[22px]"
+            style={{ fontVariationSettings: isHome ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 200" }}
+          >
+            home
+          </span>
+          <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">Accueil</span>
+        </Link>
+
+        {/* Catalog */}
+        <Link to="/products" className={`flex flex-col items-center justify-center pt-2 transition-all duration-300
+          ${isCatalog ? 'text-on-surface font-bold border-t-2 border-on-surface' : 'text-outline hover:text-on-surface'}`}>
+          <span
+            className="material-symbols-outlined mb-1 text-[22px]"
+            style={{ fontVariationSettings: isCatalog ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 200" }}
+          >
+            menu_book
+          </span>
+          <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">Catalogue</span>
+        </Link>
+
+        {/* Cart */}
+        <Link to="/cart" className={`flex flex-col items-center justify-center pt-2 transition-all duration-300 relative
+          ${isCart ? 'text-on-surface font-bold border-t-2 border-on-surface' : 'text-outline hover:text-on-surface'}`}>
+          <span
+            className="material-symbols-outlined mb-1 text-[22px]"
+            style={{ fontVariationSettings: isCart ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 200" }}
+          >
+            shopping_bag
+          </span>
+          {itemCount > 0 && (
+            <span className="absolute top-1 right-3 w-3.5 h-3.5 bg-secondary text-on-secondary
+                             text-[8px] font-bold flex items-center justify-center rounded-full">
+              {itemCount}
+            </span>
+          )}
+          <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">Panier</span>
+        </Link>
+
+        {/* About */}
+        <Link to="/about" className={`flex flex-col items-center justify-center pt-2 transition-all duration-300
+          ${isAbout ? 'text-on-surface font-bold border-t-2 border-on-surface' : 'text-outline hover:text-on-surface'}`}>
+          <span
+            className="material-symbols-outlined mb-1 text-[22px]"
+            style={{ fontVariationSettings: isAbout ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 200" }}
+          >
+            info
+          </span>
+          <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">À Propos</span>
+        </Link>
+      </nav>
+    </>
   )
 }
 

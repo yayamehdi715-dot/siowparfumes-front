@@ -96,7 +96,7 @@ function AdminOrdersPage() {
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <p className="section-label">Suivi</p>
-          <h1 className="font-display text-4xl text-brand-white tracking-wide">COMMANDES</h1>
+          <h1 className="font-headline text-4xl text-brand-white tracking-wide">COMMANDES</h1>
         </div>
         <p className="text-brand-gray-500 font-body text-sm">
           {filtered.length} / {orders.length} commande{orders.length !== 1 ? 's' : ''}
@@ -151,7 +151,7 @@ function AdminOrdersPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="admin-card text-center py-16">
-          <p className="font-display text-5xl text-brand-gray-800 mb-3">VIDE</p>
+          <p className="font-headline text-5xl text-brand-gray-800 mb-3">VIDE</p>
           <p className="text-brand-gray-500 font-body">Aucune commande trouvée</p>
         </div>
       ) : (

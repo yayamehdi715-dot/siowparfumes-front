@@ -14,7 +14,7 @@ function StatCard({ icon: Icon, label, value, color = 'text-brand-white', accent
           <p className="text-brand-gray-500 text-xs font-heading font-semibold tracking-widest uppercase mb-2">
             {label}
           </p>
-          <p className={`font-display text-4xl leading-none ${color}`}>
+          <p className={`font-headline text-4xl leading-none ${color}`}>
             {value ?? '—'}
           </p>
         </div>
@@ -75,7 +75,7 @@ function AdminDashboardPage() {
       <div className="flex items-end justify-between">
         <div>
           <p className="section-label">Vue d'ensemble</p>
-          <h1 className="font-display text-4xl text-brand-white tracking-wide">DASHBOARD</h1>
+          <h1 className="font-headline text-4xl text-brand-white tracking-wide">DASHBOARD</h1>
         </div>
         <button
           onClick={() => setShowConfirm(true)}
@@ -142,7 +142,7 @@ function AdminDashboardPage() {
             ].map(({ label, count, color }) => (
               <div key={label} className="text-center">
                 <div className={`w-2 h-2 ${color} mx-auto mb-2`} />
-                <p className="font-display text-2xl text-brand-white">{count ?? 0}</p>
+                <p className="font-headline text-2xl text-brand-white">{count ?? 0}</p>
                 <p className="text-brand-gray-500 text-xs font-heading tracking-wider uppercase">{label}</p>
               </div>
             ))}

@@ -5,16 +5,19 @@ function SizeSelector({ sizes = [], selected, onChange }) {
         const isSelected = selected === size
         const outOfStock = stock === 0
         return (
-          <button key={size} onClick={() => !outOfStock && onChange(size)}
+          <button
+            key={size}
+            onClick={() => !outOfStock && onChange(size)}
             disabled={outOfStock}
-            className={`min-w-[44px] h-10 px-3 font-body text-sm rounded-xl
-                        transition-all duration-200 border-2
+            className={`min-w-[44px] h-10 px-3 font-label text-[0.6875rem] uppercase
+                        tracking-[0.1rem] transition-all duration-200 border
                         ${isSelected
-                          ? 'bg-sf-rose border-sf-rose text-sf-text font-700'
+                          ? 'bg-primary text-on-primary border-primary'
                           : outOfStock
-                            ? 'border-sf-beige text-sf-text-light cursor-not-allowed line-through bg-sf-beige'
-                            : 'border-sf-beige-dark text-sf-text hover:border-sf-rose bg-white'
-                        }`}>
+                            ? 'border-outline-variant/40 text-outline cursor-not-allowed line-through bg-transparent'
+                            : 'border-outline-variant text-on-surface hover:border-primary bg-transparent'
+                        }`}
+          >
             {size}
           </button>
         )

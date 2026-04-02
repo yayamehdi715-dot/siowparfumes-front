@@ -20,7 +20,7 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage'
 
 function PublicLayout({ children }) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-surface">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
@@ -33,22 +33,24 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <Toaster position="top-right"
+          <Toaster
+            position="top-center"
             toastOptions={{
               style: {
-                background: '#FFFFFF',
-                color: '#3D3530',
-                border: '1px solid #F0EAE0',
-                borderRadius: '12px',
-                fontFamily: 'Nunito, sans-serif',
-                fontSize: '14px',
-                boxShadow: '0 4px 24px rgba(139,111,94,0.12)',
+                background: '#ffffff',
+                color: '#1a1c1c',
+                border: '1px solid #e2e2e2',
+                borderRadius: '0px',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '13px',
+                letterSpacing: '0.01em',
+                boxShadow: '0 10px 40px rgba(26,28,28,0.08)',
               },
               success: {
-                iconTheme: { primary: '#A8BBA8', secondary: '#fff' },
+                iconTheme: { primary: '#8C495F', secondary: '#fff' },
               },
               error: {
-                iconTheme: { primary: '#F2C4CE', secondary: '#3D3530' },
+                iconTheme: { primary: '#ba1a1a', secondary: '#fff' },
               },
             }}
           />

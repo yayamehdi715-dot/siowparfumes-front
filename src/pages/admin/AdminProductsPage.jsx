@@ -69,7 +69,7 @@ function AdminProductsPage() {
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <p className="section-label">Catalogue</p>
-          <h1 className="font-display text-4xl text-brand-white tracking-wide">PRODUITS</h1>
+          <h1 className="font-headline text-4xl text-brand-white tracking-wide">PRODUITS</h1>
         </div>
         <button onClick={openCreate} className="btn-primary flex items-center gap-2">
           <Plus size={14} />
@@ -100,7 +100,7 @@ function AdminProductsPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="admin-card text-center py-16">
-          <p className="font-display text-5xl text-brand-gray-800 mb-3">VIDE</p>
+          <p className="font-headline text-5xl text-brand-gray-800 mb-3">VIDE</p>
           <p className="text-brand-gray-500 font-body">Aucun produit trouvé</p>
         </div>
       ) : (
@@ -138,7 +138,7 @@ function AdminProductsPage() {
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-display text-xl text-brand-white">
+                  <span className="font-headline text-xl text-brand-white">
                     {(product.price ?? 0).toLocaleString('fr-DZ')}
                     <span className="text-xs text-brand-gray-500 font-body ml-1">DA</span>
                   </span>

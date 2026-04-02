@@ -6,79 +6,88 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    background-color: #FAF7F2;
-    color: #3D3530;
-    font-family: 'Nunito', sans-serif;
+    background-color: #F9F9F9;
+    color: #1a1c1c;
+    font-family: 'Inter', system-ui, sans-serif;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
   }
-  ::selection { background-color: #F2C4CE; color: #3D3530; }
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: #FAF7F2; }
-  ::-webkit-scrollbar-thumb { background: #E5DDD0; border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover { background: #A8BBA8; }
+  ::selection { background-color: #ffacc5; color: #1a1c1c; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #F9F9F9; }
+  ::-webkit-scrollbar-thumb { background: #c4c7c7; }
+  ::-webkit-scrollbar-thumb:hover { background: #747878; }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+  }
 }
 
 @layer components {
+  /* ── Buttons ──────────────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-sf-rose text-sf-text font-body font-semibold
-           rounded-full px-8 py-3 text-sm
-           transition-all duration-300
-           hover:bg-sf-rose-dark hover:shadow-rose;
+           bg-gradient-to-b from-primary to-primary-container text-on-primary
+           font-body font-semibold
+           px-11 py-4 text-[0.6875rem] uppercase tracking-[0.2rem]
+           transition-all duration-300 active:scale-[0.97];
   }
-
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           bg-transparent text-sf-text font-body font-semibold
-           rounded-full px-8 py-3 text-sm border-2 border-sf-beige-dark
-           transition-all duration-300
-           hover:border-sf-rose hover:bg-sf-rose-soft;
+           bg-transparent text-secondary font-body font-semibold
+           px-11 py-4 text-[0.6875rem] uppercase tracking-[0.2rem]
+           border border-secondary/30
+           transition-all duration-300 hover:border-secondary active:scale-[0.97];
   }
-
-  .btn-sage {
+  .btn-outline {
     @apply inline-flex items-center justify-center gap-2
-           bg-sf-sage text-white font-body font-semibold
-           rounded-full px-8 py-3 text-sm
-           transition-all duration-300
-           hover:bg-sf-sage-dark hover:shadow-soft;
+           bg-transparent text-on-surface font-body font-semibold
+           px-8 py-3 text-[0.6875rem] uppercase tracking-[0.1rem]
+           border border-primary/20
+           transition-all duration-300 hover:bg-primary hover:text-on-primary active:scale-[0.97];
   }
 
+  /* ── Product card (sharp, no radius) ─────────────────────────── */
   .card-product {
-    @apply bg-white rounded-2xl overflow-hidden shadow-soft
+    @apply bg-surface-container-lowest overflow-hidden
            transition-all duration-300 cursor-pointer
-           hover:shadow-soft-lg hover:-translate-y-1;
+           hover:shadow-float;
   }
 
-  .sf-label {
-    @apply text-sf-rose-dark font-body font-semibold tracking-widest uppercase text-xs;
+  /* ── Labels ───────────────────────────────────────────────────── */
+  .stitch-label {
+    @apply font-label text-[0.6875rem] uppercase tracking-[0.15rem] text-on-surface-variant;
+  }
+  .stitch-label-secondary {
+    @apply font-label text-[0.6875rem] uppercase tracking-[0.15rem] text-secondary;
   }
 
-  .sf-title {
-    @apply font-display text-sf-text leading-tight;
-  }
-
+  /* ── Inputs ───────────────────────────────────────────────────── */
   .sf-input {
-    @apply w-full bg-white border border-sf-beige-dark text-sf-text
-           font-body text-sm px-4 py-3 rounded-xl outline-none
-           transition-all duration-300 placeholder:text-sf-text-light
-           focus:border-sf-rose focus:ring-2 focus:ring-sf-rose/20;
+    @apply w-full bg-transparent border-0 border-b border-outline-variant text-on-surface
+           font-body text-sm px-0 py-3 outline-none
+           transition-all duration-300 placeholder:text-outline
+           focus:border-primary;
   }
-
   .sf-select {
-    @apply w-full bg-white border border-sf-beige-dark text-sf-text
-           font-body text-sm px-4 py-3 rounded-xl outline-none
-           transition-all duration-300 focus:border-sf-rose
-           focus:ring-2 focus:ring-sf-rose/20 appearance-none cursor-pointer;
+    @apply w-full bg-surface-container text-on-surface
+           font-body text-sm px-4 py-3 outline-none
+           transition-all duration-300 focus:ring-1 focus:ring-primary
+           appearance-none cursor-pointer;
   }
 
+  /* ── Badge ────────────────────────────────────────────────────── */
   .badge {
-    @apply inline-block bg-sf-rose text-sf-text text-xs font-body
-           font-bold px-3 py-1 rounded-full;
+    @apply inline-block bg-primary text-on-primary text-[0.6875rem] font-label
+           uppercase tracking-[0.1rem] px-3 py-1;
   }
-
-  .badge-sage {
-    @apply inline-block bg-sf-sage text-white text-xs font-body
-           font-bold px-3 py-1 rounded-full;
+  .badge-secondary {
+    @apply inline-block bg-secondary text-on-secondary text-[0.6875rem] font-label
+           uppercase tracking-[0.1rem] px-3 py-1;
   }
 }
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

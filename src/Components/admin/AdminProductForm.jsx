@@ -145,65 +145,65 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
       
       {/* Header */}
       <div className="border-b border-gray-200 pb-6">
-        <h2 className="text-2xl font-display text-sf-text mb-2">
+        <h2 className="text-2xl font-headline text-gray-900 mb-2">
           {isEditing ? 'Modifier le produit' : 'Nouveau produit'}
         </h2>
-        <p className="text-sm text-sf-text-soft font-body">
+        <p className="text-sm text-gray-500 font-body">
           Les champs marqués d'un * sont obligatoires
         </p>
       </div>
 
       {/* Infos de base */}
       <div className="space-y-6">
-        <h3 className="text-lg font-display text-sf-text flex items-center gap-2">
-          <span className="w-8 h-8 bg-sf-rose-soft rounded-full flex items-center justify-center text-sf-rose-dark text-sm">1</span>
+        <h3 className="text-lg font-headline text-gray-900 flex items-center gap-2">
+          <span className="w-8 h-8 bg-pink-50 rounded-full flex items-center justify-center text-pink-500 text-sm">1</span>
           Informations générales
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
+            <label className="block text-gray-900 text-sm font-semibold mb-2">
               Nom du produit *
             </label>
             <input
               name="name" value={form.name} onChange={handleChange}
               placeholder="Ex: Robe d'été fleurie..."
               className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200
-                         font-body text-sf-text placeholder:text-sf-text-soft/50
+                         font-body text-gray-900 placeholder:text-gray-500/50
                          ${errors.name 
                            ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100' 
-                           : 'border-gray-200 bg-white hover:border-sf-sage focus:border-sf-sage focus:ring-sf-sage-soft'
+                           : 'border-gray-200 bg-white hover:border-green-400 focus:border-green-400 focus:ring-green-100'
                          } focus:outline-none focus:ring-4`}
             />
             {errors.name && <p className="text-red-600 text-xs mt-2 font-medium">{errors.name}</p>}
           </div>
           
           <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
+            <label className="block text-gray-900 text-sm font-semibold mb-2">
               Marque *
             </label>
             <input
               name="brand" value={form.brand} onChange={handleChange}
               placeholder="Ex: Zara, H&M..."
               className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200
-                         font-body text-sf-text placeholder:text-sf-text-soft/50
+                         font-body text-gray-900 placeholder:text-gray-500/50
                          ${errors.brand 
                            ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100' 
-                           : 'border-gray-200 bg-white hover:border-sf-sage focus:border-sf-sage focus:ring-sf-sage-soft'
+                           : 'border-gray-200 bg-white hover:border-green-400 focus:border-green-400 focus:ring-green-100'
                          } focus:outline-none focus:ring-4`}
             />
             {errors.brand && <p className="text-red-600 text-xs mt-2 font-medium">{errors.brand}</p>}
           </div>
           
           <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
+            <label className="block text-gray-900 text-sm font-semibold mb-2">
               Catégorie *
             </label>
             <select
               name="category" value={form.category} onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white
-                       hover:border-sf-sage focus:border-sf-sage focus:ring-4 focus:ring-sf-sage-soft
-                       font-body text-sf-text transition-all duration-200 focus:outline-none
+                       hover:border-green-400 focus:border-green-400 focus:ring-4 focus:ring-green-100
+                       font-body text-gray-900 transition-all duration-200 focus:outline-none
                        cursor-pointer"
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -211,17 +211,17 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           </div>
           
           <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
+            <label className="block text-gray-900 text-sm font-semibold mb-2">
               Prix (DA) *
             </label>
             <input
               name="price" value={form.price} onChange={handleChange}
               type="number" min="0" placeholder="Ex: 4500"
               className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200
-                         font-body text-sf-text placeholder:text-sf-text-soft/50
+                         font-body text-gray-900 placeholder:text-gray-500/50
                          ${errors.price 
                            ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100' 
-                           : 'border-gray-200 bg-white hover:border-sf-sage focus:border-sf-sage focus:ring-sf-sage-soft'
+                           : 'border-gray-200 bg-white hover:border-green-400 focus:border-green-400 focus:ring-green-100'
                          } focus:outline-none focus:ring-4`}
             />
             {errors.price && <p className="text-red-600 text-xs mt-2 font-medium">{errors.price}</p>}
@@ -229,15 +229,15 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         </div>
 
         <div>
-          <label className="block text-sf-text text-sm font-semibold mb-2">
+          <label className="block text-gray-900 text-sm font-semibold mb-2">
             Description
           </label>
           <textarea
             name="description" value={form.description} onChange={handleChange}
             rows={4} placeholder="Décrivez le produit en quelques mots..."
             className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white
-                     hover:border-sf-sage focus:border-sf-sage focus:ring-4 focus:ring-sf-sage-soft
-                     font-body text-sf-text placeholder:text-sf-text-soft/50
+                     hover:border-green-400 focus:border-green-400 focus:ring-4 focus:ring-green-100
+                     font-body text-gray-900 placeholder:text-gray-500/50
                      transition-all duration-200 focus:outline-none resize-none"
           />
         </div>
@@ -245,12 +245,12 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
 
       {/* Tags section */}
       <div className="space-y-4 pt-6 border-t border-gray-200">
-        <h3 className="text-lg font-display text-sf-text flex items-center gap-2">
-          <span className="w-8 h-8 bg-sf-sage-soft rounded-full flex items-center justify-center text-sf-sage-dark text-sm">2</span>
+        <h3 className="text-lg font-headline text-gray-900 flex items-center gap-2">
+          <span className="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center text-green-600-dark text-sm">2</span>
           Collections spéciales (optionnel)
         </h3>
         
-        <p className="text-sm text-sf-text-soft font-body">
+        <p className="text-sm text-gray-500 font-body">
           Sélectionnez une ou plusieurs collections auxquelles ce produit appartient
         </p>
         
@@ -263,8 +263,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
               className={`px-6 py-3 rounded-full font-body font-semibold text-sm
                          transition-all duration-200 border-2
                          ${form.tags.includes(tag)
-                           ? 'bg-sf-sage text-white border-sf-sage shadow-md scale-105'
-                           : 'bg-white text-sf-text-soft border-gray-200 hover:border-sf-sage hover:text-sf-sage'
+                           ? 'bg-green-500 text-white border-green-400 shadow-md scale-105'
+                           : 'bg-white text-gray-500 border-gray-200 hover:border-green-400 hover:text-green-600'
                          }`}
             >
               {tag}
@@ -276,15 +276,15 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
       {/* Tailles & stocks */}
       <div className="space-y-4 pt-6 border-t border-gray-200">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-display text-sf-text flex items-center gap-2">
+          <h3 className="text-lg font-headline text-gray-900 flex items-center gap-2">
             <span className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-sm">3</span>
             Tailles & Stocks *
           </h3>
           <button 
             type="button" 
             onClick={addSize}
-            className="flex items-center gap-2 px-4 py-2 bg-sf-sage text-white rounded-lg
-                     font-body font-semibold text-sm hover:bg-sf-sage-dark transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg
+                     font-body font-semibold text-sm hover:bg-green-500-dark transition-colors"
           >
             <Plus size={16} /> Ajouter une taille
           </button>
@@ -294,25 +294,25 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           {form.sizes.map((s, i) => (
             <div key={i} className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl">
               <div className="flex-1">
-                <label className="block text-xs font-semibold text-sf-text-soft mb-1">Taille</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Taille</label>
                 <input
                   value={s.size} 
                   onChange={(e) => updateSize(i, 'size', e.target.value)}
                   placeholder="Ex: 36, M, 6 mois..."
                   className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 bg-white
-                           hover:border-sf-sage focus:border-sf-sage focus:ring-2 focus:ring-sf-sage-soft
-                           font-body text-sf-text transition-all duration-200 focus:outline-none"
+                           hover:border-green-400 focus:border-green-400 focus:ring-2 focus:ring-green-100
+                           font-body text-gray-900 transition-all duration-200 focus:outline-none"
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-xs font-semibold text-sf-text-soft mb-1">Stock</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Stock</label>
                 <input
                   type="number" min="0" value={s.stock}
                   onChange={(e) => updateSize(i, 'stock', e.target.value)}
                   placeholder="Quantité"
                   className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 bg-white
-                           hover:border-sf-sage focus:border-sf-sage focus:ring-2 focus:ring-sf-sage-soft
-                           font-body text-sf-text transition-all duration-200 focus:outline-none"
+                           hover:border-green-400 focus:border-green-400 focus:ring-2 focus:ring-green-100
+                           font-body text-gray-900 transition-all duration-200 focus:outline-none"
                 />
               </div>
               <button
@@ -332,7 +332,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
 
       {/* Upload images */}
       <div className="space-y-4 pt-6 border-t border-gray-200">
-        <h3 className="text-lg font-display text-sf-text flex items-center gap-2 mb-4">
+        <h3 className="text-lg font-headline text-gray-900 flex items-center gap-2 mb-4">
           <span className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-sm">4</span>
           Images du produit {!isEditing && '*'}
         </h3>
@@ -342,8 +342,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           className={`relative flex flex-col items-center justify-center gap-4 border-2 border-dashed
                      rounded-2xl p-12 cursor-pointer transition-all duration-300 group
                      ${dragOver
-                       ? 'border-sf-sage bg-sf-sage-soft scale-[1.02]'
-                       : 'border-gray-300 hover:border-sf-sage bg-gray-50 hover:bg-sf-sage-soft/30'
+                       ? 'border-green-400 bg-green-50 scale-[1.02]'
+                       : 'border-gray-300 hover:border-green-400 bg-gray-50 hover:bg-green-50/30'
                      }
                      ${errors.images ? 'border-red-300 bg-red-50' : ''}
                      ${uploading ? 'pointer-events-none opacity-60' : ''}`}
@@ -361,19 +361,19 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           />
           
           <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all
-                         ${dragOver ? 'bg-sf-sage scale-110' : 'bg-gray-200 group-hover:bg-sf-sage-soft'}`}>
+                         ${dragOver ? 'bg-green-500 scale-110' : 'bg-gray-200 group-hover:bg-green-50'}`}>
             {uploading ? (
-              <Loader2 size={32} className="text-sf-sage animate-spin" />
+              <Loader2 size={32} className="text-green-600 animate-spin" />
             ) : (
-              <Upload size={32} className={`transition-all ${dragOver ? 'text-white' : 'text-gray-400 group-hover:text-sf-sage'}`} />
+              <Upload size={32} className={`transition-all ${dragOver ? 'text-white' : 'text-gray-400 group-hover:text-green-600'}`} />
             )}
           </div>
           
           <div className="text-center">
-            <p className="text-sf-text font-body font-semibold text-lg mb-1">
+            <p className="text-gray-900 font-body font-semibold text-lg mb-1">
               {uploading ? 'Upload en cours...' : 'Glisser-déposer vos images ici'}
             </p>
-            <p className="text-sf-text-soft text-sm">
+            <p className="text-gray-500 text-sm">
               ou cliquez pour sélectionner · JPG, PNG, WebP
             </p>
           </div>
@@ -383,7 +383,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         {/* Aperçu des images */}
         {form.images.length > 0 && (
           <div>
-            <p className="text-sm font-semibold text-sf-text mb-3">
+            <p className="text-sm font-semibold text-gray-900 mb-3">
               {form.images.length} image{form.images.length > 1 ? 's' : ''} uploadée{form.images.length > 1 ? 's' : ''}
             </p>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
@@ -413,8 +413,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         <button 
           type="submit" 
           disabled={saving || uploading} 
-          className="flex-1 sm:flex-none bg-sf-sage text-white px-8 py-4 rounded-xl
-                   font-body font-bold text-base hover:bg-sf-sage-dark
+          className="flex-1 sm:flex-none bg-green-500 text-white px-8 py-4 rounded-xl
+                   font-body font-bold text-base hover:bg-green-500-dark
                    disabled:opacity-50 disabled:cursor-not-allowed
                    transition-all duration-200 hover:shadow-lg hover:scale-[1.02]
                    flex items-center justify-center gap-2"
@@ -432,7 +432,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           <button 
             type="button" 
             onClick={onCancel} 
-            className="px-6 py-4 rounded-xl border-2 border-gray-200 text-sf-text-soft
+            className="px-6 py-4 rounded-xl border-2 border-gray-200 text-gray-500
                      font-body font-semibold hover:border-gray-300 hover:bg-gray-50
                      transition-all duration-200"
           >

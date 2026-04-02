@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight, Heart } from 'lucide-react'
 import api from '../../utils/api'
 import { useCart } from '../../context/CartContext'
 import SizeSelector from '../../Components/public/SizeSelector'
@@ -8,18 +7,17 @@ import QuantitySelector from '../../Components/public/QuantitySelector'
 import toast from 'react-hot-toast'
 
 function ProductDetailPage() {
-  const { id } = useParams()
-  const navigate = useNavigate()
+  const { id }        = useParams()
+  const navigate      = useNavigate()
   const { addToCart } = useCart()
-  const [product, setProduct] = useState(null)
-  const [loading, setLoading] = useState(true)
+
+  const [product, setProduct]           = useState(null)
+  const [loading, setLoading]           = useState(true)
   const [selectedSize, setSelectedSize] = useState(null)
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity]         = useState(1)
   const [currentImage, setCurrentImage] = useState(0)
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [id])
+  useEffect(() => { window.scrollTo(0, 0) }, [id])
 
   useEffect(() => {
     api.get(`/products/${id}`)
@@ -33,8 +31,8 @@ function ProductDetailPage() {
   }, [id])
 
   if (loading) return (
-    <div className="min-h-screen bg-sf-cream flex items-center justify-center pt-20">
-      <div className="w-10 h-10 border-3 border-sf-beige-dark border-t-sf-rose
+    <div className="min-h-screen bg-surface flex items-center justify-center pt-20">
+      <div className="w-8 h-8 border border-outline-variant border-t-primary
                       rounded-full animate-spin" />
     </div>
   )
@@ -42,67 +40,94 @@ function ProductDetailPage() {
   if (!product) return null
 
   const maxStock = product.sizes?.find((s) => s.size === selectedSize)?.stock || 1
-  const images = product.images?.length > 0 ? product.images : ['/placeholder.jpg']
+  const images   = product.images?.length > 0 ? product.images : ['/placeholder.jpg']
 
   const handleAddToCart = () => {
-    if (!selectedSize) { toast.error('Veuillez sélectionner une taille 👆'); return }
+    if (!selectedSize) { toast.error('Veuillez sélectionner une taille'); return }
     addToCart(product, selectedSize, quantity)
-    toast.success(`${product.name} ajouté au panier ! 🛍️`)
+    toast.success(`${product.name} ajouté au panier`)
   }
 
   return (
-    <div className="min-h-screen bg-sf-cream pt-20">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-8 pb-6">
-        <button onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sf-text-soft hover:text-sf-text
-                     transition-colors text-sm font-body group">
-          <ArrowLeft size={16}
-            className="group-hover:-translate-x-1 transition-transform" />
+    <div className="min-h-screen bg-surface pt-16 pb-32">
+
+      {/* Back button */}
+      <div className="px-6 pt-6 pb-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 stitch-label hover:text-on-surface transition-colors group"
+        >
+          <span
+            className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform"
+            style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}
+          >
+            arrow_back
+          </span>
           Retour
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16">
+      <div className="px-6 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-16">
 
-          {/* Galerie */}
+          {/* ── Gallery ──────────────────────────────────────────── */}
           <div className="flex flex-col gap-3">
-            <div className="relative aspect-[3/4] bg-sf-beige rounded-2xl overflow-hidden group">
-              <img src={images[currentImage]} alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-700
-                           group-hover:scale-105" />
-              {images.length > 1 && (
-                <>
-                  <button onClick={() => setCurrentImage((i) => i === 0 ? images.length - 1 : i - 1)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90
-                               rounded-full flex items-center justify-center shadow-soft
-                               opacity-0 group-hover:opacity-100 transition-opacity
-                               hover:bg-white">
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button onClick={() => setCurrentImage((i) => i === images.length - 1 ? 0 : i + 1)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90
-                               rounded-full flex items-center justify-center shadow-soft
-                               opacity-0 group-hover:opacity-100 transition-opacity
-                               hover:bg-white">
-                    <ChevronRight size={18} />
-                  </button>
-                </>
-              )}
-              <div className="absolute top-3 left-3">
-                <span className="bg-white/90 rounded-full px-3 py-1 text-xs font-body
-                                 font-600 text-sf-text shadow-soft">
+            {/* Main image */}
+            <div className="relative aspect-[3/4] bg-surface-container overflow-hidden group">
+              <img
+                src={images[currentImage]}
+                alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+
+              {/* Category badge */}
+              <div className="absolute top-4 left-4">
+                <span className="stitch-label bg-surface-container-lowest/90 px-3 py-1.5 text-on-surface">
                   {product.category}
                 </span>
               </div>
+
+              {/* Nav arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setCurrentImage((i) => i === 0 ? images.length - 1 : i - 1)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10
+                               bg-surface-container-lowest/90 flex items-center justify-center
+                               opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                  >
+                    <span className="material-symbols-outlined text-[20px]"
+                      style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>
+                      chevron_left
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setCurrentImage((i) => i === images.length - 1 ? 0 : i + 1)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10
+                               bg-surface-container-lowest/90 flex items-center justify-center
+                               opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                  >
+                    <span className="material-symbols-outlined text-[20px]"
+                      style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>
+                      chevron_right
+                    </span>
+                  </button>
+                </>
+              )}
             </div>
 
+            {/* Thumbnails */}
             {images.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
                 {images.map((img, i) => (
-                  <button key={i} onClick={() => setCurrentImage(i)}
-                    className={`aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all
-                                ${i === currentImage ? 'border-sf-rose shadow-rose' : 'border-transparent'}`}>
+                  <button
+                    key={i}
+                    onClick={() => setCurrentImage(i)}
+                    className={`aspect-[3/4] overflow-hidden border transition-all
+                                ${i === currentImage
+                                  ? 'border-primary'
+                                  : 'border-transparent opacity-60 hover:opacity-100'}`}
+                  >
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -110,69 +135,92 @@ function ProductDetailPage() {
             )}
           </div>
 
-          {/* Infos */}
-          <div className="flex flex-col gap-6 animate-fade-up">
+          {/* ── Product Info ──────────────────────────────────────── */}
+          <div className="flex flex-col gap-8 animate-fade-up">
+
+            {/* Name & price */}
             <div>
-              <p className="sf-label mb-2">{product.brand}</p>
-              <h1 className="font-display text-sf-text text-4xl sm:text-5xl leading-tight mb-4">
+              {product.brand && (
+                <p className="stitch-label mb-2">{product.brand}</p>
+              )}
+              <h1 className="font-headline text-on-surface text-4xl sm:text-5xl font-bold
+                             leading-tight tracking-tighter mb-5">
                 {product.name}
               </h1>
-              <p className="font-body font-700 text-sf-text text-3xl">
+              <p className="font-label text-[1.25rem] uppercase tracking-[0.05rem] text-secondary font-semibold">
                 {(product.price ?? 0).toLocaleString('fr-DZ')}
-                <span className="text-base text-sf-text-soft font-400 ml-2">DA</span>
+                <span className="text-sm text-on-surface-variant font-normal ml-2">DZD</span>
               </p>
             </div>
 
-            <div className="h-px bg-sf-beige" />
+            {/* Visual separator — color shift, no border */}
+            <div className="h-px bg-surface-container-high" />
 
+            {/* Size */}
             <div>
-              <p className="font-body text-sf-text-soft text-sm font-600 uppercase
-                             tracking-wider mb-3">
+              <p className="stitch-label mb-4">
                 Taille
-                {selectedSize && <span className="ml-2 text-sf-rose-dark">{selectedSize}</span>}
+                {selectedSize && (
+                  <span className="ml-3 text-secondary normal-case tracking-normal font-semibold">
+                    {selectedSize}
+                  </span>
+                )}
               </p>
-              <SizeSelector sizes={product.sizes || []} selected={selectedSize}
-                onChange={(size) => { setSelectedSize(size); setQuantity(1) }} />
+              <SizeSelector
+                sizes={product.sizes || []}
+                selected={selectedSize}
+                onChange={(size) => { setSelectedSize(size); setQuantity(1) }}
+              />
               {selectedSize && (
-                <p className="text-sf-text-light text-xs font-body mt-2">
+                <p className="font-body text-[0.75rem] text-outline mt-2">
                   {maxStock} disponible{maxStock > 1 ? 's' : ''}
                 </p>
               )}
             </div>
 
+            {/* Quantity */}
             <div>
-              <p className="font-body text-sf-text-soft text-sm font-600 uppercase
-                             tracking-wider mb-3">Quantité</p>
-              <QuantitySelector value={quantity} min={1} max={maxStock}
-                onChange={setQuantity} />
+              <p className="stitch-label mb-4">Quantité</p>
+              <QuantitySelector value={quantity} min={1} max={maxStock} onChange={setQuantity} />
             </div>
 
-            <button onClick={handleAddToCart}
-              className="btn-primary w-full py-4 text-base rounded-2xl">
-              <ShoppingBag size={18} />
-              Ajouter au panier
+            {/* Add to cart */}
+            <button onClick={handleAddToCart} className="btn-primary w-full py-4 justify-center text-sm">
+              <span
+                className="material-symbols-outlined text-[18px]"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
+              >
+                shopping_bag
+              </span>
+              Ajouter au Panier
             </button>
 
+            {/* Description */}
             {product.description && (
               <>
-                <div className="h-px bg-sf-beige" />
+                <div className="h-px bg-surface-container-high" />
                 <div>
-                  <p className="font-body text-sf-text-soft text-sm font-600 uppercase
-                                 tracking-wider mb-3">Description</p>
-                  <p className="font-body text-sf-text-soft leading-relaxed text-sm">
+                  <p className="stitch-label mb-4">Description</p>
+                  <p className="font-body text-on-surface-variant leading-relaxed text-sm">
                     {product.description}
                   </p>
                 </div>
               </>
             )}
 
-            <div className="bg-sf-sage-soft rounded-2xl p-4 flex items-start gap-3">
-              <span className="text-2xl">🚚</span>
+            {/* Delivery info */}
+            <div className="bg-surface-container-low p-5 flex items-start gap-4">
+              <span
+                className="material-symbols-outlined text-on-surface-variant mt-0.5"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}
+              >
+                local_shipping
+              </span>
               <div>
-                <p className="font-body font-700 text-sf-text text-sm">
+                <p className="font-body font-semibold text-on-surface text-sm mb-0.5">
                   Livraison dans toute l'Algérie
                 </p>
-                <p className="font-body text-sf-text-soft text-xs mt-0.5">
+                <p className="font-body text-on-surface-variant text-xs">
                   Paiement à la livraison · 2 à 5 jours ouvrables
                 </p>
               </div>
