@@ -38,33 +38,10 @@ function AdminSecretAccess() {
   )
 }
 
-const NAV_COLS = [
-  {
-    title: 'Navigation',
-    links: [
-      { to: '/', label: 'Accueil' },
-      { to: '/products', label: 'Catalogue' },
-      { to: '/about', label: 'À Propos' },
-      { to: '/cart', label: 'Panier' },
-    ],
-  },
-  {
-    title: 'Catégories',
-    links: [
-      { to: '/products?category=Bébé', label: 'Bébé' },
-      { to: '/products?category=Enfants', label: 'Enfants' },
-      { to: '/products?category=Femme', label: 'Femme' },
-      { to: '/products?category=Homme', label: 'Homme' },
-      { to: '/products?category=Accessoires', label: 'Accessoires' },
-    ],
-  },
-]
-
 function Footer() {
   return (
     <footer className="bg-primary text-on-primary pt-20 pb-40 px-6">
 
-      {/* Brand block */}
       <div className="mb-16">
         <h2 className="text-3xl font-headline italic tracking-tighter mb-4">SIOW PARFUMES</h2>
         <p className="text-white/50 text-[0.6875rem] uppercase tracking-[0.1rem] leading-loose max-w-xs">
@@ -73,23 +50,29 @@ function Footer() {
         </p>
       </div>
 
-      {/* Nav columns */}
       <div className="grid grid-cols-2 gap-12 mb-16">
-        {NAV_COLS.map(({ title, links }) => (
-          <div key={title} className="space-y-6">
-            <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">{title}</h4>
-            <ul className="space-y-4 text-sm text-white/70">
-              {links.map(({ to, label }) => (
-                <li key={label}>
-                  <Link to={to} className="hover:text-white transition-colors">{label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+
+        <div className="space-y-6">
+          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">Navigation</h4>
+          <ul className="space-y-4 text-sm text-white/70">
+            <li><Link to="/" className="hover:text-white transition-colors">Accueil</Link></li>
+            <li><Link to="/products" className="hover:text-white transition-colors">Catalogue</Link></li>
+            <li><Link to="/about" className="hover:text-white transition-colors">À Propos</Link></li>
+            <li><Link to="/cart" className="hover:text-white transition-colors">Panier</Link></li>
+          </ul>
+        </div>
+
+        <div className="space-y-6">
+          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">Catégories</h4>
+          <ul className="space-y-4 text-sm text-white/70">
+            <li><Link to="/products?category=Watches"    className="hover:text-white transition-colors">Watches</Link></li>
+            <li><Link to="/products?category=Fragrances" className="hover:text-white transition-colors">Fragrances</Link></li>
+            <li><Link to="/products?category=Saudi Coll." className="hover:text-white transition-colors">Saudi Coll.</Link></li>
+            <li><Link to="/products?category=Essentials" className="hover:text-white transition-colors">Essentials</Link></li>
+          </ul>
+        </div>
       </div>
 
-      {/* Contact */}
       <div className="space-y-6 mb-16">
         <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">Contact</h4>
         <div className="space-y-2 text-sm text-white/70">
@@ -98,7 +81,6 @@ function Footer() {
         </div>
       </div>
 
-      {/* Legal */}
       <div className="pt-8 border-t border-white/10 flex justify-between items-center
                       text-[10px] uppercase tracking-[0.1rem] text-white/30">
         <p className="flex items-center gap-1">

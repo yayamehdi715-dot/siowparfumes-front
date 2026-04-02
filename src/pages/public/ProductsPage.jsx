@@ -3,14 +3,13 @@ import { useSearchParams } from 'react-router-dom'
 import api from '../../utils/api'
 import ProductGrid from '../../Components/public/ProductGrid'
 
-const CATEGORIES = ['Tous', 'Bébé', 'Enfants', 'Femme', 'Homme', 'Lingerie', 'Accessoires']
+const CATEGORIES = ['Tous', 'Watches', 'Fragrances', 'Saudi Coll.', 'Essentials']
 
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts]         = useState([])
   const [loading, setLoading]           = useState(true)
   const [search, setSearch]             = useState(searchParams.get('search') || '')
-  const [filterOpen, setFilterOpen]     = useState(false)
   const activeCategory = searchParams.get('category') || 'Tous'
 
   useEffect(() => { window.scrollTo(0, 0) }, [])
@@ -34,7 +33,6 @@ function ProductsPage() {
     if (cat === 'Tous') searchParams.delete('category')
     else searchParams.set('category', cat)
     setSearchParams(searchParams)
-    setFilterOpen(false)
   }
 
   return (
@@ -56,7 +54,7 @@ function ProductsPage() {
                       border-b border-outline-variant/30">
         <div className="px-6 py-3 flex items-center gap-3 overflow-x-auto hide-scrollbar">
 
-          {/* Search inline */}
+          {/* Search */}
           <div className="relative flex-shrink-0">
             <span
               className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2
@@ -76,7 +74,6 @@ function ProductsPage() {
             />
           </div>
 
-          {/* Divider */}
           <div className="h-6 w-px bg-outline-variant flex-shrink-0" />
 
           {/* Category chips */}
