@@ -1,11 +1,8 @@
 // src/contexts/CartContext.jsx
-// Contexte global du panier avec persistance localStorage
-
 import { createContext, useContext, useReducer, useEffect } from 'react'
 
 const CartContext = createContext(null)
 
-// Actions
 const ACTIONS = {
   ADD: 'ADD_TO_CART',
   REMOVE: 'REMOVE_FROM_CART',
@@ -14,16 +11,17 @@ const ACTIONS = {
   LOAD: 'LOAD_CART',
 }
 
-// Reducer
 function cartReducer(state, action) {
   switch (action.type) {
     case ACTIONS.LOAD:
       return action.payload
 
     case ACTIONS.ADD: {
-      const { product, size, quantity } = action.payload
-      // Clé unique par produit + pointure
+      const { product, size, quantity, meta } = action.payload
+      // meta = { type: 'flacon'|'extrait', ml?, price? }
       const key = `${product._id}-${size}`
+      const unitPrice = meta?.price ?? product.price
+
       const existing = state.find((item) => item.key === key)
       if (existing) {
         return state.map((item) =>
@@ -37,13 +35,18 @@ function cartReducer(state, action) {
         {
           key,
           productId: product._id,
-          name: product.name,
-          brand: product.brand,
-          price: product.price,
-          image: product.images?.[0] || '',
+          name:      product.name,
+          brand:     product.brand,
+          price:     unitPrice,
+          image:     product.images?.[0] || '',
           size,
           quantity,
-          maxStock: product.sizes?.find((s) => s.size === size)?.stock || quantity,
+          maxStock:  meta?.type === 'flacon'
+            ? (product.flaconStock ?? quantity)
+            : meta?.type === 'extrait'
+              ? (product.extraits?.find((e) => e.ml === meta.ml)?.stock ?? quantity)
+              : (product.sizes?.find((s) => s.size === size)?.stock || quantity),
+          meta: meta || null,
         },
       ]
     }
@@ -69,47 +72,29 @@ function cartReducer(state, action) {
 export function CartProvider({ children }) {
   const [items, dispatch] = useReducer(cartReducer, [])
 
-  // Chargement depuis localStorage au démarrage
   useEffect(() => {
     try {
       const stored = localStorage.getItem('cart')
-      if (stored) {
-        dispatch({ type: ACTIONS.LOAD, payload: JSON.parse(stored) })
-      }
-    } catch {
-      console.warn('Panier localStorage invalide')
-    }
+      if (stored) dispatch({ type: ACTIONS.LOAD, payload: JSON.parse(stored) })
+    } catch { console.warn('Panier localStorage invalide') }
   }, [])
 
-  // Sauvegarde dans localStorage à chaque modification
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(items))
   }, [items])
 
-  // Calcul du total
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total     = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  const addToCart = (product, size, quantity = 1) => {
-    dispatch({ type: ACTIONS.ADD, payload: { product, size, quantity } })
-  }
-
-  const removeFromCart = (key) => {
-    dispatch({ type: ACTIONS.REMOVE, payload: key })
-  }
-
-  const updateQuantity = (key, quantity) => {
+  const addToCart     = (product, size, quantity = 1, meta = null) =>
+    dispatch({ type: ACTIONS.ADD, payload: { product, size, quantity, meta } })
+  const removeFromCart = (key) => dispatch({ type: ACTIONS.REMOVE, payload: key })
+  const updateQuantity = (key, quantity) =>
     dispatch({ type: ACTIONS.UPDATE_QTY, payload: { key, quantity } })
-  }
-
-  const clearCart = () => {
-    dispatch({ type: ACTIONS.CLEAR })
-  }
+  const clearCart = () => dispatch({ type: ACTIONS.CLEAR })
 
   return (
-    <CartContext.Provider
-      value={{ items, total, itemCount, addToCart, removeFromCart, updateQuantity, clearCart }}
-    >
+    <CartContext.Provider value={{ items, total, itemCount, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   )
