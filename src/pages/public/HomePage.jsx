@@ -5,10 +5,10 @@ import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
 
 const CATEGORIES = [
-  { label: 'Watches',     slug: 'Watches' },
-  { label: 'Fragrances',  slug: 'Fragrances' },
-  { label: 'Saudi Coll.', slug: 'Saudi Coll.' },
-  { label: 'Essentials',  slug: 'Essentials' },
+  { label: 'Watches',     slug: 'Watches',    imgPC: '/montrePC.webp',    imgMobile: '/montreMobil.webp'   },
+  { label: 'Fragrances',  slug: 'Fragrances', imgPC: '/parfumPC.webp',    imgMobile: '/parfumMobil.webp'   },
+  { label: 'Saudi Coll.', slug: 'Saudi Coll.',imgPC: '/saudiPC.webp',     imgMobile: '/saoudiMobil.webp'   },
+  { label: 'Essentials',  slug: 'Essentials', imgPC: '/essencialPC.webp', imgMobile: '/essencialMobil.webp'},
 ]
 
 function DropCard({ product }) {
@@ -77,7 +77,6 @@ function HomePage() {
     ])
       .then(([novRes, bsRes]) => {
         setNouveautes(novRes.data  || [])
-        // Si pas de best sellers marqués, fallback sur les premiers produits
         setBestSellers((bsRes.data?.length ? bsRes.data : novRes.data) || [])
       })
       .catch(() => {})
@@ -89,8 +88,20 @@ function HomePage() {
 
       {/* ── Hero ──────────────────────────────────────────────── */}
       <section className="relative h-[85vh] lg:h-screen w-full overflow-hidden">
-        <img src="/hero-family.jpg" alt="Collection SIOW"
-          className="absolute inset-0 w-full h-full object-cover" />
+
+        {/* Image mobile (affichée uniquement < lg) */}
+        <img
+          src="/heroMobil.webp"
+          alt="Collection SIOW"
+          className="absolute inset-0 w-full h-full object-cover lg:hidden"
+        />
+        {/* Image PC (affichée uniquement >= lg) */}
+        <img
+          src="/heroPC.webp"
+          alt="Collection SIOW"
+          className="absolute inset-0 w-full h-full object-cover hidden lg:block"
+        />
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
 
         <div className="absolute bottom-16 left-6 lg:left-16 xl:left-24 z-10 max-w-sm lg:max-w-xl">
@@ -137,7 +148,6 @@ function HomePage() {
           </Link>
         </div>
 
-        {/* Mobile: horizontal scroll / Desktop: grid */}
         <div className="hidden lg:grid grid-cols-4 xl:grid-cols-6 gap-4 px-16 xl:px-24">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
@@ -193,37 +203,59 @@ function HomePage() {
 
         {/* Mobile: asymmetric 2-col */}
         <div className="lg:hidden grid grid-cols-2 grid-rows-3 gap-2 h-[520px]">
+
+          {/* Watches — tall (row-span-2) */}
           <Link to="/products?category=Watches"
-            className="col-span-1 row-span-2 bg-surface-container relative flex items-end p-5 overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+            className="col-span-1 row-span-2 relative flex items-end p-5 overflow-hidden group bg-surface-container"
+            style={{ backgroundImage: "url('/montreMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent
+                            group-hover:from-black/75 transition-all duration-500" />
             <span className="relative z-10 stitch-label text-white">Watches</span>
           </Link>
+
+          {/* Fragrances — short (row-span-1) */}
           <Link to="/products?category=Fragrances"
-            className="col-span-1 row-span-1 bg-surface-container-high relative flex items-end p-5 overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            className="col-span-1 row-span-1 relative flex items-end p-5 overflow-hidden group bg-surface-container-high"
+            style={{ backgroundImage: "url('/parfumMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent
+                            group-hover:from-black/65 transition-all duration-500" />
             <span className="relative z-10 stitch-label text-white">Fragrances</span>
           </Link>
+
+          {/* Saudi Coll. — tall (row-span-2) */}
           <Link to="/products?category=Saudi Coll."
-            className="col-span-1 row-span-2 bg-surface-container-highest relative flex items-end p-5 overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            className="col-span-1 row-span-2 relative flex items-end p-5 overflow-hidden group bg-surface-container-highest"
+            style={{ backgroundImage: "url('/saoudiMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent
+                            group-hover:from-black/75 transition-all duration-500" />
             <span className="relative z-10 stitch-label text-white">Saudi Coll.</span>
           </Link>
+
+          {/* Essentials — short (row-span-1) */}
           <Link to="/products?category=Essentials"
-            className="col-span-1 row-span-1 bg-surface-container-low relative flex items-end p-5 overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            className="col-span-1 row-span-1 relative flex items-end p-5 overflow-hidden group bg-surface-container-low"
+            style={{ backgroundImage: "url('/essencialMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent
+                            group-hover:from-black/65 transition-all duration-500" />
             <span className="relative z-10 stitch-label text-white">Essentials</span>
           </Link>
+
         </div>
 
         {/* Desktop: 4-col equal grid, tall */}
         <div className="hidden lg:grid grid-cols-4 gap-3 h-[60vh]">
-          {CATEGORIES.map(({ label, slug }, i) => (
+          {CATEGORIES.map(({ label, slug, imgPC }, i) => (
             <Link key={slug} to={`/products?category=${slug}`}
               className="relative overflow-hidden bg-surface-container flex items-end p-6 group
                          hover:shadow-float transition-shadow duration-300 animate-fade-up"
-              style={{ animationDelay: `${i * 60}ms` }}>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent
-                              group-hover:from-black/70 transition-all duration-500" />
+              style={{
+                animationDelay: `${i * 60}ms`,
+                backgroundImage: `url('${imgPC}')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent
+                              group-hover:from-black/80 transition-all duration-500" />
               <div className="relative z-10">
                 <p className="stitch-label text-white mb-1">{label}</p>
                 <p className="font-headline italic text-white/60 text-sm">Explorer →</p>
