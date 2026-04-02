@@ -1,25 +1,64 @@
-// src/components/admin/AdminLayout.jsx
-// Layout admin avec sidebar navigation
-
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import {
-  LayoutDashboard, Package, ClipboardList, LogOut,
-  Zap, Menu, X, ChevronRight
-} from 'lucide-react'
+import { LayoutDashboard, Package, ClipboardList, LogOut, Menu, X } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 const NAV_ITEMS = [
-  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/products', label: 'Produits', icon: Package },
-  { to: '/admin/orders', label: 'Commandes', icon: ClipboardList },
+  { to: '/admin',          label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/admin/products', label: 'Produits',  icon: Package },
+  { to: '/admin/orders',   label: 'Commandes', icon: ClipboardList },
 ]
 
+function SidebarContent({ onClose, onLogout }) {
+  return (
+    <div className="flex flex-col h-full">
+      {/* Brand */}
+      <div className="px-6 py-7 border-b border-white/8">
+        <p className="font-headline italic text-xl tracking-tighter text-white leading-none">
+          SIOW PARFUMES
+        </p>
+        <p className="font-label text-[0.6rem] uppercase tracking-[0.2rem] text-white/30 mt-1">
+          Admin Panel
+        </p>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-6 space-y-1">
+        {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+          <NavLink key={to} to={to} end={end} onClick={onClose}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 transition-all duration-200
+               border-l-2 font-label text-[0.6875rem] uppercase tracking-[0.12rem]
+               ${isActive
+                 ? 'border-[#8C495F] text-white bg-[#8C495F]/10'
+                 : 'border-transparent text-white/40 hover:text-white hover:bg-white/5 hover:border-white/20'
+               }`
+            }>
+            <Icon size={15} />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Logout */}
+      <div className="px-3 py-4 border-t border-white/8">
+        <button onClick={onLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 text-white/30
+                     hover:text-red-400 hover:bg-red-400/5 transition-colors
+                     font-label text-[0.6875rem] uppercase tracking-[0.12rem]">
+          <LogOut size={15} />
+          Déconnexion
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function AdminLayout() {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { logout }       = useAuth()
+  const navigate         = useNavigate()
+  const [open, setOpen]  = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -27,112 +66,46 @@ function AdminLayout() {
     navigate('/admin/login', { replace: true })
   }
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-brand-gray-800">
-        <div
-          className="w-8 h-8 bg-brand-red flex items-center justify-center flex-shrink-0"
-          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%)' }}
-        >
-          <Zap size={14} className="text-white fill-white" />
-        </div>
-        <div>
-          <p className="font-display text-lg tracking-widest text-brand-white leading-none">
-            SOLEKICKS
-          </p>
-          <p className="text-brand-gray-600 text-[10px] font-heading tracking-widest uppercase mt-0.5">
-            Admin Panel
-          </p>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 transition-all duration-200 group
-               border-l-2 ${
-                isActive
-                  ? 'bg-brand-red/10 border-brand-red text-brand-red'
-                  : 'border-transparent text-brand-gray-400 hover:bg-brand-gray-800 hover:text-brand-white hover:border-brand-gray-600'
-              }`
-            }
-          >
-            <Icon size={16} />
-            <span className="font-heading font-semibold tracking-widest uppercase text-xs flex-1">
-              {label}
-            </span>
-            <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* Déconnexion */}
-      <div className="px-4 py-4 border-t border-brand-gray-800">
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 text-brand-gray-500
-                     hover:text-brand-red hover:bg-brand-red/5 transition-colors
-                     font-heading font-semibold tracking-widest uppercase text-xs"
-        >
-          <LogOut size={16} />
-          Déconnexion
-        </button>
-      </div>
-    </div>
-  )
-
   return (
-    <div className="min-h-screen bg-brand-black flex">
+    <div className="min-h-screen flex" style={{ background: '#0d0d0d' }}>
 
       {/* Sidebar desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-brand-gray-900 border-r border-brand-gray-800 flex-shrink-0 fixed h-full z-30">
-        <SidebarContent />
+      <aside className="hidden lg:flex flex-col w-60 bg-[#111111] border-r border-white/8
+                        flex-shrink-0 fixed h-full z-30">
+        <SidebarContent onLogout={handleLogout} />
       </aside>
 
       {/* Sidebar mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-40"
-          onClick={() => setSidebarOpen(false)}
-        >
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-          <aside
-            className="absolute left-0 top-0 bottom-0 w-64 bg-brand-gray-900 border-r border-brand-gray-800"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="absolute top-4 right-4 p-2 text-brand-gray-500 hover:text-white"
-            >
+      {open && (
+        <div className="lg:hidden fixed inset-0 z-40" onClick={() => setOpen(false)}>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <aside className="absolute left-0 top-0 bottom-0 w-60 bg-[#111111] border-r border-white/8"
+            onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setOpen(false)}
+              className="absolute top-4 right-4 p-2 text-white/30 hover:text-white">
               <X size={18} />
             </button>
-            <SidebarContent />
+            <SidebarContent onClose={() => setOpen(false)} onLogout={handleLogout} />
           </aside>
         </div>
       )}
 
-      {/* Contenu principal */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        {/* Top bar mobile */}
-        <header className="lg:hidden flex items-center justify-between px-4 py-4 bg-brand-gray-900 border-b border-brand-gray-800">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-brand-gray-400 hover:text-white transition-colors"
-          >
+      {/* Main */}
+      <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
+        {/* Mobile top bar */}
+        <header className="lg:hidden flex items-center justify-between px-5 py-4
+                           bg-[#111111] border-b border-white/8">
+          <button onClick={() => setOpen(true)}
+            className="p-2 text-white/40 hover:text-white transition-colors">
             <Menu size={20} />
           </button>
-          <span className="font-display text-xl tracking-widest text-brand-white">ADMIN</span>
-          <div className="w-10" />
+          <span className="font-headline italic text-lg tracking-tighter text-white">
+            SIOW PARFUMES
+          </span>
+          <div className="w-9" />
         </header>
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 lg:p-10">
           <Outlet />
         </main>
       </div>

@@ -1,6 +1,3 @@
-// src/pages/admin/AdminProductsPage.jsx
-// Gestion des produits admin : liste, création, modification, suppression
-
 import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, X, AlertTriangle, Loader2, Search } from 'lucide-react'
 import api from '../../utils/api'
@@ -8,26 +5,19 @@ import AdminProductForm from '../../Components/admin/AdminProductForm'
 import toast from 'react-hot-toast'
 
 function AdminProductsPage() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-
-  // Modal états
-  const [showForm, setShowForm] = useState(false)
-  const [editingProduct, setEditingProduct] = useState(null)
-  const [deletingId, setDeletingId] = useState(null)
+  const [products, setProducts]       = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [search, setSearch]           = useState('')
+  const [showForm, setShowForm]       = useState(false)
+  const [editingProduct, setEditing]  = useState(null)
+  const [deletingId, setDeletingId]   = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
 
   const fetchProducts = async () => {
     setLoading(true)
-    try {
-      const res = await api.get('/products')
-      setProducts(res.data || [])
-    } catch {
-      toast.error('Erreur lors du chargement des produits')
-    } finally {
-      setLoading(false)
-    }
+    try   { const res = await api.get('/products'); setProducts(res.data || []) }
+    catch { toast.error('Erreur chargement produits') }
+    finally { setLoading(false) }
   }
 
   useEffect(() => { fetchProducts() }, [])
@@ -38,70 +28,57 @@ function AdminProductsPage() {
       await api.delete(`/products/${id}`)
       toast.success('Produit supprimé')
       setProducts((p) => p.filter((x) => x._id !== id))
-    } catch {
-      toast.error('Erreur lors de la suppression')
-    } finally {
-      setDeletingId(null)
-      setDeleteConfirm(null)
-    }
+    } catch { toast.error('Erreur suppression') }
+    finally { setDeletingId(null); setDeleteConfirm(null) }
   }
 
-  const handleFormSuccess = () => {
-    setShowForm(false)
-    setEditingProduct(null)
-    fetchProducts()
-  }
+  const handleFormSuccess = () => { setShowForm(false); setEditing(null); fetchProducts() }
+  const openCreate = () => { setEditing(null); setShowForm(true) }
+  const openEdit   = (p) => { setEditing(p); setShowForm(true) }
 
-  const openCreate = () => { setEditingProduct(null); setShowForm(true) }
-  const openEdit = (p) => { setEditingProduct(p); setShowForm(true) }
-
-  const filtered = products.filter(
-    (p) =>
-      !search ||
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.brand.toLowerCase().includes(search.toLowerCase())
+  const filtered = products.filter((p) =>
+    !search ||
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
+    (p.brand && p.brand.toLowerCase().includes(search.toLowerCase()))
   )
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* En-tête */}
+      {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <p className="section-label">Catalogue</p>
-          <h1 className="font-headline text-4xl text-brand-white tracking-wide">PRODUITS</h1>
+          <p className="admin-label">Catalogue</p>
+          <h1 className="font-headline text-4xl text-white tracking-tight">Produits</h1>
         </div>
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={14} />
-          Ajouter un produit
+        <button onClick={openCreate} className="admin-btn-primary flex items-center gap-2">
+          <Plus size={13} /> Ajouter un produit
         </button>
       </div>
 
-      {/* Recherche */}
-      <div className="relative max-w-sm">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-gray-500" />
-        <input
-          type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-          placeholder="Rechercher un produit..."
-          className="input-field pl-9 text-sm"
-        />
+      {/* Search */}
+      <div className="relative max-w-xs">
+        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none" />
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Rechercher…"
+          className="admin-input pl-9" />
         {search && (
           <button onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray-500 hover:text-white">
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white">
             <X size={12} />
           </button>
         )}
       </div>
 
-      {/* Liste des produits */}
+      {/* Grid */}
       {loading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 size={32} className="animate-spin text-brand-gray-600" />
+        <div className="flex justify-center py-20">
+          <Loader2 size={28} className="animate-spin text-white/20" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="admin-card text-center py-16">
-          <p className="font-headline text-5xl text-brand-gray-800 mb-3">VIDE</p>
-          <p className="text-brand-gray-500 font-body">Aucun produit trouvé</p>
+        <div className="admin-card text-center py-20">
+          <p className="font-headline text-5xl text-white/10 mb-3">VIDE</p>
+          <p className="font-body text-white/25 text-sm">Aucun produit trouvé</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -110,62 +87,74 @@ function AdminProductsPage() {
             return (
               <div key={product._id} className="admin-card group relative overflow-hidden">
                 {/* Image */}
-                <div className="h-40 -mx-6 -mt-6 mb-4 overflow-hidden bg-brand-gray-900">
-                  {product.images?.[0] ? (
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-brand-gray-700">
-                      Pas d'image
-                    </div>
+                <div className="h-44 -mx-6 -mt-6 mb-4 overflow-hidden bg-white/5">
+                  {product.images?.[0]
+                    ? <img src={product.images[0]} alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    : <div className="w-full h-full flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white/10 text-4xl"
+                          style={{ fontVariationSettings: "'FILL' 0, 'wght' 100" }}>image</span>
+                      </div>
+                  }
+                </div>
+
+                {/* Badges */}
+                <div className="flex items-center gap-2 mb-3 flex-wrap">
+                  <span className="font-label text-[0.6rem] uppercase tracking-[0.1rem]
+                                   px-2 py-1 bg-white/8 text-white/50">
+                    {product.category}
+                  </span>
+                  {product.bestSeller && (
+                    <span className="font-label text-[0.6rem] uppercase tracking-[0.1rem]
+                                     px-2 py-1 bg-[#8C495F]/20 text-[#8C495F]">
+                      Best Seller
+                    </span>
+                  )}
+                  {product.featured && (
+                    <span className="font-label text-[0.6rem] uppercase tracking-[0.1rem]
+                                     px-2 py-1 bg-amber-400/15 text-amber-400/80">
+                      Mis en avant
+                    </span>
                   )}
                 </div>
 
-                {/* Infos */}
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-brand-gray-500 text-xs font-heading tracking-widest uppercase">
+                {/* Info */}
+                <div className="mb-3">
+                  {product.brand && (
+                    <p className="font-label text-[0.6rem] uppercase tracking-[0.15rem] text-white/30 mb-0.5">
                       {product.brand}
                     </p>
-                    <h3 className="font-heading font-bold text-brand-white text-sm truncate">
-                      {product.name}
-                    </h3>
-                  </div>
-                  <span className="tag flex-shrink-0 text-[9px]">{product.category}</span>
+                  )}
+                  <h3 className="font-headline text-white text-base leading-tight truncate">
+                    {product.name}
+                  </h3>
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-headline text-xl text-brand-white">
+                  <span className="font-headline text-xl text-white">
                     {(product.price ?? 0).toLocaleString('fr-DZ')}
-                    <span className="text-xs text-brand-gray-500 font-body ml-1">DA</span>
+                    <span className="text-xs text-white/30 font-body ml-1">DZD</span>
                   </span>
-                  <span className={`text-xs font-body ${totalStock === 0 ? 'text-red-400' : totalStock <= 5 ? 'text-yellow-400' : 'text-brand-gray-500'}`}>
+                  <span className={`font-label text-[0.6rem] uppercase tracking-[0.1rem]
+                    ${totalStock === 0 ? 'text-red-400' : totalStock <= 5 ? 'text-amber-400' : 'text-white/30'}`}>
                     {totalStock === 0 ? 'Épuisé' : `${totalStock} en stock`}
                   </span>
                 </div>
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => openEdit(product)}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 border
-                               border-brand-gray-600 text-brand-gray-400 hover:border-brand-white
-                               hover:text-brand-white transition-colors text-xs font-heading
-                               font-semibold tracking-wider uppercase"
-                  >
-                    <Edit2 size={12} /> Modifier
+                  <button onClick={() => openEdit(product)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5
+                               border border-white/10 text-white/40 hover:border-white/30
+                               hover:text-white transition-colors
+                               font-label text-[0.6rem] uppercase tracking-[0.1rem]">
+                    <Edit2 size={11} /> Modifier
                   </button>
-                  <button
-                    onClick={() => setDeleteConfirm(product)}
-                    className="flex items-center justify-center gap-2 px-3 py-2 border
-                               border-brand-gray-700 text-brand-gray-600 hover:border-brand-red
-                               hover:text-brand-red transition-colors"
-                    aria-label="Supprimer"
-                  >
-                    <Trash2 size={14} />
+                  <button onClick={() => setDeleteConfirm(product)}
+                    className="flex items-center justify-center px-3 py-2.5
+                               border border-white/8 text-white/20 hover:border-red-400/30
+                               hover:text-red-400 transition-colors">
+                    <Trash2 size={13} />
                   </button>
                 </div>
               </div>
@@ -174,64 +163,51 @@ function AdminProductsPage() {
         </div>
       )}
 
-      {/* Modal formulaire produit */}
+      {/* Modal form */}
       {showForm && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="min-h-screen flex items-start justify-center p-4 pt-10">
-            <div
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-              onClick={() => { setShowForm(false); setEditingProduct(null) }}
-            />
-            <div className="relative bg-brand-gray-900 border border-brand-gray-700
-                            w-full max-w-2xl animate-slide-up">
-              {/* Header modal */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-brand-gray-800">
-                <h2 className="font-heading font-bold text-brand-white tracking-widest uppercase text-sm">
+            <div className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+              onClick={() => { setShowForm(false); setEditing(null) }} />
+            <div className="relative bg-[#161616] border border-white/8 w-full max-w-2xl animate-fade-up">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
+                <p className="admin-label">
                   {editingProduct ? 'Modifier le produit' : 'Nouveau produit'}
-                </h2>
-                <button
-                  onClick={() => { setShowForm(false); setEditingProduct(null) }}
-                  className="p-2 text-brand-gray-500 hover:text-brand-white transition-colors"
-                >
-                  <X size={18} />
+                </p>
+                <button onClick={() => { setShowForm(false); setEditing(null) }}
+                  className="p-2 text-white/25 hover:text-white transition-colors">
+                  <X size={16} />
                 </button>
               </div>
               <div className="p-6">
-                <AdminProductForm
-                  initialData={editingProduct}
-                  onSuccess={handleFormSuccess}
-                  onCancel={() => { setShowForm(false); setEditingProduct(null) }}
-                />
+                <AdminProductForm initialData={editingProduct} onSuccess={handleFormSuccess}
+                  onCancel={() => { setShowForm(false); setEditing(null) }} />
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal confirmation suppression */}
+      {/* Delete confirm */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-brand-gray-900 border border-brand-gray-700 p-6 max-w-sm w-full animate-slide-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+          <div className="bg-[#161616] border border-white/8 p-8 max-w-sm w-full animate-fade-up">
             <div className="flex items-center gap-3 mb-4">
-              <AlertTriangle size={20} className="text-brand-red" />
-              <h3 className="font-heading font-bold text-brand-white">Supprimer le produit ?</h3>
+              <AlertTriangle size={17} className="text-red-400 flex-shrink-0" />
+              <h3 className="font-headline text-white text-lg">Supprimer ce produit ?</h3>
             </div>
-            <p className="text-brand-gray-400 font-body mb-1">
-              <span className="text-brand-white font-semibold">{deleteConfirm.name}</span>
+            <p className="font-body text-white/40 text-sm mb-1">
+              <span className="text-white">{deleteConfirm.name}</span> sera définitivement supprimé.
             </p>
-            <p className="text-brand-gray-500 text-sm font-body mb-6">
-              Cette action est irréversible.
-            </p>
+            <p className="font-body text-white/25 text-xs mb-8">Cette action est irréversible.</p>
             <div className="flex gap-3">
-              <button
-                onClick={() => handleDelete(deleteConfirm._id)}
+              <button onClick={() => handleDelete(deleteConfirm._id)}
                 disabled={deletingId === deleteConfirm._id}
-                className="btn-primary flex items-center gap-2 flex-1 justify-center"
-              >
+                className="admin-btn-danger flex-1 justify-center">
                 {deletingId === deleteConfirm._id && <Loader2 size={12} className="animate-spin" />}
                 Supprimer
               </button>
-              <button onClick={() => setDeleteConfirm(null)} className="btn-ghost flex-1">
+              <button onClick={() => setDeleteConfirm(null)} className="admin-btn-ghost flex-1">
                 Annuler
               </button>
             </div>

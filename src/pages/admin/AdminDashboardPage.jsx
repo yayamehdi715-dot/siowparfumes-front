@@ -1,40 +1,39 @@
-// src/pages/admin/AdminDashboardPage.jsx
-// Dashboard admin — statistiques et résumé
-
 import { useState, useEffect } from 'react'
-import { TrendingUp, Package, RefreshCcw, ShoppingBag, AlertTriangle, Loader2 } from 'lucide-react'
+import { TrendingUp, Package, RotateCcw, ShoppingBag, AlertTriangle, Loader2, RefreshCw } from 'lucide-react'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 
-function StatCard({ icon: Icon, label, value, color = 'text-brand-white', accent }) {
+const STATUS_COLORS = {
+  confirmé:      'bg-blue-500/20 text-blue-400',
+  'en livraison':'bg-amber-500/20 text-amber-400',
+  livré:         'bg-emerald-500/20 text-emerald-400',
+  retour:        'bg-orange-500/20 text-orange-400',
+}
+
+function StatCard({ icon: Icon, label, value, highlight = false }) {
   return (
-    <div className={`admin-card relative overflow-hidden group ${accent ? 'border-brand-red/30' : ''}`}>
-      <div className="flex items-start justify-between">
+    <div className={`admin-card relative overflow-hidden
+      ${highlight ? 'border-[#8C495F]/40' : ''}`}>
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-brand-gray-500 text-xs font-heading font-semibold tracking-widest uppercase mb-2">
-            {label}
-          </p>
-          <p className={`font-headline text-4xl leading-none ${color}`}>
+          <p className="admin-label">{label}</p>
+          <p className="font-headline text-3xl text-white mt-1 tracking-tight">
             {value ?? '—'}
           </p>
         </div>
-        <div className={`w-10 h-10 flex items-center justify-center border ${
-          accent ? 'border-brand-red/30 text-brand-red bg-brand-red/5' : 'border-brand-gray-700 text-brand-gray-600'
-        }`}>
-          <Icon size={18} />
+        <div className={`w-9 h-9 flex items-center justify-center flex-shrink-0
+          ${highlight ? 'bg-[#8C495F]/20 text-[#8C495F]' : 'bg-white/5 text-white/30'}`}>
+          <Icon size={16} />
         </div>
       </div>
-      {/* Accent bar */}
-      {accent && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-red/50" />
-      )}
+      {highlight && <div className="absolute bottom-0 left-0 right-0 h-px bg-[#8C495F]/50" />}
     </div>
   )
 }
 
 function AdminDashboardPage() {
-  const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [stats, setStats]         = useState(null)
+  const [loading, setLoading]     = useState(true)
   const [resetting, setResetting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -50,9 +49,7 @@ function AdminDashboardPage() {
     }
   }
 
-  useEffect(() => {
-    fetchStats()
-  }, [])
+  useEffect(() => { fetchStats() }, [])
 
   const handleReset = async () => {
     setResetting(true)
@@ -71,114 +68,118 @@ function AdminDashboardPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
 
-      {/* En-tête */}
+      {/* Header */}
       <div className="flex items-end justify-between">
         <div>
-          <p className="section-label">Vue d'ensemble</p>
-          <h1 className="font-headline text-4xl text-brand-white tracking-wide">DASHBOARD</h1>
+          <p className="admin-label">Vue d'ensemble</p>
+          <h1 className="font-headline text-4xl text-white tracking-tight">Dashboard</h1>
         </div>
-        <button
-          onClick={() => setShowConfirm(true)}
-          className="btn-ghost flex items-center gap-2 text-xs"
-        >
-          <RefreshCcw size={12} />
-          Réinitialiser les stats
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={fetchStats} className="admin-btn-ghost flex items-center gap-2">
+            <RefreshCw size={12} /> Actualiser
+          </button>
+          <button onClick={() => setShowConfirm(true)}
+            className="admin-btn-ghost flex items-center gap-2 text-red-400/60 hover:text-red-400
+                       border-red-400/10 hover:border-red-400/30">
+            <RotateCcw size={12} /> Réinitialiser
+          </button>
+        </div>
       </div>
 
-      {/* Stats */}
+      {/* Stat cards */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="admin-card h-24 animate-pulse">
-              <div className="h-3 bg-brand-gray-700 rounded w-2/3 mb-3" />
-              <div className="h-8 bg-brand-gray-700 rounded w-1/2" />
+              <div className="h-2.5 bg-white/8 w-2/3 mb-3" />
+              <div className="h-8 bg-white/8 w-1/2" />
             </div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            icon={TrendingUp}
-            label="Gains (livrés)"
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard icon={TrendingUp} label="Chiffre d'affaires"
             value={stats?.totalRevenue != null
-              ? `${stats.totalRevenue.toLocaleString('fr-DZ')} DA`
-              : '—'}
-            color="text-emerald-400"
-            accent
-          />
-          <StatCard
-            icon={ShoppingBag}
-            label="Total commandes"
-            value={stats?.totalOrders}
-          />
-          <StatCard
-            icon={Package}
-            label="Livrées"
-            value={stats?.deliveredOrders}
-            color="text-emerald-400"
-          />
-          <StatCard
-            icon={RefreshCcw}
-            label="Retours"
-            value={stats?.returnOrders}
-            color="text-red-400"
-          />
+              ? `${stats.totalRevenue.toLocaleString('fr-DZ')} DZD` : '—'}
+            highlight />
+          <StatCard icon={ShoppingBag} label="Total commandes"  value={stats?.totalOrders} />
+          <StatCard icon={Package}     label="Livrées"          value={stats?.deliveredOrders} />
+          <StatCard icon={RotateCcw}   label="Retours"          value={stats?.returnOrders} />
         </div>
       )}
 
-      {/* Répartition statuts */}
+      {/* Status breakdown */}
       {stats && !loading && (
         <div className="admin-card">
-          <p className="text-brand-gray-400 text-xs font-heading font-semibold tracking-widest uppercase mb-4">
-            Répartition des commandes
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <p className="admin-label mb-6">Répartition des commandes</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {[
-              { label: 'Confirmé', count: stats.confirmedOrders, color: 'bg-blue-400' },
-              { label: 'En livraison', count: stats.inDeliveryOrders, color: 'bg-yellow-400' },
-              { label: 'Livré', count: stats.deliveredOrders, color: 'bg-emerald-400' },
-              { label: 'Retour', count: stats.returnOrders, color: 'bg-red-400' },
-            ].map(({ label, count, color }) => (
-              <div key={label} className="text-center">
-                <div className={`w-2 h-2 ${color} mx-auto mb-2`} />
-                <p className="font-headline text-2xl text-brand-white">{count ?? 0}</p>
-                <p className="text-brand-gray-500 text-xs font-heading tracking-wider uppercase">{label}</p>
+              { label: 'Confirmé',    count: stats.confirmedOrders,  key: 'confirmé' },
+              { label: 'En livraison',count: stats.inDeliveryOrders, key: 'en livraison' },
+              { label: 'Livré',       count: stats.deliveredOrders,  key: 'livré' },
+              { label: 'Retour',      count: stats.returnOrders,     key: 'retour' },
+            ].map(({ label, count, key }) => (
+              <div key={key} className="text-center">
+                <span className={`inline-block px-3 py-1 font-label text-[0.6rem]
+                                  uppercase tracking-[0.1rem] mb-3 ${STATUS_COLORS[key]}`}>
+                  {label}
+                </span>
+                <p className="font-headline text-3xl text-white">{count ?? 0}</p>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Modal confirmation reset */}
+      {/* Category breakdown */}
+      {stats?.byCategory && !loading && (
+        <div className="admin-card">
+          <p className="admin-label mb-6">Ventes par catégorie</p>
+          <div className="space-y-3">
+            {Object.entries(stats.byCategory).map(([cat, data]) => {
+              const pct = stats.totalRevenue > 0
+                ? Math.round((data.revenue / stats.totalRevenue) * 100) : 0
+              return (
+                <div key={cat}>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem] text-white/60">
+                      {cat}
+                    </span>
+                    <span className="font-label text-[0.6875rem] text-white/40">
+                      {data.orders} cmd · {data.revenue.toLocaleString('fr-DZ')} DZD
+                    </span>
+                  </div>
+                  <div className="h-1 bg-white/8 w-full">
+                    <div className="h-1 bg-[#8C495F]/70 transition-all duration-700"
+                      style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Confirm modal */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-brand-gray-900 border border-brand-gray-700 p-6 max-w-md w-full animate-slide-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#161616] border border-white/8 p-8 max-w-sm w-full animate-fade-up">
             <div className="flex items-center gap-3 mb-4">
-              <AlertTriangle size={20} className="text-brand-red" />
-              <h3 className="font-heading font-bold text-brand-white tracking-wider">Confirmation</h3>
+              <AlertTriangle size={18} className="text-red-400 flex-shrink-0" />
+              <h3 className="font-headline text-white text-lg">Confirmer la réinitialisation ?</h3>
             </div>
-            <p className="text-brand-gray-300 font-body mb-2">
-              Cette action va supprimer toutes les commandes avec le statut{' '}
-              <span className="text-emerald-400 font-semibold">livré</span> et{' '}
-              <span className="text-red-400 font-semibold">retour</span>.
+            <p className="font-body text-white/50 text-sm leading-relaxed mb-2">
+              Toutes les commandes <span className="text-emerald-400">livrées</span> et{' '}
+              <span className="text-orange-400">retournées</span> seront supprimées.
             </p>
-            <p className="text-brand-gray-500 text-sm font-body mb-6">
-              Cette opération est irréversible.
-            </p>
+            <p className="font-body text-white/30 text-xs mb-8">Cette opération est irréversible.</p>
             <div className="flex gap-3">
-              <button
-                onClick={handleReset}
-                disabled={resetting}
-                className="btn-primary flex items-center gap-2 flex-1 justify-center"
-              >
-                {resetting && <Loader2 size={14} className="animate-spin" />}
+              <button onClick={handleReset} disabled={resetting}
+                className="admin-btn-danger flex-1 justify-center">
+                {resetting && <Loader2 size={12} className="animate-spin" />}
                 Confirmer
               </button>
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="btn-ghost flex-1"
-              >
+              <button onClick={() => setShowConfirm(false)} className="admin-btn-ghost flex-1">
                 Annuler
               </button>
             </div>
