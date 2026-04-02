@@ -10,7 +10,6 @@ function ProductDetailPage() {
   const { id }        = useParams()
   const navigate      = useNavigate()
   const { addToCart } = useCart()
-
   const [product, setProduct]           = useState(null)
   const [loading, setLoading]           = useState(true)
   const [selectedSize, setSelectedSize] = useState(null)
@@ -32,11 +31,9 @@ function ProductDetailPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-surface flex items-center justify-center pt-20">
-      <div className="w-8 h-8 border border-outline-variant border-t-primary
-                      rounded-full animate-spin" />
+      <div className="w-8 h-8 border border-outline-variant border-t-primary rounded-full animate-spin" />
     </div>
   )
-
   if (!product) return null
 
   const maxStock = product.sizes?.find((s) => s.size === selectedSize)?.stock || 1
@@ -49,85 +46,62 @@ function ProductDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface pt-16 pb-32">
+    <div className="min-h-screen bg-surface pt-16 lg:pt-28 pb-32">
 
-      {/* Back button */}
-      <div className="px-6 pt-6 pb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 stitch-label hover:text-on-surface transition-colors group"
-        >
-          <span
-            className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform"
-            style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}
-          >
-            arrow_back
-          </span>
+      {/* Back */}
+      <div className="max-w-screen-xl mx-auto px-6 lg:px-16 xl:px-24 pt-6 pb-4">
+        <button onClick={() => navigate(-1)}
+          className="flex items-center gap-2 stitch-label hover:text-on-surface transition-colors group">
+          <span className="material-symbols-outlined text-[18px]
+                           group-hover:-translate-x-1 transition-transform"
+            style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>arrow_back</span>
           Retour
         </button>
       </div>
 
-      <div className="px-6 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-16">
+      <div className="max-w-screen-xl mx-auto px-6 lg:px-16 xl:px-24 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-20">
 
-          {/* ── Gallery ──────────────────────────────────────────── */}
-          <div className="flex flex-col gap-3">
-            {/* Main image */}
+          {/* ── Gallery ────────────────────────────────────────── */}
+          <div className="flex flex-col gap-3 lg:sticky lg:top-32 lg:self-start">
             <div className="relative aspect-[3/4] bg-surface-container overflow-hidden group">
-              <img
-                src={images[currentImage]}
-                alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              <img src={images[currentImage]} alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
 
-              {/* Category badge */}
               <div className="absolute top-4 left-4">
                 <span className="stitch-label bg-surface-container-lowest/90 px-3 py-1.5 text-on-surface">
                   {product.category}
                 </span>
               </div>
 
-              {/* Nav arrows */}
               {images.length > 1 && (
                 <>
-                  <button
-                    onClick={() => setCurrentImage((i) => i === 0 ? images.length - 1 : i - 1)}
+                  <button onClick={() => setCurrentImage((i) => i === 0 ? images.length - 1 : i - 1)}
                     className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10
                                bg-surface-container-lowest/90 flex items-center justify-center
-                               opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
-                  >
+                               opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
                     <span className="material-symbols-outlined text-[20px]"
-                      style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>
-                      chevron_left
-                    </span>
+                      style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>chevron_left</span>
                   </button>
-                  <button
-                    onClick={() => setCurrentImage((i) => i === images.length - 1 ? 0 : i + 1)}
+                  <button onClick={() => setCurrentImage((i) => i === images.length - 1 ? 0 : i + 1)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10
                                bg-surface-container-lowest/90 flex items-center justify-center
-                               opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
-                  >
+                               opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
                     <span className="material-symbols-outlined text-[20px]"
-                      style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>
-                      chevron_right
-                    </span>
+                      style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>chevron_right</span>
                   </button>
                 </>
               )}
             </div>
 
-            {/* Thumbnails */}
             {images.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
                 {images.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentImage(i)}
+                  <button key={i} onClick={() => setCurrentImage(i)}
                     className={`aspect-[3/4] overflow-hidden border transition-all
                                 ${i === currentImage
                                   ? 'border-primary'
-                                  : 'border-transparent opacity-60 hover:opacity-100'}`}
-                  >
+                                  : 'border-transparent opacity-60 hover:opacity-100'}`}>
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -135,25 +109,22 @@ function ProductDetailPage() {
             )}
           </div>
 
-          {/* ── Product Info ──────────────────────────────────────── */}
-          <div className="flex flex-col gap-8 animate-fade-up">
+          {/* ── Product Info ─────────────────────────────────────── */}
+          <div className="flex flex-col gap-8 animate-fade-up lg:pt-4">
 
-            {/* Name & price */}
             <div>
-              {product.brand && (
-                <p className="stitch-label mb-2">{product.brand}</p>
-              )}
-              <h1 className="font-headline text-on-surface text-4xl sm:text-5xl font-bold
-                             leading-tight tracking-tighter mb-5">
+              {product.brand && <p className="stitch-label mb-2">{product.brand}</p>}
+              <h1 className="font-headline text-on-surface text-4xl lg:text-5xl xl:text-6xl
+                             font-bold leading-tight tracking-tighter mb-5">
                 {product.name}
               </h1>
-              <p className="font-label text-[1.25rem] uppercase tracking-[0.05rem] text-secondary font-semibold">
+              <p className="font-label text-[1.25rem] lg:text-[1.5rem] uppercase tracking-[0.05rem]
+                             text-secondary font-semibold">
                 {(product.price ?? 0).toLocaleString('fr-DZ')}
                 <span className="text-sm text-on-surface-variant font-normal ml-2">DZD</span>
               </p>
             </div>
 
-            {/* Visual separator — color shift, no border */}
             <div className="h-px bg-surface-container-high" />
 
             {/* Size */}
@@ -166,11 +137,8 @@ function ProductDetailPage() {
                   </span>
                 )}
               </p>
-              <SizeSelector
-                sizes={product.sizes || []}
-                selected={selectedSize}
-                onChange={(size) => { setSelectedSize(size); setQuantity(1) }}
-              />
+              <SizeSelector sizes={product.sizes || []} selected={selectedSize}
+                onChange={(size) => { setSelectedSize(size); setQuantity(1) }} />
               {selectedSize && (
                 <p className="font-body text-[0.75rem] text-outline mt-2">
                   {maxStock} disponible{maxStock > 1 ? 's' : ''}
@@ -184,14 +152,11 @@ function ProductDetailPage() {
               <QuantitySelector value={quantity} min={1} max={maxStock} onChange={setQuantity} />
             </div>
 
-            {/* Add to cart */}
-            <button onClick={handleAddToCart} className="btn-primary w-full py-4 justify-center text-sm">
-              <span
-                className="material-symbols-outlined text-[18px]"
-                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
-              >
-                shopping_bag
-              </span>
+            {/* CTA */}
+            <button onClick={handleAddToCart}
+              className="btn-primary w-full py-5 justify-center text-sm lg:text-base">
+              <span className="material-symbols-outlined text-[18px]"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>shopping_bag</span>
               Ajouter au Panier
             </button>
 
@@ -201,21 +166,17 @@ function ProductDetailPage() {
                 <div className="h-px bg-surface-container-high" />
                 <div>
                   <p className="stitch-label mb-4">Description</p>
-                  <p className="font-body text-on-surface-variant leading-relaxed text-sm">
+                  <p className="font-body text-on-surface-variant leading-relaxed text-sm lg:text-base">
                     {product.description}
                   </p>
                 </div>
               </>
             )}
 
-            {/* Delivery info */}
+            {/* Delivery */}
             <div className="bg-surface-container-low p-5 flex items-start gap-4">
-              <span
-                className="material-symbols-outlined text-on-surface-variant mt-0.5"
-                style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}
-              >
-                local_shipping
-              </span>
+              <span className="material-symbols-outlined text-on-surface-variant mt-0.5"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>local_shipping</span>
               <div>
                 <p className="font-body font-semibold text-on-surface text-sm mb-0.5">
                   Livraison dans toute l'Algérie
