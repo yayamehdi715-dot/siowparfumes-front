@@ -17,6 +17,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminProductsPage from './pages/admin/AdminProductsPage'
 import AdminOrdersPage from './pages/admin/AdminOrdersPage'
+import AdminSettingsPage from './pages/admin/AdminSettingsPage'
 
 function PublicLayout({ children }) {
   return (
@@ -47,26 +48,23 @@ function App() {
                   letterSpacing: '0.01em',
                   boxShadow: '0 10px 40px rgba(26,28,28,0.08)',
                 },
-                success: {
-                  iconTheme: { primary: '#8C495F', secondary: '#fff' },
-                },
-                error: {
-                  iconTheme: { primary: '#ba1a1a', secondary: '#fff' },
-                },
+                success: { iconTheme: { primary: '#FBBF24', secondary: '#000' } },
+                error:   { iconTheme: { primary: '#ba1a1a', secondary: '#fff' } },
               }}
             />
             <Routes>
-              <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
-              <Route path="/products" element={<PublicLayout><ProductsPage /></PublicLayout>} />
-              <Route path="/products/:id" element={<PublicLayout><ProductDetailPage /></PublicLayout>} />
-              <Route path="/tag/:tag" element={<PublicLayout><TagProductsPage /></PublicLayout>} />
-              <Route path="/cart" element={<PublicLayout><CartPage /></PublicLayout>} />
-              <Route path="/confirmation" element={<PublicLayout><ConfirmationPage /></PublicLayout>} />
-              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/"              element={<PublicLayout><HomePage /></PublicLayout>} />
+              <Route path="/products"      element={<PublicLayout><ProductsPage /></PublicLayout>} />
+              <Route path="/products/:id"  element={<PublicLayout><ProductDetailPage /></PublicLayout>} />
+              <Route path="/tag/:tag"      element={<PublicLayout><TagProductsPage /></PublicLayout>} />
+              <Route path="/cart"          element={<PublicLayout><CartPage /></PublicLayout>} />
+              <Route path="/confirmation"  element={<PublicLayout><ConfirmationPage /></PublicLayout>} />
+              <Route path="/admin/login"   element={<AdminLoginPage />} />
               <Route path="/admin" element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
-                <Route index element={<AdminDashboardPage />} />
+                <Route index           element={<AdminDashboardPage />} />
                 <Route path="products" element={<AdminProductsPage />} />
-                <Route path="orders" element={<AdminOrdersPage />} />
+                <Route path="orders"   element={<AdminOrdersPage />} />
+                <Route path="settings" element={<AdminSettingsPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

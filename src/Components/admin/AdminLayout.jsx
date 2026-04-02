@@ -1,13 +1,14 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Package, ClipboardList, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, ClipboardList, LogOut, Menu, X, Settings } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 const NAV_ITEMS = [
-  { to: '/admin',          label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/products', label: 'Produits',  icon: Package },
-  { to: '/admin/orders',   label: 'Commandes', icon: ClipboardList },
+  { to: '/admin',          label: 'Dashboard',  icon: LayoutDashboard, end: true },
+  { to: '/admin/products', label: 'Produits',   icon: Package },
+  { to: '/admin/orders',   label: 'Commandes',  icon: ClipboardList },
+  { to: '/admin/settings', label: 'Sécurité',   icon: Settings },
 ]
 
 function SidebarContent({ onClose, onLogout }) {
@@ -31,7 +32,7 @@ function SidebarContent({ onClose, onLogout }) {
               `flex items-center gap-3 px-4 py-3 transition-all duration-200
                border-l-2 font-label text-[0.6875rem] uppercase tracking-[0.12rem]
                ${isActive
-                 ? 'border-[#8C495F] text-white bg-[#8C495F]/10'
+                 ? 'border-amber-400 text-amber-400 bg-amber-400/8'
                  : 'border-transparent text-white/40 hover:text-white hover:bg-white/5 hover:border-white/20'
                }`
             }>
