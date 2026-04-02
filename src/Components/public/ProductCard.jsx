@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 
 function ProductCard({ product }) {
-  const hasStock = product.sizes?.some((s) => s.stock > 0)
   const imageUrl = product.images?.[0] || '/placeholder.jpg'
 
   return (
@@ -21,16 +20,6 @@ function ProductCard({ product }) {
             {product.category}
           </span>
         </div>
-
-        {/* Out of stock overlay */}
-        {!hasStock && (
-          <div className="absolute inset-0 bg-white/75 flex flex-col items-center justify-center gap-2">
-            <span className="stitch-label text-outline">Épuisé</span>
-            <span className="stitch-label text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
-              Articles similaires →
-            </span>
-          </div>
-        )}
 
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/8 transition-colors duration-300" />

@@ -19,7 +19,6 @@ function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState(null)
   const [quantity, setQuantity]         = useState(1)
   const [currentImage, setCurrentImage] = useState(0)
-
   const [achatMode, setAchatMode]       = useState('flacon')
   const [selectedExtrait, setSelectedExtrait] = useState(null)
 
@@ -31,10 +30,12 @@ function ProductDetailPage() {
         const p = res.data
         setProduct(p)
         if (!PARFUM_CATS.includes(p.category)) {
-          const first = p.sizes?.find((s) => s.stock > 0)
+          // Sélectionner la première taille disponible
+          const first = p.sizes?.[0]
           if (first) setSelectedSize(first.size)
         } else {
-          const firstExtrait = p.extraits?.find((e) => e.stock > 0)
+          // Sélectionner le premier extrait disponible
+          const firstExtrait = p.extraits?.[0]
           if (firstExtrait) setSelectedExtrait(firstExtrait)
         }
       })
@@ -49,15 +50,10 @@ function ProductDetailPage() {
   )
   if (!product) return null
 
-  const isParfum      = PARFUM_CATS.includes(product.category)
-  const images        = product.images?.length > 0 ? product.images : ['/placeholder.jpg']
-  const flaconStock   = product.flaconStock ?? 0
-  const extraits      = product.extraits ?? []
-  const hasExtraits   = extraits.length > 0
-  const flaconDispo   = flaconStock > 0
-  const maxStock      = isParfum
-    ? (achatMode === 'flacon' ? flaconStock : (selectedExtrait?.stock ?? 1))
-    : (product.sizes?.find((s) => s.size === selectedSize)?.stock || 1)
+  const isParfum    = PARFUM_CATS.includes(product.category)
+  const images      = product.images?.length > 0 ? product.images : ['/placeholder.jpg']
+  const extraits    = product.extraits ?? []
+  const hasExtraits = extraits.length > 0
 
   const prixAffiche = isParfum
     ? (achatMode === 'extrait' && selectedExtrait ? selectedExtrait.price : product.price)
@@ -66,11 +62,9 @@ function ProductDetailPage() {
   const handleAddToCart = () => {
     if (isParfum) {
       if (achatMode === 'flacon') {
-        if (!flaconDispo) { toast.error(t.toastFlaconUnavailable); return }
         addToCart(product, 'Flacon complet', quantity, { type: 'flacon', price: product.price })
       } else {
         if (!selectedExtrait) { toast.error(t.toastSelectVolume); return }
-        if (selectedExtrait.stock <= 0) { toast.error(t.toastExtraitUnavailable); return }
         addToCart(product, `${selectedExtrait.ml} ml`, quantity, {
           type: 'extrait', ml: selectedExtrait.ml, price: selectedExtrait.price,
         })
@@ -164,7 +158,7 @@ function ProductDetailPage() {
 
             <div className="h-px bg-surface-container-high" />
 
-            {/* ── Sélection pour PARFUMS ──────────────────────── */}
+            {/* ── Sélection PARFUMS ───────────────────────────── */}
             {isParfum ? (
               <>
                 {hasExtraits && (
@@ -203,10 +197,6 @@ function ProductDetailPage() {
                       <p className="font-label text-[0.75rem] uppercase tracking-[0.1rem] text-on-surface">
                         {t.fullBottle}
                       </p>
-                      <span className={`font-label text-[0.6875rem] uppercase tracking-[0.05rem]
-                                        ${flaconDispo ? 'text-secondary' : 'text-outline line-through'}`}>
-                        {flaconDispo ? t.available(flaconStock) : t.outOfStock}
-                      </span>
                     </div>
                     <p className="font-label text-[1.125rem] text-secondary font-semibold">
                       {(product.price ?? 0).toLocaleString('fr-DZ')}
@@ -221,37 +211,29 @@ function ProductDetailPage() {
                     <div className="flex flex-wrap gap-2">
                       {extraits.map((ex) => {
                         const isSelected = selectedExtrait?.ml === ex.ml
-                        const epuise     = ex.stock <= 0
                         return (
                           <button
                             key={ex.ml}
-                            onClick={() => { if (!epuise) { setSelectedExtrait(ex); setQuantity(1) } }}
-                            disabled={epuise}
+                            onClick={() => { setSelectedExtrait(ex); setQuantity(1) }}
                             className={`flex flex-col items-center px-4 py-3 border min-w-[72px]
                                         font-label transition-all duration-200
                                         ${isSelected
                                           ? 'bg-primary text-on-primary border-primary'
-                                          : epuise
-                                            ? 'border-outline-variant/40 text-outline cursor-not-allowed bg-transparent'
-                                            : 'border-outline-variant text-on-surface hover:border-primary bg-transparent'}`}>
+                                          : 'border-outline-variant text-on-surface hover:border-primary bg-transparent'}`}>
                             <span className="text-[0.875rem] font-semibold">{ex.ml} ml</span>
                             <span className={`text-[0.6rem] uppercase tracking-widest mt-0.5
                                               ${isSelected ? 'text-on-primary/70' : 'text-outline'}`}>
-                              {epuise ? t.outOfStock : `${ex.price.toLocaleString('fr-DZ')} DZD`}
+                              {ex.price.toLocaleString('fr-DZ')} DZD
                             </span>
                           </button>
                         )
                       })}
                     </div>
-                    {selectedExtrait && !extraits.find(e => e.ml === selectedExtrait.ml && e.stock <= 0) && (
-                      <p className="font-body text-[0.75rem] text-outline mt-2">
-                        {t.available(selectedExtrait.stock)}
-                      </p>
-                    )}
                   </div>
                 )}
               </>
             ) : (
+              /* ── Sélection MONTRES / ESSENTIELS ──────────────── */
               <div>
                 <p className="stitch-label mb-4">
                   {t.size}
@@ -261,19 +243,17 @@ function ProductDetailPage() {
                     </span>
                   )}
                 </p>
-                <SizeSelector sizes={product.sizes || []} selected={selectedSize}
-                  onChange={(size) => { setSelectedSize(size); setQuantity(1) }} />
-                {selectedSize && (
-                  <p className="font-body text-[0.75rem] text-outline mt-2">
-                    {t.available(maxStock)}
-                  </p>
-                )}
+                <SizeSelector
+                  sizes={product.sizes || []}
+                  selected={selectedSize}
+                  onChange={(size) => { setSelectedSize(size); setQuantity(1) }}
+                />
               </div>
             )}
 
             <div>
               <p className="stitch-label mb-4">{t.quantity}</p>
-              <QuantitySelector value={quantity} min={1} max={maxStock} onChange={setQuantity} />
+              <QuantitySelector value={quantity} min={1} max={99} onChange={setQuantity} />
             </div>
 
             <button onClick={handleAddToCart}
@@ -308,6 +288,7 @@ function ProductDetailPage() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
