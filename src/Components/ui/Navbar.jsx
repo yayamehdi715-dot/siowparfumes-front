@@ -3,11 +3,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 import { useLanguage } from '../../context/LanguageContext'
 
-const NAV_CATEGORIES = [
-  { label: 'Watches',     slug: 'Watches' },
-  { label: 'Fragrances',  slug: 'Fragrances' },
-  { label: 'Saudi Coll.', slug: 'Saudi Coll.' },
-  { label: 'Essentials',  slug: 'Essentials' },
+// Slugs pour les catégories (invariables)
+const NAV_CATEGORY_SLUGS = [
+  { slug: 'Watches' },
+  { slug: 'Fragrances' },
+  { slug: 'Saudi Coll.' },
+  { slug: 'Essentials' },
 ]
 
 function Navbar() {
@@ -34,11 +35,10 @@ function Navbar() {
     }
   }
 
-  const path       = location.pathname
-  const isHome     = path === '/'
-  const isCatalog  = path.startsWith('/products') || path.startsWith('/tag')
-  const isCart     = path === '/cart'
-  const isAbout    = path === '/about'
+  const path      = location.pathname
+  const isHome    = path === '/'
+  const isCatalog = path.startsWith('/products') || path.startsWith('/tag')
+  const isCart    = path === '/cart'
 
   return (
     <>
@@ -74,8 +74,11 @@ function Navbar() {
             )}
           </div>
 
+          {/* Logo centré mobile */}
           <Link to="/">
-            <h1 className="text-xl font-headline italic tracking-tighter text-on-surface">
+            <img src="/logo.png" alt="SIOW PARFUMES" className="h-10 w-auto object-contain"
+              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block' }} />
+            <h1 className="text-xl font-headline italic tracking-tighter text-on-surface hidden">
               SIOW PARFUMES
             </h1>
           </Link>
@@ -136,13 +139,15 @@ function Navbar() {
 
             {/* Center: logo */}
             <Link to="/" className="absolute left-1/2 -translate-x-1/2">
+              <img src="/logo.png" alt="SIOW PARFUMES" className="h-12 w-auto object-contain"
+                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block' }} />
               <h1 className="text-2xl font-headline italic tracking-tighter text-on-surface
-                             hover:text-secondary transition-colors duration-300">
+                             hover:text-secondary transition-colors duration-300 hidden">
                 SIOW PARFUMES
               </h1>
             </Link>
 
-            {/* Right: lang toggle + cart + about */}
+            {/* Right: lang toggle + cart */}
             <div className="flex items-center gap-6 w-64 justify-end">
               {/* Language toggle desktop */}
               <button onClick={toggleLang}
@@ -151,11 +156,6 @@ function Navbar() {
                            border border-outline-variant px-2 py-1">
                 {lang === 'ar' ? 'FR' : 'AR'}
               </button>
-              <Link to="/about"
-                className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]
-                           text-on-surface-variant hover:text-on-surface transition-colors">
-                {t.about}
-              </Link>
               <button onClick={() => navigate('/cart')}
                 className="relative flex items-center gap-2 text-on-surface-variant
                            hover:text-on-surface transition-colors">
@@ -178,14 +178,14 @@ function Navbar() {
 
           {/* Category nav row */}
           <div className="flex justify-center items-center gap-10 pb-3 border-t border-outline-variant/20 pt-3">
-            {NAV_CATEGORIES.map(({ label, slug }) => (
+            {NAV_CATEGORY_SLUGS.map(({ slug }) => (
               <Link key={slug} to={`/products?category=${slug}`}
                 className={`font-label text-[0.6875rem] uppercase tracking-[0.2rem] transition-colors
                             relative group pb-1
                             ${location.search.includes(slug)
                               ? 'text-on-surface after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-primary'
                               : 'text-on-surface-variant hover:text-on-surface'}`}>
-                {label}
+                {t.categoryLabels?.[slug] ?? slug}
               </Link>
             ))}
           </div>
@@ -200,10 +200,9 @@ function Navbar() {
                       px-4 pb-8 pt-2 bg-[#F9F9F9]/92 backdrop-blur-2xl
                       border-t border-black/5">
         {[
-          { to: '/',        icon: 'home',         label: t.home,     active: isHome },
-          { to: '/products',icon: 'menu_book',     label: t.catalog,  active: isCatalog },
-          { to: '/cart',    icon: 'shopping_bag',  label: t.cartLabel, active: isCart, badge: itemCount },
-          { to: '/about',   icon: 'info',          label: t.aboutLabel, active: isAbout },
+          { to: '/',         icon: 'home',        label: t.home,     active: isHome },
+          { to: '/products', icon: 'menu_book',   label: t.catalog,  active: isCatalog },
+          { to: '/cart',     icon: 'shopping_bag', label: t.cartLabel, active: isCart, badge: itemCount },
         ].map(({ to, icon, label, active, badge }) => (
           <Link key={to} to={to}
             className={`flex flex-col items-center justify-center pt-2 transition-all duration-300 relative

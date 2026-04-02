@@ -3,14 +3,26 @@ import { Plus, Trash2, Upload, X, Loader2 } from 'lucide-react'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 
-const CATEGORIES = ['Montres', 'Parfums', 'Parfums Saoudiens', 'Essentiels']
-const PARFUM_CATS = ['Parfums', 'Parfums Saoudiens']
+const CATEGORIES   = ['Montres', 'Parfums', 'Parfums Saoudiens', 'Essentiels']
+const PARFUM_CATS  = ['Parfums', 'Parfums Saoudiens']
 
 const EMPTY = {
   name: '', brand: '', category: 'Montres', price: '',
-  description: '', sizes: [{ size: '', stock: '' }],
-  flaconStock: '', extraits: [],
-  images: [], tags: [], bestSeller: false, featured: false,
+  description: '',
+  sizes:   [{ size: '', stock: '' }],
+  extraits: [],
+  images: [], tags: [], bestSeller: false,
+}
+
+// ── FieldSet défini EN DEHORS du composant pour éviter le re-mount à chaque frappe ──
+function FieldSet({ label, error, children }) {
+  return (
+    <div>
+      <label className="admin-label">{label}</label>
+      {children}
+      {error && <p className="text-red-400/80 text-xs mt-1.5">{error}</p>}
+    </div>
+  )
 }
 
 function AdminProductForm({ initialData, onSuccess, onCancel }) {
@@ -18,24 +30,22 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const [form, setForm] = useState(
     initialData ? {
       ...initialData,
-      price:       initialData.price?.toString() ?? '',
-      flaconStock: initialData.flaconStock?.toString() ?? '',
+      price:    initialData.price?.toString() ?? '',
       sizes: initialData.sizes?.length > 0
         ? initialData.sizes.map((s) => ({ size: s.size.toString(), stock: s.stock.toString() }))
         : [{ size: '', stock: '' }],
       extraits: initialData.extraits?.length > 0
-        ? initialData.extraits.map((e) => ({ ml: e.ml.toString(), price: e.price.toString(), stock: e.stock.toString() }))
+        ? initialData.extraits.map((e) => ({ ml: e.ml.toString(), price: e.price.toString() }))
         : [],
       images: initialData.images || [],
       tags:   initialData.tags   || [],
       bestSeller: initialData.bestSeller || false,
-      featured:   initialData.featured   || false,
     } : EMPTY
   )
-  const [errors, setErrors]     = useState({})
+  const [errors, setErrors]       = useState({})
   const [uploading, setUploading] = useState(false)
-  const [saving, setSaving]     = useState(false)
-  const [dragOver, setDragOver] = useState(false)
+  const [saving, setSaving]       = useState(false)
+  const [dragOver, setDragOver]   = useState(false)
 
   const isParfum = PARFUM_CATS.includes(form.category)
 
@@ -49,20 +59,21 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     const cat = e.target.value
     setForm((p) => ({
       ...p,
-      category:    cat,
-      sizes:       PARFUM_CATS.includes(cat) ? [] : (p.sizes.length ? p.sizes : [{ size: '', stock: '' }]),
-      flaconStock: p.flaconStock,
-      extraits:    PARFUM_CATS.includes(cat) ? p.extraits : [],
+      category: cat,
+      sizes:    PARFUM_CATS.includes(cat) ? [] : (p.sizes.length ? p.sizes : [{ size: '', stock: '' }]),
+      extraits: PARFUM_CATS.includes(cat) ? p.extraits : [],
     }))
     setErrors({})
   }
 
+  // Tailles (Montres / Essentiels)
   const addSize    = () => setForm((p) => ({ ...p, sizes: [...p.sizes, { size: '', stock: '' }] }))
   const removeSize = (i) => setForm((p) => ({ ...p, sizes: p.sizes.filter((_, idx) => idx !== i) }))
   const updateSize = (i, field, val) =>
     setForm((p) => ({ ...p, sizes: p.sizes.map((s, idx) => idx === i ? { ...s, [field]: val } : s) }))
 
-  const addExtrait    = () => setForm((p) => ({ ...p, extraits: [...p.extraits, { ml: '', price: '', stock: '' }] }))
+  // Extraits (Parfums) — ml + price uniquement, pas de stock
+  const addExtrait    = () => setForm((p) => ({ ...p, extraits: [...p.extraits, { ml: '', price: '' }] }))
   const removeExtrait = (i) => setForm((p) => ({ ...p, extraits: p.extraits.filter((_, idx) => idx !== i) }))
   const updateExtrait = (i, field, val) =>
     setForm((p) => ({ ...p, extraits: p.extraits.map((e, idx) => idx === i ? { ...e, [field]: val } : e) }))
@@ -88,14 +99,13 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     if (!isEditing && form.images.length === 0) e.images = 'Au moins une image requise'
 
     if (isParfum) {
-      if (form.flaconStock === '' || isNaN(+form.flaconStock) || +form.flaconStock < 0)
-        e.flaconStock = 'Stock du flacon invalide'
-      const ok = form.extraits.every(
-        (ex) => ex.ml.toString().trim() && !isNaN(+ex.ml) && +ex.ml > 0
-               && !isNaN(+ex.price) && +ex.price >= 0
-               && !isNaN(+ex.stock) && +ex.stock >= 0
-      )
-      if (!ok && form.extraits.length > 0) e.extraits = 'Tous les extraits doivent avoir ml, prix et stock valides'
+      if (form.extraits.length > 0) {
+        const ok = form.extraits.every(
+          (ex) => ex.ml.toString().trim() && !isNaN(+ex.ml) && +ex.ml > 0
+                 && !isNaN(+ex.price) && +ex.price >= 0
+        )
+        if (!ok) e.extraits = 'Tous les volumes doivent avoir une quantité (ml) et un prix valides'
+      }
     } else {
       if (form.sizes.length === 0) e.sizes = 'Ajoutez au moins une taille'
       const ok = form.sizes.every((s) => s.size.toString().trim() && !isNaN(+s.stock) && +s.stock >= 0)
@@ -115,8 +125,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         price: +form.price,
         ...(isParfum
           ? {
-              flaconStock: +form.flaconStock,
-              extraits: form.extraits.map((ex) => ({ ml: +ex.ml, price: +ex.price, stock: +ex.stock })),
+              flaconStock: 0,
+              extraits: form.extraits.map((ex) => ({ ml: +ex.ml, price: +ex.price, stock: 0 })),
               sizes: [],
             }
           : {
@@ -135,18 +145,10 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     } finally { setSaving(false) }
   }
 
-  const FieldSet = ({ label, error, children }) => (
-    <div>
-      <label className="admin-label">{label}</label>
-      {children}
-      {error && <p className="text-red-400/80 text-xs mt-1.5">{error}</p>}
-    </div>
-  )
-
   return (
     <form onSubmit={handleSubmit} className="space-y-8" noValidate>
 
-      {/* ── 1. Catégorie EN PREMIER ───────────────────────────── */}
+      {/* ── 1. Catégorie ──────────────────────────────────────── */}
       <div>
         <p className="admin-label mb-4 text-white/60">Catégorie *</p>
         <div className="relative">
@@ -164,44 +166,58 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
       <div>
         <p className="admin-label mb-4 text-white/60">Informations générales</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
           <FieldSet label="Nom du produit *" error={errors.name}>
-            <input name="name" value={form.name} onChange={handleChange}
-              placeholder="Ex: Oud Royal..." className="admin-input" />
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Ex: Oud Royal..."
+              className="admin-input"
+              autoComplete="off"
+            />
           </FieldSet>
+
           <FieldSet label="Marque">
-            <input name="brand" value={form.brand} onChange={handleChange}
-              placeholder="Ex: Amouage..." className="admin-input" />
+            <input
+              name="brand"
+              value={form.brand}
+              onChange={handleChange}
+              placeholder="Ex: Amouage..."
+              className="admin-input"
+              autoComplete="off"
+            />
           </FieldSet>
 
-          <FieldSet
-            label={isParfum ? 'Prix du flacon (DZD) *' : 'Prix (DZD) *'}
-            error={errors.price}>
-            <input name="price" value={form.price} onChange={handleChange}
-              type="number" min="0" placeholder="Ex: 4500"
-              className="admin-input" />
+          <FieldSet label="Prix (DZD) *" error={errors.price}>
+            <input
+              name="price"
+              value={form.price}
+              onChange={handleChange}
+              type="number"
+              min="0"
+              placeholder="Ex: 4500"
+              className="admin-input"
+            />
           </FieldSet>
 
-          {isParfum && (
-            <FieldSet label="Stock du flacon *" error={errors.flaconStock}>
-              <input
-                name="flaconStock" value={form.flaconStock}
-                onChange={handleChange}
-                type="number" min="0" placeholder="Ex: 10"
-                className="admin-input" />
-            </FieldSet>
-          )}
         </div>
 
         <div className="mt-4">
           <FieldSet label="Description">
-            <textarea name="description" value={form.description} onChange={handleChange}
-              rows={3} placeholder="Décrivez le produit..."
-              className="admin-input resize-none" />
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              rows={3}
+              placeholder="Décrivez le produit..."
+              className="admin-input resize-none"
+            />
           </FieldSet>
         </div>
       </div>
 
-      {/* ── 3a. Tailles & Stocks (Montres / Essentiels) ──────── */}
+      {/* ── 3a. Tailles & Stocks (Montres / Essentiels) ───────── */}
       {!isParfum && (
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -215,13 +231,21 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           <div className="space-y-2">
             {form.sizes.map((s, i) => (
               <div key={i} className="flex items-center gap-3">
-                <input value={s.size} onChange={(e) => updateSize(i, 'size', e.target.value)}
+                <input
+                  value={s.size}
+                  onChange={(e) => updateSize(i, 'size', e.target.value)}
                   placeholder="Taille (ex: M, 44, XL…)"
-                  className="admin-input flex-1" />
-                <input type="number" min="0" value={s.stock}
+                  className="admin-input flex-1"
+                  autoComplete="off"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  value={s.stock}
                   onChange={(e) => updateSize(i, 'stock', e.target.value)}
                   placeholder="Stock"
-                  className="admin-input w-28" />
+                  className="admin-input w-28"
+                />
                 <button type="button" onClick={() => removeSize(i)}
                   className="p-2 text-white/20 hover:text-red-400 transition-colors flex-shrink-0">
                   <Trash2 size={14} />
@@ -233,28 +257,31 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         </div>
       )}
 
-      {/* ── 3b. Extraits (Parfums / Parfums Saoudiens) ────────── */}
+      {/* ── 3b. Volumes disponibles (Parfums / Parfums Saoudiens) */}
       {isParfum && (
         <div>
           <div className="flex items-center justify-between mb-2">
             <div>
-              <p className="admin-label text-white/60">Vente en extraits</p>
+              <p className="admin-label text-white/60">Volumes disponibles</p>
               <p className="text-white/30 text-xs mt-1 font-body">
-                Ajoutez les volumes disponibles à la vente (optionnel)
+                Ajoutez les volumes à la vente avec leur prix (ex: 20ml, 30ml…)
               </p>
             </div>
             <button type="button" onClick={addExtrait}
               className="flex items-center gap-1.5 text-white/40 hover:text-white
                          font-label text-[0.6875rem] uppercase tracking-[0.1rem] transition-colors">
-              <Plus size={12} /> Ajouter un extrait
+              <Plus size={12} /> Ajouter un volume
             </button>
           </div>
 
           {form.extraits.length > 0 && (
-            <div className="flex gap-3 px-0 mb-1 mt-3">
-              <span className="text-white/25 text-[0.6rem] font-label uppercase tracking-widest flex-1">Volume (ml)</span>
-              <span className="text-white/25 text-[0.6rem] font-label uppercase tracking-widest flex-1">Prix (DZD)</span>
-              <span className="text-white/25 text-[0.6rem] font-label uppercase tracking-widest w-24">Stock</span>
+            <div className="flex gap-3 mb-1 mt-3">
+              <span className="text-white/25 text-[0.6rem] font-label uppercase tracking-widest flex-1">
+                Quantité (ml)
+              </span>
+              <span className="text-white/25 text-[0.6rem] font-label uppercase tracking-widest flex-1">
+                Prix (DZD)
+              </span>
               <span className="w-10" />
             </div>
           )}
@@ -262,18 +289,24 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           <div className="space-y-2">
             {form.extraits.map((ex, i) => (
               <div key={i} className="flex items-center gap-3">
-                <input type="number" min="1" value={ex.ml}
+                {/* Quantité ml — saisie clavier libre */}
+                <input
+                  value={ex.ml}
                   onChange={(e) => updateExtrait(i, 'ml', e.target.value)}
                   placeholder="Ex: 20"
-                  className="admin-input flex-1" />
-                <input type="number" min="0" value={ex.price}
+                  className="admin-input flex-1"
+                  autoComplete="off"
+                  inputMode="numeric"
+                />
+                {/* Prix */}
+                <input
+                  type="number"
+                  min="0"
+                  value={ex.price}
                   onChange={(e) => updateExtrait(i, 'price', e.target.value)}
                   placeholder="Ex: 800"
-                  className="admin-input flex-1" />
-                <input type="number" min="0" value={ex.stock}
-                  onChange={(e) => updateExtrait(i, 'stock', e.target.value)}
-                  placeholder="Stock"
-                  className="admin-input w-24" />
+                  className="admin-input flex-1"
+                />
                 <button type="button" onClick={() => removeExtrait(i)}
                   className="p-2 text-white/20 hover:text-red-400 transition-colors flex-shrink-0">
                   <Trash2 size={14} />
@@ -285,7 +318,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           {form.extraits.length === 0 && (
             <div className="border border-dashed border-white/8 p-5 text-center mt-2">
               <p className="text-white/20 font-label text-[0.6875rem] uppercase tracking-[0.1rem]">
-                Aucun extrait — flacon complet uniquement
+                Aucun volume — cliquez sur "Ajouter un volume"
               </p>
             </div>
           )}
@@ -294,36 +327,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         </div>
       )}
 
-      {/* ── 4. Mise en avant ──────────────────────────────────── */}
-      <div>
-        <p className="admin-label mb-4 text-white/60">Mise en avant</p>
-        <div className="flex flex-wrap gap-4">
-          {[
-            { key: 'bestSeller', label: 'Meilleure Vente' },
-            { key: 'featured',   label: 'Mis en avant' },
-          ].map(({ key, label }) => (
-            <label key={key}
-              className={`flex items-center gap-3 px-5 py-3 border cursor-pointer
-                          transition-all duration-200
-                          ${form[key]
-                            ? 'border-[#8C495F]/60 bg-[#8C495F]/10 text-white'
-                            : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white/60'}`}>
-              <input type="checkbox" className="sr-only"
-                checked={form[key]} onChange={() => set(key, !form[key])} />
-              <div className={`w-4 h-4 border flex items-center justify-center flex-shrink-0
-                               ${form[key] ? 'border-[#8C495F] bg-[#8C495F]' : 'border-white/20'}`}>
-                {form[key] && (
-                  <span className="material-symbols-outlined text-white text-[12px]"
-                    style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}>check</span>
-                )}
-              </div>
-              <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* ── 5. Images ─────────────────────────────────────────── */}
+      {/* ── 4. Images ─────────────────────────────────────────── */}
       <div>
         <p className="admin-label mb-4 text-white/60">Images {!isEditing && '*'}</p>
 

@@ -12,7 +12,6 @@ import ProductsPage from './pages/public/ProductsPage'
 import ProductDetailPage from './pages/public/ProductDetailPage'
 import CartPage from './pages/public/CartPage'
 import ConfirmationPage from './pages/public/ConfirmationPage'
-import AboutPage from './pages/public/AboutPage'
 import TagProductsPage from './pages/public/TagProductsPage'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
@@ -63,7 +62,6 @@ function App() {
               <Route path="/tag/:tag" element={<PublicLayout><TagProductsPage /></PublicLayout>} />
               <Route path="/cart" element={<PublicLayout><CartPage /></PublicLayout>} />
               <Route path="/confirmation" element={<PublicLayout><ConfirmationPage /></PublicLayout>} />
-              <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
               <Route path="/admin/login" element={<AdminLoginPage />} />
               <Route path="/admin" element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
                 <Route index element={<AdminDashboardPage />} />

@@ -12,12 +12,12 @@ const STATUS_COLORS = {
 
 function StatCard({ icon: Icon, label, value, highlight = false }) {
   return (
-    <div className={`admin-card relative overflow-hidden
+    <div className={`admin-card relative overflow-hidden min-w-0
       ${highlight ? 'border-[#8C495F]/40' : ''}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="admin-label">{label}</p>
-          <p className="font-headline text-3xl text-white mt-1 tracking-tight">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="admin-label truncate">{label}</p>
+          <p className="font-headline text-2xl lg:text-3xl text-white mt-1 tracking-tight break-all">
             {value ?? '—'}
           </p>
         </div>
@@ -66,15 +66,15 @@ function AdminDashboardPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="w-full max-w-5xl mx-auto space-y-8 overflow-x-hidden">
 
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="admin-label">Vue d'ensemble</p>
-          <h1 className="font-headline text-4xl text-white tracking-tight">Dashboard</h1>
+          <h1 className="font-headline text-3xl lg:text-4xl text-white tracking-tight">Dashboard</h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <button onClick={fetchStats} className="admin-btn-ghost flex items-center gap-2">
             <RefreshCw size={12} /> Actualiser
           </button>
@@ -88,7 +88,7 @@ function AdminDashboardPage() {
 
       {/* Stat cards */}
       {loading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="admin-card h-24 animate-pulse">
               <div className="h-2.5 bg-white/8 w-2/3 mb-3" />
@@ -97,7 +97,7 @@ function AdminDashboardPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           <StatCard icon={TrendingUp} label="Chiffre d'affaires"
             value={stats?.totalRevenue != null
               ? `${stats.totalRevenue.toLocaleString('fr-DZ')} DZD` : '—'}
@@ -110,21 +110,21 @@ function AdminDashboardPage() {
 
       {/* Status breakdown */}
       {stats && !loading && (
-        <div className="admin-card">
+        <div className="admin-card overflow-x-auto">
           <p className="admin-label mb-6">Répartition des commandes</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:gap-6 min-w-0">
             {[
               { label: 'Confirmé',    count: stats.confirmedOrders,  key: 'confirmé' },
               { label: 'En livraison',count: stats.inDeliveryOrders, key: 'en livraison' },
               { label: 'Livré',       count: stats.deliveredOrders,  key: 'livré' },
               { label: 'Retour',      count: stats.returnOrders,     key: 'retour' },
             ].map(({ label, count, key }) => (
-              <div key={key} className="text-center">
-                <span className={`inline-block px-3 py-1 font-label text-[0.6rem]
+              <div key={key} className="text-center min-w-0">
+                <span className={`inline-block px-2 py-1 font-label text-[0.6rem]
                                   uppercase tracking-[0.1rem] mb-3 ${STATUS_COLORS[key]}`}>
                   {label}
                 </span>
-                <p className="font-headline text-3xl text-white">{count ?? 0}</p>
+                <p className="font-headline text-2xl lg:text-3xl text-white">{count ?? 0}</p>
               </div>
             ))}
           </div>
@@ -141,11 +141,11 @@ function AdminDashboardPage() {
                 ? Math.round((data.revenue / stats.totalRevenue) * 100) : 0
               return (
                 <div key={cat}>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem] text-white/60">
+                  <div className="flex justify-between items-center mb-1.5 gap-2 flex-wrap">
+                    <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem] text-white/60 truncate">
                       {cat}
                     </span>
-                    <span className="font-label text-[0.6875rem] text-white/40">
+                    <span className="font-label text-[0.6875rem] text-white/40 flex-shrink-0">
                       {data.orders} cmd · {data.revenue.toLocaleString('fr-DZ')} DZD
                     </span>
                   </div>

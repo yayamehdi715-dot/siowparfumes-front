@@ -6,10 +6,10 @@ import { useLanguage } from '../../context/LanguageContext'
 import toast from 'react-hot-toast'
 
 const CATEGORIES = [
-  { label: 'Watches',     slug: 'Watches',    imgPC: '/montrePC.webp',    imgMobile: '/montreMobil.webp'   },
-  { label: 'Fragrances',  slug: 'Fragrances', imgPC: '/parfumPC.webp',    imgMobile: '/parfumMobil.webp'   },
-  { label: 'Saudi Coll.', slug: 'Saudi Coll.',imgPC: '/saudiPC.webp',     imgMobile: '/saoudiMobil.webp'   },
-  { label: 'Essentials',  slug: 'Essentials', imgPC: '/essencialPC.webp', imgMobile: '/essencialMobil.webp'},
+  { slug: 'Watches',     imgPC: '/montrePC.webp',    imgMobile: '/montreMobil.webp'   },
+  { slug: 'Fragrances',  imgPC: '/parfumPC.webp',    imgMobile: '/parfumMobil.webp'   },
+  { slug: 'Saudi Coll.', imgPC: '/saudiPC.webp',     imgMobile: '/saoudiMobil.webp'   },
+  { slug: 'Essentials',  imgPC: '/essencialPC.webp', imgMobile: '/essencialMobil.webp'},
 ]
 
 function DropCard({ product }) {
@@ -105,12 +105,9 @@ function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
 
         <div className="absolute bottom-16 left-6 lg:left-16 xl:left-24 z-10 max-w-sm lg:max-w-xl">
-          <span className="text-[0.6875rem] uppercase tracking-[0.3rem] text-white/80 mb-4 block animate-fade-up">
-            {t.collection2024}
-          </span>
+          {/* "Collection 2024" supprimé */}
           <h2 className="text-5xl lg:text-7xl xl:text-8xl font-headline font-bold text-white
-                         leading-[0.9] tracking-tighter mb-6 animate-fade-up"
-            style={{ animationDelay: '80ms' }}>
+                         leading-[0.9] tracking-tighter mb-6 animate-fade-up">
             {t.heroTitle.split('\n').map((line, i) => (
               <span key={i}>{line}{i === 0 && <br />}</span>
             ))}
@@ -210,7 +207,9 @@ function HomePage() {
             style={{ backgroundImage: "url('/montreMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent
                             group-hover:from-black/75 transition-all duration-500" />
-            <span className="relative z-10 stitch-label text-white">Watches</span>
+            <span className="relative z-10 stitch-label text-white">
+              {t.categoryLabels?.['Watches'] ?? 'Watches'}
+            </span>
           </Link>
 
           <Link to="/products?category=Fragrances"
@@ -218,7 +217,9 @@ function HomePage() {
             style={{ backgroundImage: "url('/parfumMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent
                             group-hover:from-black/65 transition-all duration-500" />
-            <span className="relative z-10 stitch-label text-white">Fragrances</span>
+            <span className="relative z-10 stitch-label text-white">
+              {t.categoryLabels?.['Fragrances'] ?? 'Fragrances'}
+            </span>
           </Link>
 
           <Link to="/products?category=Saudi Coll."
@@ -226,7 +227,9 @@ function HomePage() {
             style={{ backgroundImage: "url('/saoudiMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent
                             group-hover:from-black/75 transition-all duration-500" />
-            <span className="relative z-10 stitch-label text-white">Saudi Coll.</span>
+            <span className="relative z-10 stitch-label text-white">
+              {t.categoryLabels?.['Saudi Coll.'] ?? 'Saudi Coll.'}
+            </span>
           </Link>
 
           <Link to="/products?category=Essentials"
@@ -234,14 +237,16 @@ function HomePage() {
             style={{ backgroundImage: "url('/essencialMobil.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent
                             group-hover:from-black/65 transition-all duration-500" />
-            <span className="relative z-10 stitch-label text-white">Essentials</span>
+            <span className="relative z-10 stitch-label text-white">
+              {t.categoryLabels?.['Essentials'] ?? 'Essentials'}
+            </span>
           </Link>
 
         </div>
 
         {/* Desktop: 4-col equal grid, tall */}
         <div className="hidden lg:grid grid-cols-4 gap-3 h-[60vh]">
-          {CATEGORIES.map(({ label, slug, imgPC }, i) => (
+          {CATEGORIES.map(({ slug, imgPC }, i) => (
             <Link key={slug} to={`/products?category=${slug}`}
               className="relative overflow-hidden bg-surface-container flex items-end p-6 group
                          hover:shadow-float transition-shadow duration-300 animate-fade-up"
@@ -254,7 +259,9 @@ function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent
                               group-hover:from-black/80 transition-all duration-500" />
               <div className="relative z-10">
-                <p className="stitch-label text-white mb-1">{label}</p>
+                <p className="stitch-label text-white mb-1">
+                  {t.categoryLabels?.[slug] ?? slug}
+                </p>
                 <p className="font-headline italic text-white/60 text-sm">{t.explore}</p>
               </div>
             </Link>

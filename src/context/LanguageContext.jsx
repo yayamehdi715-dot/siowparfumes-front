@@ -15,22 +15,29 @@ const translations = {
     cartLabel: 'السلة',
     aboutLabel: 'من نحن',
 
+    // Category labels (Arabic)
+    categoryLabels: {
+      'Watches':     'ساعات',
+      'Fragrances':  'عطور',
+      'Saudi Coll.': 'العطور السعودية',
+      'Essentials':  'أساسيات',
+    },
+
     // Footer
     footerTagline: 'عطور راقية باستثناء. مجموعة حصرية من العطور النادرة لأهل الذوق الرفيع.',
     navigation: 'التنقل',
     categories: 'الفئات',
     contact: 'التواصل',
-    deliveryInfo: 'الجزائر — التوصيل لكل الولايات الـ 58',
-    paymentInfo: 'الدفع عند الاستلام · CIB · Edahabia',
+    deliveryInfo: 'الجزائر — التوصيل في 69 ولاية',
+    paymentInfo: 'الدفع عند الاستلام',
 
     // HomePage
-    collection2024: 'مجموعة 2024',
     heroTitle: 'صحوة\nالحواس',
     heroDesc: 'مجموعة حصرية من القطع الاستثنائية، بين الأناقة الخالدة والمعاصرة المتقنة.',
     discoverAtelier: 'اكتشف المجموعة',
     scroll: 'مرر',
     nouveautes: 'الجديد',
-    selection2024: 'اختيارات 2024',
+    selection2024: 'الأحدث',
     seeAll: 'عرض الكل',
     bestSellers: 'الأكثر مبيعاً',
     mostPopular: 'الأكثر شعبية',
@@ -70,13 +77,7 @@ const translations = {
     paymentMode: 'طريقة الدفع',
     payDelivery: 'الدفع عند الاستلام',
     payDeliveryDesc: 'نقداً عند الاستلام',
-    payCIB: 'بطاقة CIB',
-    payCIBDesc: 'دفع آمن',
-    payEdahabia: 'بطاقة Edahabia',
-    payEdahabiaDesc: 'عبر بطاقتك',
-    chargilyNotice: 'سيتم توجيهك إلى منصة الدفع الآمنة Chargily ePay لإتمام عملية الدفع.',
     confirmOrder: 'تأكيد الطلب',
-    payNow: 'ادفع الآن',
     processing: 'جاري المعالجة...',
     // Validation errors
     errFirstName: 'الاسم الأول مطلوب',
@@ -127,7 +128,7 @@ const translations = {
     deliveryDetails: 'الدفع عند الاستلام · من 2 إلى 5 أيام عمل',
     available: (n) => `${n} ${n === 1 ? 'متوفر' : 'متوفرة'}`,
 
-    // AboutPage
+    // AboutPage (kept for compatibility)
     ourStory: 'قصتنا',
     whoWeAre: 'من نحن؟',
     aboutDesc: 'SIOW Parfumes هو قبل كل شيء شغف بالتميز وجمع القطع النادرة، المقدمة لأهل الذوق الرفيع في الجزائر.',
@@ -169,20 +170,27 @@ const translations = {
     cartLabel: 'Panier',
     aboutLabel: 'À Propos',
 
+    // Category labels (French)
+    categoryLabels: {
+      'Watches':     'Watches',
+      'Fragrances':  'Fragrances',
+      'Saudi Coll.': 'Saudi Coll.',
+      'Essentials':  'Essentials',
+    },
+
     footerTagline: "Haute parfumerie d'exception. Curation exclusive de fragrances rares pour les connaisseurs les plus exigeants.",
     navigation: 'Navigation',
     categories: 'Catégories',
     contact: 'Contact',
-    deliveryInfo: 'Algérie — Livraison dans les 58 wilayas',
-    paymentInfo: 'Paiement à la livraison · CIB · Edahabia',
+    deliveryInfo: 'Algérie — Livraison dans les 69 wilayas',
+    paymentInfo: 'Paiement à la livraison',
 
-    collection2024: 'Collection 2024',
     heroTitle: "L'ÉVEIL\nDES SENS",
     heroDesc: "Une curation exclusive de pièces d'exception, entre élégance intemporelle et contemporanéité maîtrisée.",
     discoverAtelier: "Découvrir l'Atelier",
     scroll: 'Scroll',
     nouveautes: 'Nouveautés',
-    selection2024: 'Sélection Archive 2024',
+    selection2024: 'Dernières arrivées',
     seeAll: 'Voir tout',
     bestSellers: 'Best Sellers',
     mostPopular: 'Les plus populaires',
@@ -219,13 +227,7 @@ const translations = {
     paymentMode: 'Mode de paiement',
     payDelivery: 'Paiement à la livraison',
     payDeliveryDesc: 'Cash à la réception',
-    payCIB: 'Carte CIB',
-    payCIBDesc: 'Paiement sécurisé',
-    payEdahabia: 'Carte Edahabia',
-    payEdahabiaDesc: 'Via votre carte',
-    chargilyNotice: 'Vous serez redirigé vers la plateforme sécurisée Chargily ePay pour finaliser votre paiement.',
     confirmOrder: 'Confirmer la commande',
-    payNow: 'Payer maintenant',
     processing: 'Traitement...',
     errFirstName: 'Prénom requis',
     errLastName: 'Nom requis',
