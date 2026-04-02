@@ -39,34 +39,36 @@ function AdminSecretAccess() {
   )
 }
 
-function FooterLogo() {
-  const [imgError, setImgError] = useState(false)
-  return (
-    <div className="flex items-center gap-3 mb-4">
-      {!imgError && (
-        <img
-          src="/logo.png"
-          alt="SIOW PARFUMES"
-          className="h-12 w-auto object-contain brightness-0 invert flex-shrink-0"
-          onError={() => setImgError(true)}
-        />
-      )}
-      <span className="text-2xl font-headline italic tracking-tighter text-white leading-none">
-        SIOW PARFUMES
-      </span>
-    </div>
-  )
-}
-
 function Footer() {
   const { t } = useLanguage()
+  const [logoError, setLogoError] = useState(false)
 
   return (
     <footer className="bg-primary text-on-primary pt-20 pb-40 px-6">
 
       {/* Logo + tagline */}
       <div className="mb-16">
-        <FooterLogo />
+        <div className="flex items-center gap-3 mb-5">
+          {/* Logo avec fond blanc doux pour assurer la visibilité */}
+          {!logoError && (
+            <div className="bg-white/10 p-2 flex-shrink-0">
+              <img
+                src="/logo.png"
+                alt="SIOW PARFUMES"
+                className="h-10 w-auto object-contain"
+                onError={() => setLogoError(true)}
+                style={{ maxWidth: '120px' }}
+              />
+            </div>
+          )}
+          <span className="text-2xl font-headline italic tracking-tighter text-white leading-none">
+            SIOW PARFUMES
+          </span>
+        </div>
+
+        {/* Ligne décorative dorée */}
+        <div className="w-10 h-[2px] bg-amber-400/60 mb-4" />
+
         <p className="text-white/50 text-[0.6875rem] uppercase tracking-[0.1rem] leading-loose max-w-xs">
           {t.footerTagline}
         </p>
@@ -75,31 +77,43 @@ function Footer() {
       {/* Navigation + Categories */}
       <div className="grid grid-cols-2 gap-12 mb-16">
         <div className="space-y-6">
-          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">{t.navigation}</h4>
-          <ul className="space-y-4 text-sm text-white/70">
-            <li><Link to="/"         className="hover:text-white transition-colors">{t.home}</Link></li>
-            <li><Link to="/products" className="hover:text-white transition-colors">{t.catalog}</Link></li>
-            <li><Link to="/cart"     className="hover:text-white transition-colors">{t.cartLabel}</Link></li>
+          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold text-amber-400/80">
+            {t.navigation}
+          </h4>
+          <ul className="space-y-4 text-sm text-white/60">
+            <li><Link to="/"         className="hover:text-amber-400 transition-colors">{t.home}</Link></li>
+            <li><Link to="/products" className="hover:text-amber-400 transition-colors">{t.catalog}</Link></li>
+            <li><Link to="/cart"     className="hover:text-amber-400 transition-colors">{t.cartLabel}</Link></li>
           </ul>
         </div>
 
         <div className="space-y-6">
-          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">{t.categories}</h4>
-          <ul className="space-y-4 text-sm text-white/70">
-            <li><Link to="/products?category=Watches"     className="hover:text-white transition-colors">{t.categoryLabels?.['Watches']     ?? 'Watches'}</Link></li>
-            <li><Link to="/products?category=Fragrances"  className="hover:text-white transition-colors">{t.categoryLabels?.['Fragrances']  ?? 'Fragrances'}</Link></li>
-            <li><Link to="/products?category=Saudi Coll." className="hover:text-white transition-colors">{t.categoryLabels?.['Saudi Coll.'] ?? 'Saudi Coll.'}</Link></li>
-            <li><Link to="/products?category=Essentials"  className="hover:text-white transition-colors">{t.categoryLabels?.['Essentials']  ?? 'Essentials'}</Link></li>
+          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold text-amber-400/80">
+            {t.categories}
+          </h4>
+          <ul className="space-y-4 text-sm text-white/60">
+            <li><Link to="/products?category=Watches"     className="hover:text-amber-400 transition-colors">{t.categoryLabels?.['Watches']     ?? 'Watches'}</Link></li>
+            <li><Link to="/products?category=Fragrances"  className="hover:text-amber-400 transition-colors">{t.categoryLabels?.['Fragrances']  ?? 'Fragrances'}</Link></li>
+            <li><Link to="/products?category=Saudi Coll." className="hover:text-amber-400 transition-colors">{t.categoryLabels?.['Saudi Coll.'] ?? 'Saudi Coll.'}</Link></li>
+            <li><Link to="/products?category=Essentials"  className="hover:text-amber-400 transition-colors">{t.categoryLabels?.['Essentials']  ?? 'Essentials'}</Link></li>
           </ul>
         </div>
       </div>
 
-      {/* Infos livraison */}
+      {/* Livraison + paiement */}
       <div className="space-y-6 mb-16">
-        <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">{t.contact}</h4>
-        <div className="space-y-2 text-sm text-white/70">
-          <p>{t.deliveryInfo}</p>
-          <p>{t.paymentInfo}</p>
+        <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold text-amber-400/80">
+          {t.contact}
+        </h4>
+        <div className="space-y-2 text-sm text-white/60">
+          <p className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400/60 flex-shrink-0" />
+            {t.deliveryInfo}
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400/60 flex-shrink-0" />
+            {t.paymentInfo}
+          </p>
         </div>
       </div>
 
@@ -115,7 +129,7 @@ function Footer() {
           href="https://www.instagram.com/siowparfumes/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-white/50 hover:text-white transition-colors
+          className="flex items-center gap-2 text-white/40 hover:text-amber-400 transition-colors
                      text-[10px] uppercase tracking-[0.1rem]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -131,7 +145,7 @@ function Footer() {
           href="https://www.instagram.com/cvkdev/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-white/20 hover:text-white/50 transition-colors
+          className="text-white/20 hover:text-amber-400/60 transition-colors
                      text-[9px] uppercase tracking-[0.15rem] font-label"
         >
           Developed by CvkDev
