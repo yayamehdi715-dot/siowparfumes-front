@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { useCart } from '../../context/CartContext'
+import { useLanguage } from '../../context/LanguageContext'
 import SizeSelector from '../../Components/public/SizeSelector'
 import QuantitySelector from '../../Components/public/QuantitySelector'
 import toast from 'react-hot-toast'
@@ -12,15 +13,14 @@ function ProductDetailPage() {
   const { id }        = useParams()
   const navigate      = useNavigate()
   const { addToCart } = useCart()
+  const { t }         = useLanguage()
   const [product, setProduct]           = useState(null)
   const [loading, setLoading]           = useState(true)
   const [selectedSize, setSelectedSize] = useState(null)
   const [quantity, setQuantity]         = useState(1)
   const [currentImage, setCurrentImage] = useState(0)
 
-  // Pour les parfums : 'flacon' | 'extrait'
   const [achatMode, setAchatMode]       = useState('flacon')
-  // Extrait sélectionné (objet { ml, price, stock })
   const [selectedExtrait, setSelectedExtrait] = useState(null)
 
   useEffect(() => { window.scrollTo(0, 0) }, [id])
@@ -34,7 +34,6 @@ function ProductDetailPage() {
           const first = p.sizes?.find((s) => s.stock > 0)
           if (first) setSelectedSize(first.size)
         } else {
-          // Pour les parfums, sélectionner le 1er extrait disponible par défaut
           const firstExtrait = p.extraits?.find((e) => e.stock > 0)
           if (firstExtrait) setSelectedExtrait(firstExtrait)
         }
@@ -67,20 +66,20 @@ function ProductDetailPage() {
   const handleAddToCart = () => {
     if (isParfum) {
       if (achatMode === 'flacon') {
-        if (!flaconDispo) { toast.error('Flacon indisponible'); return }
+        if (!flaconDispo) { toast.error(t.toastFlaconUnavailable); return }
         addToCart(product, 'Flacon complet', quantity, { type: 'flacon', price: product.price })
       } else {
-        if (!selectedExtrait) { toast.error('Sélectionnez un volume'); return }
-        if (selectedExtrait.stock <= 0) { toast.error('Extrait indisponible'); return }
+        if (!selectedExtrait) { toast.error(t.toastSelectVolume); return }
+        if (selectedExtrait.stock <= 0) { toast.error(t.toastExtraitUnavailable); return }
         addToCart(product, `${selectedExtrait.ml} ml`, quantity, {
           type: 'extrait', ml: selectedExtrait.ml, price: selectedExtrait.price,
         })
       }
     } else {
-      if (!selectedSize) { toast.error('Veuillez sélectionner une taille'); return }
+      if (!selectedSize) { toast.error(t.toastSelectSize); return }
       addToCart(product, selectedSize, quantity)
     }
-    toast.success(`${product.name} ajouté au panier`)
+    toast.success(t.toastAdded(product.name))
   }
 
   return (
@@ -93,7 +92,7 @@ function ProductDetailPage() {
           <span className="material-symbols-outlined text-[18px]
                            group-hover:-translate-x-1 transition-transform"
             style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>arrow_back</span>
-          Retour
+          {t.back}
         </button>
       </div>
 
@@ -168,10 +167,9 @@ function ProductDetailPage() {
             {/* ── Sélection pour PARFUMS ──────────────────────── */}
             {isParfum ? (
               <>
-                {/* Toggle Flacon / Extraits */}
                 {hasExtraits && (
                   <div>
-                    <p className="stitch-label mb-4">Mode d'achat</p>
+                    <p className="stitch-label mb-4">{t.purchaseMode}</p>
                     <div className="flex gap-0 border border-outline-variant w-fit">
                       <button
                         onClick={() => { setAchatMode('flacon'); setQuantity(1) }}
@@ -182,7 +180,7 @@ function ProductDetailPage() {
                                       : 'text-on-surface-variant hover:text-on-surface'}`}>
                         <span className="material-symbols-outlined text-[14px] align-middle mr-1.5"
                           style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>water_drop</span>
-                        Flacon complet
+                        {t.fullBottle}
                       </button>
                       <button
                         onClick={() => { setAchatMode('extrait'); setQuantity(1) }}
@@ -193,22 +191,21 @@ function ProductDetailPage() {
                                       : 'text-on-surface-variant hover:text-on-surface'}`}>
                         <span className="material-symbols-outlined text-[14px] align-middle mr-1.5"
                           style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>science</span>
-                        Extraits
+                        {t.extraits}
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* ── Mode Flacon ──────────────────────────────── */}
                 {achatMode === 'flacon' && (
                   <div className="bg-surface-container-low p-5">
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-label text-[0.75rem] uppercase tracking-[0.1rem] text-on-surface">
-                        Flacon complet
+                        {t.fullBottle}
                       </p>
                       <span className={`font-label text-[0.6875rem] uppercase tracking-[0.05rem]
                                         ${flaconDispo ? 'text-secondary' : 'text-outline line-through'}`}>
-                        {flaconDispo ? `${flaconStock} disponible${flaconStock > 1 ? 's' : ''}` : 'Épuisé'}
+                        {flaconDispo ? t.available(flaconStock) : t.outOfStock}
                       </span>
                     </div>
                     <p className="font-label text-[1.125rem] text-secondary font-semibold">
@@ -218,10 +215,9 @@ function ProductDetailPage() {
                   </div>
                 )}
 
-                {/* ── Mode Extraits ─────────────────────────────── */}
                 {achatMode === 'extrait' && (
                   <div>
-                    <p className="stitch-label mb-4">Choisissez votre volume</p>
+                    <p className="stitch-label mb-4">{t.chooseVolume}</p>
                     <div className="flex flex-wrap gap-2">
                       {extraits.map((ex) => {
                         const isSelected = selectedExtrait?.ml === ex.ml
@@ -241,7 +237,7 @@ function ProductDetailPage() {
                             <span className="text-[0.875rem] font-semibold">{ex.ml} ml</span>
                             <span className={`text-[0.6rem] uppercase tracking-widest mt-0.5
                                               ${isSelected ? 'text-on-primary/70' : 'text-outline'}`}>
-                              {epuise ? 'Épuisé' : `${ex.price.toLocaleString('fr-DZ')} DZD`}
+                              {epuise ? t.outOfStock : `${ex.price.toLocaleString('fr-DZ')} DZD`}
                             </span>
                           </button>
                         )
@@ -249,17 +245,16 @@ function ProductDetailPage() {
                     </div>
                     {selectedExtrait && !extraits.find(e => e.ml === selectedExtrait.ml && e.stock <= 0) && (
                       <p className="font-body text-[0.75rem] text-outline mt-2">
-                        {selectedExtrait.stock} disponible{selectedExtrait.stock > 1 ? 's' : ''}
+                        {t.available(selectedExtrait.stock)}
                       </p>
                     )}
                   </div>
                 )}
               </>
             ) : (
-              /* ── Tailles (Montres / Essentiels) ─────────────── */
               <div>
                 <p className="stitch-label mb-4">
-                  Taille
+                  {t.size}
                   {selectedSize && (
                     <span className="ml-3 text-secondary normal-case tracking-normal font-semibold">
                       {selectedSize}
@@ -270,32 +265,29 @@ function ProductDetailPage() {
                   onChange={(size) => { setSelectedSize(size); setQuantity(1) }} />
                 {selectedSize && (
                   <p className="font-body text-[0.75rem] text-outline mt-2">
-                    {maxStock} disponible{maxStock > 1 ? 's' : ''}
+                    {t.available(maxStock)}
                   </p>
                 )}
               </div>
             )}
 
-            {/* Quantité */}
             <div>
-              <p className="stitch-label mb-4">Quantité</p>
+              <p className="stitch-label mb-4">{t.quantity}</p>
               <QuantitySelector value={quantity} min={1} max={maxStock} onChange={setQuantity} />
             </div>
 
-            {/* Bouton panier */}
             <button onClick={handleAddToCart}
               className="btn-primary w-full py-5 justify-center text-sm lg:text-base">
               <span className="material-symbols-outlined text-[18px]"
                 style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>shopping_bag</span>
-              Ajouter au Panier
+              {t.addToCart}
             </button>
 
-            {/* Description */}
             {product.description && (
               <>
                 <div className="h-px bg-surface-container-high" />
                 <div>
-                  <p className="stitch-label mb-4">Description</p>
+                  <p className="stitch-label mb-4">{t.description}</p>
                   <p className="font-body text-on-surface-variant leading-relaxed text-sm lg:text-base">
                     {product.description}
                   </p>
@@ -303,16 +295,15 @@ function ProductDetailPage() {
               </>
             )}
 
-            {/* Livraison */}
             <div className="bg-surface-container-low p-5 flex items-start gap-4">
               <span className="material-symbols-outlined text-on-surface-variant mt-0.5"
                 style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>local_shipping</span>
               <div>
                 <p className="font-body font-semibold text-on-surface text-sm mb-0.5">
-                  Livraison dans toute l'Algérie
+                  {t.deliveryAlgeria}
                 </p>
                 <p className="font-body text-on-surface-variant text-xs">
-                  Paiement à la livraison · 2 à 5 jours ouvrables
+                  {t.deliveryDetails}
                 </p>
               </div>
             </div>

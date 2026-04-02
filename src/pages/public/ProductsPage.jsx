@@ -2,15 +2,17 @@ import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import api from '../../utils/api'
 import ProductGrid from '../../Components/public/ProductGrid'
+import { useLanguage } from '../../context/LanguageContext'
 
-const CATEGORIES = ['Tous', 'Watches', 'Fragrances', 'Saudi Coll.', 'Essentials']
+const CATEGORIES_SLUGS = ['Watches', 'Fragrances', 'Saudi Coll.', 'Essentials']
 
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts]         = useState([])
   const [loading, setLoading]           = useState(true)
   const [search, setSearch]             = useState(searchParams.get('search') || '')
-  const activeCategory = searchParams.get('category') || 'Tous'
+  const { t } = useLanguage()
+  const activeCategory = searchParams.get('category') || t.all
 
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
@@ -22,18 +24,21 @@ function ProductsPage() {
   }, [])
 
   const filtered = useMemo(() => products.filter((p) => {
-    const matchCat    = activeCategory === 'Tous' || p.category === activeCategory
+    const isAll       = activeCategory === t.all || activeCategory === 'Tous'
+    const matchCat    = isAll || p.category === activeCategory
     const matchSearch = !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.brand && p.brand.toLowerCase().includes(search.toLowerCase()))
     return matchCat && matchSearch
-  }), [products, activeCategory, search])
+  }), [products, activeCategory, search, t.all])
 
   const setCategory = (cat) => {
-    if (cat === 'Tous') searchParams.delete('category')
+    if (cat === t.all) searchParams.delete('category')
     else searchParams.set('category', cat)
     setSearchParams(searchParams)
   }
+
+  const CATEGORIES = [t.all, ...CATEGORIES_SLUGS]
 
   return (
     <div className="min-h-screen bg-surface">
@@ -42,13 +47,13 @@ function ProductsPage() {
       <div className="pt-24 lg:pt-36 pb-10 lg:pb-16 px-6 lg:px-16 xl:px-24 bg-surface-container-low">
         <div className="max-w-screen-xl mx-auto flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div>
-            <span className="stitch-label block mb-3">Boutique</span>
+            <span className="stitch-label block mb-3">{t.shop}</span>
             <h1 className="font-headline text-on-surface text-5xl lg:text-7xl font-bold
                            tracking-tighter leading-tight">
-              {activeCategory === 'Tous' ? 'Catalogue Complet' : activeCategory}
+              {(activeCategory === t.all || activeCategory === 'Tous') ? t.fullCatalog : activeCategory}
             </h1>
             <p className="stitch-label mt-3">
-              {loading ? '—' : `${filtered.length} article${filtered.length !== 1 ? 's' : ''}`}
+              {loading ? '—' : t.articleCount(filtered.length)}
             </p>
           </div>
 
@@ -58,7 +63,7 @@ function ProductsPage() {
             <span className="material-symbols-outlined text-outline text-[18px]"
               style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>search</span>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un article..."
+              placeholder={t.searchItem}
               className="bg-transparent text-on-surface font-body text-sm outline-none w-56
                          placeholder:text-outline" />
             {search && (
@@ -83,7 +88,7 @@ function ProductsPage() {
                              text-outline text-[18px] pointer-events-none"
               style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>search</span>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher..."
+              placeholder={t.searchMobile}
               className="bg-surface-container text-on-surface font-body text-xs
                          pl-9 pr-4 py-2 outline-none w-36 placeholder:text-outline" />
           </div>
@@ -93,7 +98,7 @@ function ProductsPage() {
             <button key={cat} onClick={() => setCategory(cat)}
               className={`flex-shrink-0 px-4 lg:px-6 py-2 font-label text-[0.6875rem] uppercase
                           tracking-[0.1rem] transition-all duration-200
-                          ${activeCategory === cat
+                          ${(activeCategory === cat || (activeCategory === 'Tous' && cat === t.all))
                             ? 'bg-primary text-on-primary'
                             : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
                           }`}>
@@ -106,7 +111,7 @@ function ProductsPage() {
       {/* ── Grid ────────────────────────────────────────────────── */}
       <div className="max-w-screen-xl mx-auto px-6 lg:px-16 xl:px-24 py-10 pb-32">
         <ProductGrid products={filtered} loading={loading}
-          emptyMessage="Aucun article dans cette catégorie." />
+          emptyMessage={t.emptyCategory} />
       </div>
     </div>
   )

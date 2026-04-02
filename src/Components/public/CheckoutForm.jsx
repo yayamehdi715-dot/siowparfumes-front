@@ -1,8 +1,10 @@
 import { useState, useCallback } from 'react'
 import { ChevronDown } from 'lucide-react'
 import wilayas from '../../data/wilayas'
+import { useLanguage } from '../../context/LanguageContext'
 
 function CheckoutForm({ onSubmit, loading }) {
+  const { t } = useLanguage()
   const [form, setForm] = useState({
     firstName:     '',
     lastName:      '',
@@ -15,13 +17,13 @@ function CheckoutForm({ onSubmit, loading }) {
 
   const validate = () => {
     const e = {}
-    if (!form.firstName.trim()) e.firstName = 'Prénom requis'
-    if (!form.lastName.trim())  e.lastName  = 'Nom requis'
-    if (!form.phone.trim())     e.phone     = 'Téléphone requis'
+    if (!form.firstName.trim()) e.firstName = t.errFirstName
+    if (!form.lastName.trim())  e.lastName  = t.errLastName
+    if (!form.phone.trim())     e.phone     = t.errPhone
     else if (!/^(0)(5|6|7)\d{8}$/.test(form.phone.replace(/\s/g, '')))
-      e.phone = 'Numéro invalide (ex: 0551234567)'
-    if (!form.wilaya)            e.wilaya   = 'Wilaya requise'
-    if (!form.commune.trim())    e.commune  = 'Commune requise'
+      e.phone = t.errPhoneInvalid
+    if (!form.wilaya)            e.wilaya   = t.errWilaya
+    if (!form.commune.trim())    e.commune  = t.errCommune
     return e
   }
 
@@ -39,9 +41,9 @@ function CheckoutForm({ onSubmit, loading }) {
   }
 
   const paymentOptions = [
-    { value: 'livraison', label: 'Paiement à la livraison', desc: 'Cash à la réception', icon: 'local_shipping' },
-    { value: 'CIB',       label: 'Carte CIB',               desc: 'Paiement sécurisé',  icon: 'credit_card' },
-    { value: 'EDAHABIA',  label: 'Carte Edahabia',           desc: 'Via votre carte',    icon: 'smartphone' },
+    { value: 'livraison', label: t.payDelivery,  desc: t.payDeliveryDesc,  icon: 'local_shipping' },
+    { value: 'CIB',       label: t.payCIB,       desc: t.payCIBDesc,       icon: 'credit_card' },
+    { value: 'EDAHABIA',  label: t.payEdahabia,  desc: t.payEdahabiaDesc,  icon: 'smartphone' },
   ]
 
   const Field = ({ name, label, placeholder, type = 'text', inputMode, autoComplete, children }) => (
@@ -70,15 +72,15 @@ function CheckoutForm({ onSubmit, loading }) {
 
       {/* Name row */}
       <div className="grid grid-cols-2 gap-4">
-        <Field name="firstName" label="Prénom" placeholder="Amina"   autoComplete="given-name" />
-        <Field name="lastName"  label="Nom"    placeholder="Benali"  autoComplete="family-name" />
+        <Field name="firstName" label={t.firstName} placeholder="Amina"  autoComplete="given-name" />
+        <Field name="lastName"  label={t.lastName}  placeholder="Benali" autoComplete="family-name" />
       </div>
 
-      <Field name="phone" label="Téléphone" placeholder="0551234567"
+      <Field name="phone" label={t.phone} placeholder="0551234567"
              type="tel" inputMode="numeric" autoComplete="tel" />
 
       {/* Wilaya select */}
-      <Field name="wilaya" label="Wilaya">
+      <Field name="wilaya" label={t.wilaya}>
         <div className="relative">
           <select
             name="wilaya"
@@ -87,7 +89,7 @@ function CheckoutForm({ onSubmit, loading }) {
             className={`sf-select w-full border-0 border-b pr-8
                         ${errors.wilaya ? 'border-error' : 'border-outline-variant'}`}
           >
-            <option value="">Sélectionner une wilaya</option>
+            <option value="">{t.selectWilaya}</option>
             {wilayas.map((w) => (
               <option key={w.code} value={w.name}>{w.code} — {w.name}</option>
             ))}
@@ -98,11 +100,11 @@ function CheckoutForm({ onSubmit, loading }) {
         {errors.wilaya && <p className="mt-1 font-body text-error text-xs">{errors.wilaya}</p>}
       </Field>
 
-      <Field name="commune" label="Commune" placeholder="Votre commune" autoComplete="address-level2" />
+      <Field name="commune" label={t.commune} placeholder={t.communePlaceholder} autoComplete="address-level2" />
 
       {/* Payment method */}
       <div>
-        <p className="stitch-label mb-4">Mode de paiement</p>
+        <p className="stitch-label mb-4">{t.paymentMode}</p>
         <div className="space-y-2">
           {paymentOptions.map((opt) => (
             <label
@@ -148,8 +150,7 @@ function CheckoutForm({ onSubmit, loading }) {
       {(form.paymentMethod === 'CIB' || form.paymentMethod === 'EDAHABIA') && (
         <div className="bg-surface-container-low p-4">
           <p className="font-body text-xs text-on-surface-variant">
-            Vous serez redirigé vers la plateforme sécurisée <strong>Chargily ePay</strong> pour
-            finaliser votre paiement.
+            {t.chargilyNotice}
           </p>
         </div>
       )}
@@ -158,11 +159,11 @@ function CheckoutForm({ onSubmit, loading }) {
         {loading ? (
           <span className="flex items-center justify-center gap-2">
             <span className="w-4 h-4 border border-white/30 border-t-white rounded-full animate-spin" />
-            Traitement...
+            {t.processing}
           </span>
         ) : form.paymentMethod === 'livraison'
-            ? 'Confirmer la commande'
-            : 'Payer maintenant'}
+            ? t.confirmOrder
+            : t.payNow}
       </button>
     </form>
   )

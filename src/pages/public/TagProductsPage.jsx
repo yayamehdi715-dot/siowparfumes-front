@@ -2,29 +2,32 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import ProductGrid from '../../Components/public/ProductGrid'
-
-const TAG_INFO = {
-  'look-bebe-printemps': { title: 'Look Bébé Printemps',  description: 'Des tenues douces et printanières pour bébé' },
-  'look-femme-casual':   { title: 'Look Femme Casual',    description: 'Des ensembles décontractés et élégants' },
-  'idees-de-cadeaux':    { title: 'Idées de cadeaux',     description: 'Sélection spéciale cadeaux pour toute la famille' },
-}
+import { useLanguage } from '../../context/LanguageContext'
 
 function TagProductsPage() {
   const { tag }    = useParams()
   const navigate   = useNavigate()
+  const { t }      = useLanguage()
   const [products, setProducts] = useState([])
   const [loading, setLoading]   = useState(true)
 
-  const tagInfo = TAG_INFO[tag]
+  const tagInfo = t.tagInfo[tag]
 
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
   useEffect(() => {
     if (!tagInfo) { navigate('/'); return }
     setLoading(true)
+    // Use original English title for API filtering (tags stored in DB by French title)
+    const frTitles = {
+      'look-bebe-printemps': 'Look Bébé Printemps',
+      'look-femme-casual':   'Look Femme Casual',
+      'idees-de-cadeaux':    'Idées de cadeaux',
+    }
+    const filterTitle = frTitles[tag] || tagInfo.title
     api.get('/products')
       .then((res) => {
-        const filtered = (res.data || []).filter((p) => p.tags && p.tags.includes(tagInfo.title))
+        const filtered = (res.data || []).filter((p) => p.tags && p.tags.includes(filterTitle))
         setProducts(filtered)
       })
       .catch(() => {})
@@ -48,16 +51,16 @@ function TagProductsPage() {
           >
             arrow_back
           </span>
-          Retour à l'accueil
+          {t.backToHome}
         </button>
-        <span className="stitch-label block mb-3">Collection</span>
+        <span className="stitch-label block mb-3">{t.collection}</span>
         <h1 className="font-headline text-on-surface text-4xl sm:text-5xl font-bold tracking-tighter leading-tight mb-3">
           {tagInfo.title}
         </h1>
         <p className="font-body text-on-surface-variant text-sm">{tagInfo.description}</p>
         {!loading && (
           <p className="stitch-label mt-4">
-            {products.length} article{products.length !== 1 ? 's' : ''}
+            {products.length} {products.length === 1 ? 'منتج' : 'منتجات'}
           </p>
         )}
       </div>
@@ -74,10 +77,10 @@ function TagProductsPage() {
                 search_off
               </span>
             </div>
-            <p className="font-headline text-on-surface text-2xl mb-2">Collection à venir</p>
-            <p className="stitch-label mb-10">Cette sélection est en cours de préparation</p>
+            <p className="font-headline text-on-surface text-2xl mb-2">{t.comingSoon}</p>
+            <p className="stitch-label mb-10">{t.comingSoonDesc}</p>
             <button onClick={() => navigate('/products')} className="btn-primary">
-              Voir tout le catalogue
+              {t.seeAllCatalog}
             </button>
           </div>
         ) : (

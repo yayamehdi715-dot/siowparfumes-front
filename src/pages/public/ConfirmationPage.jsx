@@ -1,9 +1,11 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import api from '../../utils/api'
+import { useLanguage } from '../../context/LanguageContext'
 
 function ConfirmationPage() {
   const [searchParams] = useSearchParams()
+  const { t } = useLanguage()
   const orderId = searchParams.get('orderId')
   const [orderStatus, setOrderStatus] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -29,7 +31,7 @@ function ConfirmationPage() {
         {loading ? (
           <div className="flex flex-col items-center gap-5 text-center">
             <div className="w-8 h-8 border border-outline-variant border-t-primary rounded-full animate-spin" />
-            <p className="stitch-label">Vérification du paiement...</p>
+            <p className="stitch-label">{t.verifyingPayment}</p>
           </div>
 
         ) : isFailed ? (
@@ -42,16 +44,16 @@ function ConfirmationPage() {
                 cancel
               </span>
             </div>
-            <span className="stitch-label-secondary block mb-3">Paiement échoué</span>
+            <span className="stitch-label-secondary block mb-3">{t.paymentFailed}</span>
             <h1 className="font-headline text-on-surface text-5xl font-bold tracking-tighter mb-4">
-              Oops !
+              {t.oops}
             </h1>
             <p className="font-body text-on-surface-variant text-sm leading-relaxed mb-10">
-              Le paiement n'a pas abouti. Votre commande a été annulée.
+              {t.paymentFailedDesc}
             </p>
             <div className="flex flex-col gap-3">
-              <Link to="/products" className="btn-primary justify-center">Réessayer</Link>
-              <Link to="/" className="btn-secondary justify-center">Accueil</Link>
+              <Link to="/products" className="btn-primary justify-center">{t.retry}</Link>
+              <Link to="/" className="btn-secondary justify-center">{t.homeBtn}</Link>
             </div>
           </div>
 
@@ -66,28 +68,28 @@ function ConfirmationPage() {
               </span>
             </div>
 
-            <span className="stitch-label block mb-3">Commande confirmée</span>
+            <span className="stitch-label block mb-3">{t.orderConfirmed}</span>
             <h1 className="font-headline text-on-surface text-6xl font-bold tracking-tighter mb-4">
-              Merci !
+              {t.thanks}
             </h1>
 
             {isOnlinePayment && isPaid && (
               <p className="font-body text-on-surface-variant text-sm leading-relaxed mb-2">
-                Votre paiement par <strong>{orderStatus.paymentMethod}</strong> a bien été reçu.
+                {t.paymentReceived(orderStatus.paymentMethod)}
               </p>
             )}
             {isOnlinePayment && !isPaid && !isFailed && (
               <p className="font-body text-on-surface-variant text-sm leading-relaxed mb-2">
-                Votre paiement est en cours de validation.
+                {t.paymentPending}
               </p>
             )}
 
             <p className="font-body text-on-surface-variant text-sm leading-relaxed mb-2">
-              Votre commande a bien été enregistrée.
+              {t.orderRegistered}
             </p>
             {!isOnlinePayment && (
               <p className="font-body text-on-surface-variant text-sm leading-relaxed">
-                Notre équipe vous contactera pour confirmer la livraison.
+                {t.teamWillContact}
               </p>
             )}
 
@@ -100,17 +102,17 @@ function ConfirmationPage() {
               </span>
               <div>
                 <p className="font-body font-semibold text-on-surface text-sm mb-0.5">
-                  Livraison estimée
+                  {t.estimatedDelivery}
                 </p>
                 <p className="font-body text-on-surface-variant text-xs">
-                  2 à 5 jours ouvrables · Paiement à la livraison
+                  {t.deliveryDays}
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col gap-3">
-              <Link to="/products" className="btn-primary justify-center">Continuer les achats</Link>
-              <Link to="/" className="btn-secondary justify-center">Accueil</Link>
+              <Link to="/products" className="btn-primary justify-center">{t.continueShoppingBtn}</Link>
+              <Link to="/" className="btn-secondary justify-center">{t.homeBtn}</Link>
             </div>
           </div>
         )}

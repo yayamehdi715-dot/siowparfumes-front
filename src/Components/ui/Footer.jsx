@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../context/LanguageContext'
 
 function AdminSecretAccess() {
   const [clicks, setClicks] = useState(0)
@@ -39,45 +40,46 @@ function AdminSecretAccess() {
 }
 
 function Footer() {
+  const { t } = useLanguage()
+
   return (
     <footer className="bg-primary text-on-primary pt-20 pb-40 px-6">
 
       <div className="mb-16">
         <h2 className="text-3xl font-headline italic tracking-tighter mb-4">SIOW PARFUMES</h2>
         <p className="text-white/50 text-[0.6875rem] uppercase tracking-[0.1rem] leading-loose max-w-xs">
-          Haute parfumerie d'exception. Curation exclusive de fragrances rares pour les
-          connaisseurs les plus exigeants.
+          {t.footerTagline}
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-12 mb-16">
 
         <div className="space-y-6">
-          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">Navigation</h4>
+          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">{t.navigation}</h4>
           <ul className="space-y-4 text-sm text-white/70">
-            <li><Link to="/" className="hover:text-white transition-colors">Accueil</Link></li>
-            <li><Link to="/products" className="hover:text-white transition-colors">Catalogue</Link></li>
-            <li><Link to="/about" className="hover:text-white transition-colors">À Propos</Link></li>
-            <li><Link to="/cart" className="hover:text-white transition-colors">Panier</Link></li>
+            <li><Link to="/" className="hover:text-white transition-colors">{t.home}</Link></li>
+            <li><Link to="/products" className="hover:text-white transition-colors">{t.catalog}</Link></li>
+            <li><Link to="/about" className="hover:text-white transition-colors">{t.about}</Link></li>
+            <li><Link to="/cart" className="hover:text-white transition-colors">{t.cartLabel}</Link></li>
           </ul>
         </div>
 
         <div className="space-y-6">
-          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">Catégories</h4>
+          <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">{t.categories}</h4>
           <ul className="space-y-4 text-sm text-white/70">
-            <li><Link to="/products?category=Watches"    className="hover:text-white transition-colors">Watches</Link></li>
-            <li><Link to="/products?category=Fragrances" className="hover:text-white transition-colors">Fragrances</Link></li>
+            <li><Link to="/products?category=Watches"     className="hover:text-white transition-colors">Watches</Link></li>
+            <li><Link to="/products?category=Fragrances"  className="hover:text-white transition-colors">Fragrances</Link></li>
             <li><Link to="/products?category=Saudi Coll." className="hover:text-white transition-colors">Saudi Coll.</Link></li>
-            <li><Link to="/products?category=Essentials" className="hover:text-white transition-colors">Essentials</Link></li>
+            <li><Link to="/products?category=Essentials"  className="hover:text-white transition-colors">Essentials</Link></li>
           </ul>
         </div>
       </div>
 
       <div className="space-y-6 mb-16">
-        <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">Contact</h4>
+        <h4 className="text-[0.6875rem] uppercase tracking-[0.2rem] font-bold">{t.contact}</h4>
         <div className="space-y-2 text-sm text-white/70">
-          <p>Algérie — Livraison dans les 58 wilayas</p>
-          <p>Paiement à la livraison · CIB · Edahabia</p>
+          <p>{t.deliveryInfo}</p>
+          <p>{t.paymentInfo}</p>
         </div>
       </div>
 

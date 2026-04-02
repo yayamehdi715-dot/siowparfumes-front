@@ -1,0 +1,321 @@
+import { createContext, useContext, useState } from 'react'
+
+const translations = {
+  ar: {
+    // Navbar
+    search: 'بحث',
+    searchPlaceholder: 'ابحث...',
+    about: 'من نحن',
+    cart: 'السلة',
+    cartWithCount: (n) => `السلة (${n})`,
+
+    // Bottom nav
+    home: 'الرئيسية',
+    catalog: 'المتجر',
+    cartLabel: 'السلة',
+    aboutLabel: 'من نحن',
+
+    // Footer
+    footerTagline: 'عطور راقية باستثناء. مجموعة حصرية من العطور النادرة لأهل الذوق الرفيع.',
+    navigation: 'التنقل',
+    categories: 'الفئات',
+    contact: 'التواصل',
+    deliveryInfo: 'الجزائر — التوصيل لكل الولايات الـ 58',
+    paymentInfo: 'الدفع عند الاستلام · CIB · Edahabia',
+
+    // HomePage
+    collection2024: 'مجموعة 2024',
+    heroTitle: 'صحوة\nالحواس',
+    heroDesc: 'مجموعة حصرية من القطع الاستثنائية، بين الأناقة الخالدة والمعاصرة المتقنة.',
+    discoverAtelier: 'اكتشف المجموعة',
+    scroll: 'مرر',
+    nouveautes: 'الجديد',
+    selection2024: 'اختيارات 2024',
+    seeAll: 'عرض الكل',
+    bestSellers: 'الأكثر مبيعاً',
+    mostPopular: 'الأكثر شعبية',
+    categoriesTitle: 'الفئات',
+    explore: 'استكشف',
+    outOfStock: 'نفد المخزون',
+    addToCartShort: '+ سلة',
+
+    // ProductsPage
+    shop: 'المتجر',
+    fullCatalog: 'المتجر الكامل',
+    all: 'الكل',
+    searchItem: 'ابحث عن منتج...',
+    searchMobile: 'ابحث...',
+    articleCount: (n) => `${n} ${n === 1 ? 'منتج' : 'منتجات'}`,
+    emptyCategory: 'لا يوجد منتج في هذا التصنيف.',
+
+    // CartPage
+    myCart: 'سلة التسوق',
+    continueShopping: 'مواصلة التسوق',
+    emptyCart: 'السلة فارغة',
+    emptyCartSub: 'اكتشف مجموعتنا',
+    clearCart: 'إفراغ السلة',
+    summary: 'ملخص الطلب',
+    total: 'المجموع',
+    shippingInfo: 'معلومات التوصيل',
+    cartArticleCount: (n) => `${n} ${n === 1 ? 'منتج' : 'منتجات'}`,
+
+    // CheckoutForm
+    firstName: 'الاسم الأول',
+    lastName: 'اللقب',
+    phone: 'الهاتف',
+    wilaya: 'الولاية',
+    commune: 'البلدية',
+    selectWilaya: 'اختر ولاية',
+    communePlaceholder: 'بلديتك',
+    paymentMode: 'طريقة الدفع',
+    payDelivery: 'الدفع عند الاستلام',
+    payDeliveryDesc: 'نقداً عند الاستلام',
+    payCIB: 'بطاقة CIB',
+    payCIBDesc: 'دفع آمن',
+    payEdahabia: 'بطاقة Edahabia',
+    payEdahabiaDesc: 'عبر بطاقتك',
+    chargilyNotice: 'سيتم توجيهك إلى منصة الدفع الآمنة Chargily ePay لإتمام عملية الدفع.',
+    confirmOrder: 'تأكيد الطلب',
+    payNow: 'ادفع الآن',
+    processing: 'جاري المعالجة...',
+    // Validation errors
+    errFirstName: 'الاسم الأول مطلوب',
+    errLastName: 'اللقب مطلوب',
+    errPhone: 'الهاتف مطلوب',
+    errPhoneInvalid: 'رقم غير صالح (مثال: 0551234567)',
+    errWilaya: 'الولاية مطلوبة',
+    errCommune: 'البلدية مطلوبة',
+    // Toast
+    toastEmptyCart: 'سلة التسوق فارغة',
+    toastPaymentUrlError: 'تعذر الحصول على رابط الدفع.',
+    toastOrderError: 'حدث خطأ أثناء تقديم الطلب.',
+    toastOutOfStock: 'نفد المخزون',
+    toastAdded: (name) => `تمت إضافة ${name} إلى السلة`,
+    toastSelectSize: 'الرجاء اختيار مقاس',
+    toastFlaconUnavailable: 'القارورة غير متوفرة',
+    toastSelectVolume: 'اختر حجماً',
+    toastExtraitUnavailable: 'المقتطف غير متوفر',
+
+    // ConfirmationPage
+    verifyingPayment: 'جاري التحقق من الدفع...',
+    paymentFailed: 'فشل الدفع',
+    oops: '!أوبس',
+    paymentFailedDesc: 'لم تتم عملية الدفع. تم إلغاء طلبيتك.',
+    retry: 'حاول مجدداً',
+    orderConfirmed: 'تم تأكيد الطلبية',
+    thanks: '!شكراً',
+    paymentReceived: (method) => `تم استلام دفعتك عبر ${method} بنجاح.`,
+    paymentPending: 'دفعتك قيد التحقق.',
+    orderRegistered: 'تم تسجيل طلبيتك بنجاح.',
+    teamWillContact: 'سيتواصل معك فريقنا لتأكيد التوصيل.',
+    estimatedDelivery: 'التوصيل المتوقع',
+    deliveryDays: 'من 2 إلى 5 أيام عمل · دفع عند الاستلام',
+    continueShoppingBtn: 'مواصلة التسوق',
+    homeBtn: 'الرئيسية',
+
+    // ProductDetailPage
+    back: 'رجوع',
+    purchaseMode: 'طريقة الشراء',
+    fullBottle: 'قارورة كاملة',
+    extraits: 'مقتطفات',
+    chooseVolume: 'اختر الحجم',
+    size: 'المقاس',
+    quantity: 'الكمية',
+    addToCart: 'أضف إلى السلة',
+    description: 'الوصف',
+    deliveryAlgeria: 'التوصيل في كل أنحاء الجزائر',
+    deliveryDetails: 'الدفع عند الاستلام · من 2 إلى 5 أيام عمل',
+    available: (n) => `${n} ${n === 1 ? 'متوفر' : 'متوفرة'}`,
+
+    // AboutPage
+    ourStory: 'قصتنا',
+    whoWeAre: 'من نحن؟',
+    aboutDesc: 'SIOW Parfumes هو قبل كل شيء شغف بالتميز وجمع القطع النادرة، المقدمة لأهل الذوق الرفيع في الجزائر.',
+    ourMission: 'مهمتنا',
+    excellenceTitle: 'التميز في كل يوم',
+    missionDesc: 'نؤمن بأن الموضة والعطر هما تعبير عن الذات. لهذا نقدم تشكيلة مختارة بعناية من القطع — من اليومية إلى المناسبات الخاصة — مع حرص مستمر على الجودة والأصالة.',
+    ourValues: 'قيمنا',
+    whatDefinesUs: 'ما يميزنا',
+    discoverCatalog: 'اكتشف المتجر',
+    values: {
+      Passion:      { title: 'الشغف',   desc: 'كل قطعة تُختار بعناية لرضاك.' },
+      Qualité:      { title: 'الجودة',  desc: 'مواد وعطور مختارة بدقة.' },
+      Livraison:    { title: 'التوصيل', desc: 'في كل أنحاء الجزائر، بسرعة وأمان.' },
+      Satisfaction: { title: 'الرضا',   desc: 'سعادتك هي أولويتنا المطلقة.' },
+    },
+
+    // TagProductsPage
+    collection: 'مجموعة',
+    backToHome: 'العودة للرئيسية',
+    comingSoon: 'مجموعة قادمة',
+    comingSoonDesc: 'هذه التشكيلة قيد الإعداد',
+    seeAllCatalog: 'عرض كل المتجر',
+    tagInfo: {
+      'look-bebe-printemps': { title: 'Look Bébé Printemps', description: 'ملابس ناعمة وربيعية للأطفال الصغار' },
+      'look-femme-casual':   { title: 'Look Femme Casual',   description: 'تنسيقات غير رسمية وأنيقة' },
+      'idees-de-cadeaux':    { title: 'أفكار الهدايا',       description: 'تشكيلة خاصة للهدايا للعائلة كلها' },
+    },
+  },
+
+  fr: {
+    search: 'Rechercher',
+    searchPlaceholder: 'Rechercher...',
+    about: 'À Propos',
+    cart: 'Panier',
+    cartWithCount: (n) => `Panier (${n})`,
+
+    home: 'Accueil',
+    catalog: 'Catalogue',
+    cartLabel: 'Panier',
+    aboutLabel: 'À Propos',
+
+    footerTagline: "Haute parfumerie d'exception. Curation exclusive de fragrances rares pour les connaisseurs les plus exigeants.",
+    navigation: 'Navigation',
+    categories: 'Catégories',
+    contact: 'Contact',
+    deliveryInfo: 'Algérie — Livraison dans les 58 wilayas',
+    paymentInfo: 'Paiement à la livraison · CIB · Edahabia',
+
+    collection2024: 'Collection 2024',
+    heroTitle: "L'ÉVEIL\nDES SENS",
+    heroDesc: "Une curation exclusive de pièces d'exception, entre élégance intemporelle et contemporanéité maîtrisée.",
+    discoverAtelier: "Découvrir l'Atelier",
+    scroll: 'Scroll',
+    nouveautes: 'Nouveautés',
+    selection2024: 'Sélection Archive 2024',
+    seeAll: 'Voir tout',
+    bestSellers: 'Best Sellers',
+    mostPopular: 'Les plus populaires',
+    categoriesTitle: 'Catégories',
+    explore: 'Explorer →',
+    outOfStock: 'Épuisé',
+    addToCartShort: '+ Panier',
+
+    shop: 'Boutique',
+    fullCatalog: 'Catalogue Complet',
+    all: 'Tous',
+    searchItem: 'Rechercher un article...',
+    searchMobile: 'Rechercher...',
+    articleCount: (n) => `${n} article${n !== 1 ? 's' : ''}`,
+    emptyCategory: 'Aucun article dans cette catégorie.',
+
+    myCart: 'Mon Panier',
+    continueShopping: 'Continuer les achats',
+    emptyCart: 'Panier vide',
+    emptyCartSub: 'Découvrez notre sélection',
+    clearCart: 'Vider le panier',
+    summary: 'Récapitulatif',
+    total: 'Total',
+    shippingInfo: 'Informations de livraison',
+    cartArticleCount: (n) => `${n} article${n !== 1 ? 's' : ''}`,
+
+    firstName: 'Prénom',
+    lastName: 'Nom',
+    phone: 'Téléphone',
+    wilaya: 'Wilaya',
+    commune: 'Commune',
+    selectWilaya: 'Sélectionner une wilaya',
+    communePlaceholder: 'Votre commune',
+    paymentMode: 'Mode de paiement',
+    payDelivery: 'Paiement à la livraison',
+    payDeliveryDesc: 'Cash à la réception',
+    payCIB: 'Carte CIB',
+    payCIBDesc: 'Paiement sécurisé',
+    payEdahabia: 'Carte Edahabia',
+    payEdahabiaDesc: 'Via votre carte',
+    chargilyNotice: 'Vous serez redirigé vers la plateforme sécurisée Chargily ePay pour finaliser votre paiement.',
+    confirmOrder: 'Confirmer la commande',
+    payNow: 'Payer maintenant',
+    processing: 'Traitement...',
+    errFirstName: 'Prénom requis',
+    errLastName: 'Nom requis',
+    errPhone: 'Téléphone requis',
+    errPhoneInvalid: 'Numéro invalide (ex: 0551234567)',
+    errWilaya: 'Wilaya requise',
+    errCommune: 'Commune requise',
+    toastEmptyCart: 'Votre panier est vide',
+    toastPaymentUrlError: "Impossible d'obtenir l'URL de paiement.",
+    toastOrderError: 'Erreur lors de la commande.',
+    toastOutOfStock: 'Épuisé',
+    toastAdded: (name) => `${name} ajouté au panier`,
+    toastSelectSize: 'Veuillez sélectionner une taille',
+    toastFlaconUnavailable: 'Flacon indisponible',
+    toastSelectVolume: 'Sélectionnez un volume',
+    toastExtraitUnavailable: 'Extrait indisponible',
+
+    verifyingPayment: 'Vérification du paiement...',
+    paymentFailed: 'Paiement échoué',
+    oops: 'Oops !',
+    paymentFailedDesc: "Le paiement n'a pas abouti. Votre commande a été annulée.",
+    retry: 'Réessayer',
+    orderConfirmed: 'Commande confirmée',
+    thanks: 'Merci !',
+    paymentReceived: (method) => `Votre paiement par ${method} a bien été reçu.`,
+    paymentPending: 'Votre paiement est en cours de validation.',
+    orderRegistered: 'Votre commande a bien été enregistrée.',
+    teamWillContact: 'Notre équipe vous contactera pour confirmer la livraison.',
+    estimatedDelivery: 'Livraison estimée',
+    deliveryDays: "2 à 5 jours ouvrables · Paiement à la livraison",
+    continueShoppingBtn: 'Continuer les achats',
+    homeBtn: 'Accueil',
+
+    back: 'Retour',
+    purchaseMode: "Mode d'achat",
+    fullBottle: 'Flacon complet',
+    extraits: 'Extraits',
+    chooseVolume: 'Choisissez votre volume',
+    size: 'Taille',
+    quantity: 'Quantité',
+    addToCart: 'Ajouter au Panier',
+    description: 'Description',
+    deliveryAlgeria: "Livraison dans toute l'Algérie",
+    deliveryDetails: "Paiement à la livraison · 2 à 5 jours ouvrables",
+    available: (n) => `${n} disponible${n > 1 ? 's' : ''}`,
+
+    ourStory: 'Notre histoire',
+    whoWeAre: 'Qui sommes-nous ?',
+    aboutDesc: "SIOW Parfumes, c'est avant tout une passion pour l'excellence et la curation de pièces rares, proposées aux connaisseurs les plus exigeants d'Algérie.",
+    ourMission: 'Notre mission',
+    excellenceTitle: "L'excellence au quotidien",
+    missionDesc: "Nous croyons que la mode et le parfum sont une expression de soi. C'est pourquoi nous proposons une sélection soignée de pièces — du quotidien aux occasions spéciales — avec un souci constant de qualité et d'authenticité.",
+    ourValues: 'Nos valeurs',
+    whatDefinesUs: 'Ce qui nous définit',
+    discoverCatalog: 'Découvrir le catalogue',
+    values: {
+      Passion:      { title: 'Passion',      desc: 'Chaque pièce est choisie avec soin pour votre satisfaction.' },
+      Qualité:      { title: 'Qualité',      desc: 'Des matières et fragrances soigneusement sélectionnées.' },
+      Livraison:    { title: 'Livraison',    desc: 'Partout en Algérie, rapidement et en toute sécurité.' },
+      Satisfaction: { title: 'Satisfaction', desc: 'Votre bonheur est notre priorité absolue.' },
+    },
+
+    collection: 'Collection',
+    backToHome: "Retour à l'accueil",
+    comingSoon: 'Collection à venir',
+    comingSoonDesc: 'Cette sélection est en cours de préparation',
+    seeAllCatalog: 'Voir tout le catalogue',
+    tagInfo: {
+      'look-bebe-printemps': { title: 'Look Bébé Printemps',  description: 'Des tenues douces et printanières pour bébé' },
+      'look-femme-casual':   { title: 'Look Femme Casual',    description: 'Des ensembles décontractés et élégants' },
+      'idees-de-cadeaux':    { title: 'Idées de cadeaux',     description: 'Sélection spéciale cadeaux pour toute la famille' },
+    },
+  },
+}
+
+const LanguageContext = createContext(null)
+
+export function LanguageProvider({ children }) {
+  const [lang, setLang] = useState('ar') // Langue par défaut : arabe
+
+  const toggleLang = () => setLang((l) => (l === 'ar' ? 'fr' : 'ar'))
+  const t = translations[lang]
+
+  return (
+    <LanguageContext.Provider value={{ lang, toggleLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  )
+}
+
+export function useLanguage() {
+  return useContext(LanguageContext)
+}

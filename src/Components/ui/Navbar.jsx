@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
+import { useLanguage } from '../../context/LanguageContext'
 
 const NAV_CATEGORIES = [
   { label: 'Watches',     slug: 'Watches' },
@@ -13,6 +14,7 @@ function Navbar() {
   const { itemCount } = useCart()
   const navigate      = useNavigate()
   const location      = useLocation()
+  const { lang, toggleLang, t } = useLanguage()
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchVal, setSearchVal]   = useState('')
   const [scrolled, setScrolled]     = useState(false)
@@ -54,7 +56,7 @@ function Navbar() {
                 <input
                   autoFocus value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
-                  placeholder="Rechercher..."
+                  placeholder={t.searchPlaceholder}
                   className="bg-surface-container text-on-surface font-body text-sm
                              px-3 py-1.5 outline-none w-40 border-b border-primary"
                 />
@@ -78,17 +80,25 @@ function Navbar() {
             </h1>
           </Link>
 
-          <button onClick={() => navigate('/cart')}
-            className="relative cursor-pointer active:scale-95 transition-transform text-on-surface">
-            <span className="material-symbols-outlined"
-              style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>shopping_bag</span>
-            {itemCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-on-secondary
-                               text-[9px] font-bold flex items-center justify-center rounded-full">
-                {itemCount}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Language toggle mobile */}
+            <button onClick={toggleLang}
+              className="font-label text-[0.6rem] uppercase tracking-[0.1rem] text-on-surface-variant
+                         hover:text-on-surface transition-colors border border-outline-variant px-1.5 py-0.5">
+              {lang === 'ar' ? 'FR' : 'AR'}
+            </button>
+            <button onClick={() => navigate('/cart')}
+              className="relative cursor-pointer active:scale-95 transition-transform text-on-surface">
+              <span className="material-symbols-outlined"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>shopping_bag</span>
+              {itemCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-on-secondary
+                                 text-[9px] font-bold flex items-center justify-center rounded-full">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* ── DESKTOP top bar ─────────────────────────────────── */}
@@ -102,7 +112,7 @@ function Navbar() {
                   <input
                     autoFocus value={searchVal}
                     onChange={(e) => setSearchVal(e.target.value)}
-                    placeholder="Rechercher..."
+                    placeholder={t.searchPlaceholder}
                     className="bg-surface-container text-on-surface font-body text-sm
                                px-3 py-1.5 outline-none border-b border-primary flex-1"
                   />
@@ -118,7 +128,7 @@ function Navbar() {
                   <span className="material-symbols-outlined text-[20px]"
                     style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>search</span>
                   <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">
-                    Rechercher
+                    {t.search}
                   </span>
                 </button>
               )}
@@ -132,12 +142,19 @@ function Navbar() {
               </h1>
             </Link>
 
-            {/* Right: cart + about */}
+            {/* Right: lang toggle + cart + about */}
             <div className="flex items-center gap-6 w-64 justify-end">
+              {/* Language toggle desktop */}
+              <button onClick={toggleLang}
+                className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]
+                           text-on-surface-variant hover:text-on-surface transition-colors
+                           border border-outline-variant px-2 py-1">
+                {lang === 'ar' ? 'FR' : 'AR'}
+              </button>
               <Link to="/about"
                 className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]
                            text-on-surface-variant hover:text-on-surface transition-colors">
-                À Propos
+                {t.about}
               </Link>
               <button onClick={() => navigate('/cart')}
                 className="relative flex items-center gap-2 text-on-surface-variant
@@ -151,7 +168,7 @@ function Navbar() {
                       {itemCount}
                     </span>
                     <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">
-                      Panier ({itemCount})
+                      {t.cartWithCount(itemCount)}
                     </span>
                   </>
                 )}
@@ -183,10 +200,10 @@ function Navbar() {
                       px-4 pb-8 pt-2 bg-[#F9F9F9]/92 backdrop-blur-2xl
                       border-t border-black/5">
         {[
-          { to: '/',        icon: 'home',         label: 'Accueil',   active: isHome },
-          { to: '/products',icon: 'menu_book',     label: 'Catalogue', active: isCatalog },
-          { to: '/cart',    icon: 'shopping_bag',  label: 'Panier',    active: isCart,  badge: itemCount },
-          { to: '/about',   icon: 'info',          label: 'À Propos',  active: isAbout },
+          { to: '/',        icon: 'home',         label: t.home,     active: isHome },
+          { to: '/products',icon: 'menu_book',     label: t.catalog,  active: isCatalog },
+          { to: '/cart',    icon: 'shopping_bag',  label: t.cartLabel, active: isCart, badge: itemCount },
+          { to: '/about',   icon: 'info',          label: t.aboutLabel, active: isAbout },
         ].map(({ to, icon, label, active, badge }) => (
           <Link key={to} to={to}
             className={`flex flex-col items-center justify-center pt-2 transition-all duration-300 relative

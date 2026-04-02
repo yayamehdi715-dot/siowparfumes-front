@@ -5,14 +5,16 @@ import CheckoutForm from '../../Components/public/CheckoutForm'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 import { useState } from 'react'
+import { useLanguage } from '../../context/LanguageContext'
 
 function CartPage() {
   const { items, total, clearCart } = useCart()
   const navigate    = useNavigate()
+  const { t }       = useLanguage()
   const [submitting, setSubmitting] = useState(false)
 
   const handleOrder = async (customerInfo) => {
-    if (items.length === 0) { toast.error('Votre panier est vide'); return }
+    if (items.length === 0) { toast.error(t.toastEmptyCart); return }
     setSubmitting(true)
     const { paymentMethod, ...shippingInfo } = customerInfo
     const orderItems = items.map((item) => ({
@@ -30,10 +32,10 @@ function CartPage() {
           customerInfo: shippingInfo, items: orderItems, total, paymentMode: paymentMethod,
         })
         if (data.checkout_url) { clearCart(); window.location.href = data.checkout_url }
-        else toast.error("Impossible d'obtenir l'URL de paiement.")
+        else toast.error(t.toastPaymentUrlError)
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
+      toast.error(err.response?.data?.message || t.toastOrderError)
     } finally {
       setSubmitting(false)
     }
@@ -48,9 +50,9 @@ function CartPage() {
             style={{ fontVariationSettings: "'FILL' 0, 'wght' 100" }}>shopping_bag</span>
         </div>
         <h2 className="font-headline text-on-surface text-3xl lg:text-4xl font-bold
-                       tracking-tighter mb-3">Panier vide</h2>
-        <p className="stitch-label mb-10">Découvrez notre sélection</p>
-        <Link to="/products" className="btn-primary">Découvrir le catalogue</Link>
+                       tracking-tighter mb-3">{t.emptyCart}</h2>
+        <p className="stitch-label mb-10">{t.emptyCartSub}</p>
+        <Link to="/products" className="btn-primary">{t.discoverCatalog ?? t.discoverAtelier}</Link>
       </div>
     </div>
   )
@@ -67,13 +69,13 @@ function CartPage() {
             <span className="material-symbols-outlined text-[16px]
                              group-hover:-translate-x-1 transition-transform"
               style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>arrow_back</span>
-            Continuer les achats
+            {t.continueShopping}
           </button>
           <h1 className="font-headline text-on-surface text-4xl lg:text-6xl font-bold tracking-tighter">
-            Mon Panier
+            {t.myCart}
           </h1>
           <p className="stitch-label mt-2">
-            {items.length} article{items.length !== 1 ? 's' : ''}
+            {t.cartArticleCount(items.length)}
           </p>
         </div>
       </div>
@@ -89,7 +91,7 @@ function CartPage() {
                 className="stitch-label hover:text-error transition-colors flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[14px]"
                   style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>delete_sweep</span>
-                Vider le panier
+                {t.clearCart}
               </button>
             </div>
             {items.map((item) => <CartItem key={item.key} item={item} />)}
@@ -101,7 +103,7 @@ function CartPage() {
 
               {/* Total */}
               <div className="bg-surface-container-lowest p-6 lg:p-8 shadow-ambient">
-                <p className="stitch-label mb-5">Récapitulatif</p>
+                <p className="stitch-label mb-5">{t.summary}</p>
                 <div className="space-y-3 mb-5">
                   {items.map((item) => (
                     <div key={item.key} className="flex justify-between text-sm font-body">
@@ -116,7 +118,7 @@ function CartPage() {
                 </div>
                 <div className="h-px bg-surface-container-high mb-5" />
                 <div className="flex justify-between items-baseline">
-                  <span className="stitch-label">Total</span>
+                  <span className="stitch-label">{t.total}</span>
                   <span className="font-headline text-secondary text-2xl lg:text-3xl font-bold">
                     {total.toLocaleString('fr-DZ')} DZD
                   </span>
@@ -125,7 +127,7 @@ function CartPage() {
 
               {/* Checkout form */}
               <div className="bg-surface-container-lowest p-6 lg:p-8 shadow-ambient">
-                <p className="stitch-label mb-6">Informations de livraison</p>
+                <p className="stitch-label mb-6">{t.shippingInfo}</p>
                 <CheckoutForm onSubmit={handleOrder} loading={submitting} />
               </div>
             </div>
