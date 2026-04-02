@@ -6,6 +6,15 @@ import { useLanguage } from '../../context/LanguageContext'
 
 const CATEGORIES_SLUGS = ['Watches', 'Fragrances', 'Saudi Coll.', 'Essentials']
 
+// ─── Correspondance slug URL → catégorie en base ──────────────────────────────
+// Les slugs dans l'URL sont en anglais, les catégories en DB sont en français.
+const SLUG_TO_DB = {
+  'Watches':     'Montres',
+  'Fragrances':  'Parfums',
+  'Saudi Coll.': 'Parfums Saoudiens',
+  'Essentials':  'Essentiels',
+}
+
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts]         = useState([])
@@ -24,8 +33,10 @@ function ProductsPage() {
   }, [])
 
   const filtered = useMemo(() => products.filter((p) => {
-    const isAll       = activeCategory === t.all || activeCategory === 'Tous'
-    const matchCat    = isAll || p.category === activeCategory
+    const isAll = activeCategory === t.all || activeCategory === 'Tous'
+    // Convertir le slug URL vers le nom DB avant de comparer
+    const dbCategory  = SLUG_TO_DB[activeCategory] || activeCategory
+    const matchCat    = isAll || p.category === dbCategory
     const matchSearch = !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.brand && p.brand.toLowerCase().includes(search.toLowerCase()))
@@ -40,6 +51,11 @@ function ProductsPage() {
 
   const CATEGORIES = [t.all, ...CATEGORIES_SLUGS]
 
+  // Titre affiché : utilise le label traduit si dispo, sinon le slug
+  const pageTitle = (activeCategory === t.all || activeCategory === 'Tous')
+    ? t.fullCatalog
+    : (t.categoryLabels?.[activeCategory] ?? activeCategory)
+
   return (
     <div className="min-h-screen bg-surface">
 
@@ -47,19 +63,22 @@ function ProductsPage() {
       <div className="pt-24 lg:pt-36 pb-10 lg:pb-16 px-6 lg:px-16 xl:px-24 bg-surface-container-low">
         <div className="max-w-screen-xl mx-auto flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div>
-            <span className="stitch-label block mb-3">{t.shop}</span>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-6 h-[2px] bg-amber-400" />
+              <span className="stitch-label">{t.shop}</span>
+            </div>
             <h1 className="font-headline text-on-surface text-5xl lg:text-7xl font-bold
                            tracking-tighter leading-tight">
-              {(activeCategory === t.all || activeCategory === 'Tous') ? t.fullCatalog : activeCategory}
+              {pageTitle}
             </h1>
             <p className="stitch-label mt-3">
               {loading ? '—' : t.articleCount(filtered.length)}
             </p>
           </div>
 
-          {/* Desktop search inline in header */}
+          {/* Desktop search */}
           <div className="hidden lg:flex items-center gap-3 bg-surface-container px-4 py-2.5
-                          border-b border-outline-variant">
+                          border-b border-amber-400/30">
             <span className="material-symbols-outlined text-outline text-[18px]"
               style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>search</span>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
@@ -94,24 +113,27 @@ function ProductsPage() {
           </div>
           <div className="h-6 w-px bg-outline-variant flex-shrink-0 lg:hidden" />
 
-          {CATEGORIES.map((cat) => (
-            <button key={cat} onClick={() => setCategory(cat)}
-              className={`flex-shrink-0 px-4 lg:px-6 py-2 font-label text-[0.6875rem] uppercase
-                          tracking-[0.1rem] transition-all duration-200
-                          ${(activeCategory === cat || (activeCategory === 'Tous' && cat === t.all))
-                            ? 'bg-primary text-on-primary'
-                            : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-                          }`}>
-              {cat}
-            </button>
-          ))}
+          {CATEGORIES.map((cat) => {
+            const isActive = activeCategory === cat ||
+              (activeCategory === 'Tous' && cat === t.all)
+            return (
+              <button key={cat} onClick={() => setCategory(cat)}
+                className={`flex-shrink-0 px-4 lg:px-6 py-2 font-label text-[0.6875rem] uppercase
+                            tracking-[0.1rem] transition-all duration-200
+                            ${isActive
+                              ? 'bg-amber-400 text-black font-bold'
+                              : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                            }`}>
+                {cat === t.all ? cat : (t.categoryLabels?.[cat] ?? cat)}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* ── Grid ────────────────────────────────────────────────── */}
       <div className="max-w-screen-xl mx-auto px-6 lg:px-16 xl:px-24 py-10 pb-32">
-        <ProductGrid products={filtered} loading={loading}
-          emptyMessage={t.emptyCategory} />
+        <ProductGrid products={filtered} loading={loading} emptyMessage={t.emptyCategory} />
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 const translations = {
   ar: {
@@ -31,7 +31,7 @@ const translations = {
     deliveryInfo: 'الجزائر — التوصيل في 69 ولاية',
     paymentInfo: 'الدفع عند الاستلام',
 
-    // HomePage hero — titre modifié
+    // HomePage
     heroTitle: 'سحر\nالعطور',
     heroDesc: 'مجموعة حصرية من القطع الاستثنائية، بين الأناقة الخالدة والمعاصرة المتقنة.',
     discoverAtelier: 'اكتشف المجموعة',
@@ -65,6 +65,12 @@ const translations = {
     total: 'المجموع',
     shippingInfo: 'معلومات التوصيل',
     cartArticleCount: (n) => `${n} ${n === 1 ? 'منتج' : 'منتجات'}`,
+
+    // Modal confirmation commande
+    confirmModalTitle: 'تحقق من معلوماتك',
+    confirmModalYourInfo: 'معلوماتك',
+    confirmModalWarning: 'تأكد من صحة رقم هاتفك وعنوانك. الطلبيات الكاذبة تضر بالبائع وتعيق التوصيل للعملاء الجادين.',
+    confirmModalEdit: 'تعديل',
 
     // CheckoutForm
     firstName: 'الاسم الأول',
@@ -116,9 +122,9 @@ const translations = {
     back: 'رجوع',
     purchaseMode: 'طريقة الشراء',
     fullBottle: 'قارورة كاملة',
-    extraits: 'تقسيمات',           // ← modifié
+    extraits: 'تقسيمات',
     chooseVolume: 'اختر الحجم',
-    buyNow: 'شراء مباشر',          // ← nouveau
+    buyNow: 'شراء مباشر',
     size: 'المقاس',
     quantity: 'الكمية',
     addToCart: 'أضف إلى السلة',
@@ -127,7 +133,7 @@ const translations = {
     deliveryDetails: 'الدفع عند الاستلام · من 2 إلى 5 أيام عمل',
     available: (n) => `${n} ${n === 1 ? 'متوفر' : 'متوفرة'}`,
 
-    // AboutPage (kept for compatibility)
+    // AboutPage
     ourStory: 'قصتنا',
     whoWeAre: 'من نحن؟',
     aboutDesc: 'SIOW Parfumes هو قبل كل شيء شغف بالتميز وجمع القطع النادرة، المقدمة لأهل الذوق الرفيع في الجزائر.',
@@ -163,27 +169,22 @@ const translations = {
     about: 'À Propos',
     cart: 'Panier',
     cartWithCount: (n) => `Panier (${n})`,
-
     home: 'Accueil',
     catalog: 'Catalogue',
     cartLabel: 'Panier',
     aboutLabel: 'À Propos',
-
-    // Category labels (French)
     categoryLabels: {
       'Watches':     'Watches',
       'Fragrances':  'Fragrances',
       'Saudi Coll.': 'Saudi Coll.',
       'Essentials':  'Essentials',
     },
-
     footerTagline: "Haute parfumerie d'exception. Curation exclusive de fragrances rares pour les connaisseurs les plus exigeants.",
     navigation: 'Navigation',
     categories: 'Catégories',
     contact: 'Contact',
     deliveryInfo: 'Algérie — Livraison dans les 69 wilayas',
     paymentInfo: 'Paiement à la livraison',
-
     heroTitle: "L'ÉVEIL\nDES SENS",
     heroDesc: "Une curation exclusive de pièces d'exception, entre élégance intemporelle et contemporanéité maîtrisée.",
     discoverAtelier: "Découvrir l'Atelier",
@@ -197,7 +198,6 @@ const translations = {
     explore: 'Explorer →',
     outOfStock: 'Épuisé',
     addToCartShort: '+ Panier',
-
     shop: 'Boutique',
     fullCatalog: 'Catalogue Complet',
     all: 'Tous',
@@ -205,7 +205,6 @@ const translations = {
     searchMobile: 'Rechercher...',
     articleCount: (n) => `${n} article${n !== 1 ? 's' : ''}`,
     emptyCategory: 'Aucun article dans cette catégorie.',
-
     myCart: 'Mon Panier',
     continueShopping: 'Continuer les achats',
     emptyCart: 'Panier vide',
@@ -215,6 +214,12 @@ const translations = {
     total: 'Total',
     shippingInfo: 'Informations de livraison',
     cartArticleCount: (n) => `${n} article${n !== 1 ? 's' : ''}`,
+
+    // Modal confirmation commande
+    confirmModalTitle: 'Vérifiez vos informations',
+    confirmModalYourInfo: 'Vos informations',
+    confirmModalWarning: 'Assurez-vous que votre numéro de téléphone et votre adresse sont corrects. Les fausses commandes nuisent au vendeur et retardent la livraison aux vrais clients.',
+    confirmModalEdit: 'Modifier',
 
     firstName: 'Prénom',
     lastName: 'Nom',
@@ -243,7 +248,6 @@ const translations = {
     toastFlaconUnavailable: 'Flacon indisponible',
     toastSelectVolume: 'Sélectionnez un volume',
     toastExtraitUnavailable: 'Extrait indisponible',
-
     verifyingPayment: 'Vérification du paiement...',
     paymentFailed: 'Paiement échoué',
     oops: 'Oops !',
@@ -259,13 +263,12 @@ const translations = {
     deliveryDays: "2 à 5 jours ouvrables · Paiement à la livraison",
     continueShoppingBtn: 'Continuer les achats',
     homeBtn: 'Accueil',
-
     back: 'Retour',
     purchaseMode: "Mode d'achat",
     fullBottle: 'Flacon complet',
     extraits: 'Extraits',
     chooseVolume: 'Choisissez votre volume',
-    buyNow: 'Acheter directement',   // ← nouveau
+    buyNow: 'Acheter directement',
     size: 'Taille',
     quantity: 'Quantité',
     addToCart: 'Ajouter au Panier',
@@ -273,23 +276,21 @@ const translations = {
     deliveryAlgeria: "Livraison dans toute l'Algérie",
     deliveryDetails: "Paiement à la livraison · 2 à 5 jours ouvrables",
     available: (n) => `${n} disponible${n > 1 ? 's' : ''}`,
-
     ourStory: 'Notre histoire',
     whoWeAre: 'Qui sommes-nous ?',
-    aboutDesc: "SIOW Parfumes, c'est avant tout une passion pour l'excellence et la curation de pièces rares, proposées aux connaisseurs les plus exigeants d'Algérie.",
+    aboutDesc: "SIOW Parfumes, c'est avant tout une passion pour l'excellence.",
     ourMission: 'Notre mission',
     excellenceTitle: "L'excellence au quotidien",
-    missionDesc: "Nous croyons que la mode et le parfum sont une expression de soi. C'est pourquoi nous proposons une sélection soignée de pièces — du quotidien aux occasions spéciales — avec un souci constant de qualité et d'authenticité.",
+    missionDesc: "Nous croyons que le parfum est une expression de soi.",
     ourValues: 'Nos valeurs',
     whatDefinesUs: 'Ce qui nous définit',
     discoverCatalog: 'Découvrir le catalogue',
     values: {
-      Passion:      { title: 'Passion',      desc: 'Chaque pièce est choisie avec soin pour votre satisfaction.' },
-      Qualité:      { title: 'Qualité',      desc: 'Des matières et fragrances soigneusement sélectionnées.' },
-      Livraison:    { title: 'Livraison',    desc: 'Partout en Algérie, rapidement et en toute sécurité.' },
-      Satisfaction: { title: 'Satisfaction', desc: 'Votre bonheur est notre priorité absolue.' },
+      Passion:      { title: 'Passion',      desc: 'Chaque pièce est choisie avec soin.' },
+      Qualité:      { title: 'Qualité',      desc: 'Des fragrances soigneusement sélectionnées.' },
+      Livraison:    { title: 'Livraison',    desc: 'Partout en Algérie, rapidement.' },
+      Satisfaction: { title: 'Satisfaction', desc: 'Votre bonheur est notre priorité.' },
     },
-
     collection: 'Collection',
     backToHome: "Retour à l'accueil",
     comingSoon: 'Collection à venir',
@@ -307,8 +308,21 @@ const LanguageContext = createContext(null)
 
 export function LanguageProvider({ children }) {
   const [lang, setLang] = useState('ar')
+
+  // ── Applique la police arabe Cairo sur le body quand la langue est AR ──
+  useEffect(() => {
+    if (lang === 'ar') {
+      document.body.classList.add('lang-ar')
+      document.documentElement.setAttribute('lang', 'ar')
+    } else {
+      document.body.classList.remove('lang-ar')
+      document.documentElement.setAttribute('lang', 'fr')
+    }
+  }, [lang])
+
   const toggleLang = () => setLang((l) => (l === 'ar' ? 'fr' : 'ar'))
   const t = translations[lang]
+
   return (
     <LanguageContext.Provider value={{ lang, toggleLang, t }}>
       {children}
