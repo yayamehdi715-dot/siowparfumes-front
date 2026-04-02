@@ -3,13 +3,33 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 import { useLanguage } from '../../context/LanguageContext'
 
-// Slugs pour les catégories (invariables)
 const NAV_CATEGORY_SLUGS = [
   { slug: 'Watches' },
   { slug: 'Fragrances' },
   { slug: 'Saudi Coll.' },
   { slug: 'Essentials' },
 ]
+
+function Logo({ className = '' }) {
+  const [imgError, setImgError] = useState(false)
+  return (
+    <Link to="/" className={`flex items-center gap-2.5 group ${className}`}>
+      {!imgError && (
+        <img
+          src="/logo.png"
+          alt="SIOW PARFUMES"
+          className="h-9 w-auto object-contain flex-shrink-0"
+          onError={() => setImgError(true)}
+        />
+      )}
+      <span className="font-headline italic tracking-tighter text-on-surface
+                       group-hover:text-secondary transition-colors duration-300
+                       text-xl lg:text-2xl leading-none">
+        SIOW PARFUMES
+      </span>
+    </Link>
+  )
+}
 
 function Navbar() {
   const { itemCount } = useCart()
@@ -42,15 +62,15 @@ function Navbar() {
 
   return (
     <>
-      {/* ── Top Bar ─────────────────────────────────────────────── */}
       <header className={`fixed top-0 w-full z-50 transition-all duration-300
         ${scrolled ? 'bg-[#F9F9F9]/95 shadow-ambient' : 'bg-[#F9F9F9]/80'}
         backdrop-blur-xl`}>
 
-        {/* ── MOBILE top row ──────────────────────────────────── */}
-        <div className="lg:hidden flex justify-between items-center px-6 py-4">
-          {/* Search toggle */}
-          <div>
+        {/* ── MOBILE ──────────────────────────────────────────── */}
+        <div className="lg:hidden flex justify-between items-center px-6 py-3">
+
+          {/* Gauche : search */}
+          <div className="w-8">
             {searchOpen ? (
               <form onSubmit={handleSearch} className="flex items-center gap-2">
                 <input
@@ -58,7 +78,7 @@ function Navbar() {
                   onChange={(e) => setSearchVal(e.target.value)}
                   placeholder={t.searchPlaceholder}
                   className="bg-surface-container text-on-surface font-body text-sm
-                             px-3 py-1.5 outline-none w-40 border-b border-primary"
+                             px-3 py-1.5 outline-none w-36 border-b border-primary"
                 />
                 <button type="button" onClick={() => { setSearchOpen(false); setSearchVal('') }}>
                   <span className="material-symbols-outlined text-[20px] text-on-surface"
@@ -74,17 +94,11 @@ function Navbar() {
             )}
           </div>
 
-          {/* Logo centré mobile */}
-          <Link to="/">
-            <img src="/logo.png" alt="SIOW PARFUMES" className="h-10 w-auto object-contain"
-              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block' }} />
-            <h1 className="text-xl font-headline italic tracking-tighter text-on-surface hidden">
-              SIOW PARFUMES
-            </h1>
-          </Link>
+          {/* Centre : logo + nom */}
+          <Logo />
 
+          {/* Droite : langue + panier */}
           <div className="flex items-center gap-3">
-            {/* Language toggle mobile */}
             <button onClick={toggleLang}
               className="font-label text-[0.6rem] uppercase tracking-[0.1rem] text-on-surface-variant
                          hover:text-on-surface transition-colors border border-outline-variant px-1.5 py-0.5">
@@ -104,11 +118,11 @@ function Navbar() {
           </div>
         </div>
 
-        {/* ── DESKTOP top bar ─────────────────────────────────── */}
+        {/* ── DESKTOP ─────────────────────────────────────────── */}
         <div className="hidden lg:flex flex-col">
-          {/* Main row */}
           <div className="flex justify-between items-center px-10 xl:px-16 py-4">
-            {/* Left: search */}
+
+            {/* Gauche : search */}
             <div className="flex items-center gap-6 w-64">
               {searchOpen ? (
                 <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1">
@@ -137,19 +151,13 @@ function Navbar() {
               )}
             </div>
 
-            {/* Center: logo */}
-            <Link to="/" className="absolute left-1/2 -translate-x-1/2">
-              <img src="/logo.png" alt="SIOW PARFUMES" className="h-12 w-auto object-contain"
-                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block' }} />
-              <h1 className="text-2xl font-headline italic tracking-tighter text-on-surface
-                             hover:text-secondary transition-colors duration-300 hidden">
-                SIOW PARFUMES
-              </h1>
-            </Link>
+            {/* Centre : logo + nom */}
+            <div className="absolute left-1/2 -translate-x-1/2">
+              <Logo />
+            </div>
 
-            {/* Right: lang toggle + cart */}
+            {/* Droite : langue + panier */}
             <div className="flex items-center gap-6 w-64 justify-end">
-              {/* Language toggle desktop */}
               <button onClick={toggleLang}
                 className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]
                            text-on-surface-variant hover:text-on-surface transition-colors
@@ -176,12 +184,12 @@ function Navbar() {
             </div>
           </div>
 
-          {/* Category nav row */}
+          {/* Catégories */}
           <div className="flex justify-center items-center gap-10 pb-3 border-t border-outline-variant/20 pt-3">
             {NAV_CATEGORY_SLUGS.map(({ slug }) => (
               <Link key={slug} to={`/products?category=${slug}`}
                 className={`font-label text-[0.6875rem] uppercase tracking-[0.2rem] transition-colors
-                            relative group pb-1
+                            relative pb-1
                             ${location.search.includes(slug)
                               ? 'text-on-surface after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-primary'
                               : 'text-on-surface-variant hover:text-on-surface'}`}>
@@ -191,17 +199,15 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Bottom rule */}
         <div className="bg-surface-container-low h-[1px] w-full" />
       </header>
 
-      {/* ── Bottom Nav (mobile only) ────────────────────────────── */}
+      {/* ── Bottom Nav mobile ───────────────────────────────────── */}
       <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center
-                      px-4 pb-8 pt-2 bg-[#F9F9F9]/92 backdrop-blur-2xl
-                      border-t border-black/5">
+                      px-4 pb-8 pt-2 bg-[#F9F9F9]/92 backdrop-blur-2xl border-t border-black/5">
         {[
-          { to: '/',         icon: 'home',        label: t.home,     active: isHome },
-          { to: '/products', icon: 'menu_book',   label: t.catalog,  active: isCatalog },
+          { to: '/',         icon: 'home',         label: t.home,      active: isHome },
+          { to: '/products', icon: 'menu_book',    label: t.catalog,   active: isCatalog },
           { to: '/cart',     icon: 'shopping_bag', label: t.cartLabel, active: isCart, badge: itemCount },
         ].map(({ to, icon, label, active, badge }) => (
           <Link key={to} to={to}
