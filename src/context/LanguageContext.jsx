@@ -24,7 +24,7 @@ const translations = {
     paymentInfo: 'الدفع عند الاستلام · CIB · Edahabia',
 
     // HomePage
-    collection2024: 'مجموعة 2024',
+    collection2024: 'مجموعة ',
     heroTitle: 'أناقتك تبدأ\nمن هنا',
     heroDesc: 'مجموعة حصرية من القطع الاستثنائية، بين الأناقة الخالدة والمعاصرة المتقنة.',
     discoverAtelier: 'اكتشف المجموعة',
@@ -176,7 +176,7 @@ const translations = {
     deliveryInfo: 'Algérie — Livraison dans les 58 wilayas',
     paymentInfo: 'Paiement à la livraison · CIB · Edahabia',
 
-    collection2024: 'Collection 2024',
+    collection2024: 'Collection ',
     heroTitle: "L'ÉVEIL\nDES SENS",
     heroDesc: "Une curation exclusive de pièces d'exception, entre élégance intemporelle et contemporanéité maîtrisée.",
     discoverAtelier: "Découvrir l'Atelier",
