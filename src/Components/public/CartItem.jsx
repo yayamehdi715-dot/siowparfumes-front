@@ -1,19 +1,35 @@
 import QuantitySelector from './QuantitySelector'
 import { useCart } from '../../context/CartContext'
+import { useLanguage } from '../../context/LanguageContext'
+
+// Génère une URL Cloudinary optimisée pour le thumbnail (petit, rapide)
+function getThumbUrl(url) {
+  if (!url || !url.includes('cloudinary.com')) return url
+  return url.replace('/upload/', '/upload/w_200,h_240,c_fill,q_auto:good,f_auto/')
+}
 
 function CartItem({ item }) {
   const { updateQuantity, removeFromCart } = useCart()
+  const { t } = useLanguage()
+
+  const thumbUrl = getThumbUrl(item.image)
 
   return (
     <div className="flex gap-4 p-4 bg-surface-container-lowest">
-      {/* Image */}
+      {/* Image — thumbnail optimisé */}
       <div className="w-20 h-24 sm:w-24 sm:h-28 overflow-hidden bg-surface-container flex-shrink-0">
-        {item.image
-          ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full bg-surface-container" />}
+        {thumbUrl
+          ? <img
+              src={thumbUrl}
+              alt={item.name}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          : <div className="w-full h-full bg-surface-container" />
+        }
       </div>
 
-      {/* Details */}
+      {/* Détails */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
           {item.brand && (
@@ -22,8 +38,9 @@ function CartItem({ item }) {
             </p>
           )}
           <h4 className="font-headline text-on-surface text-base leading-tight">{item.name}</h4>
-          <span className="inline-block mt-1.5 stitch-label text-secondary">
-            Taille {item.size}
+          <span className="inline-block mt-1.5 font-label text-[0.6875rem] uppercase
+                           tracking-[0.1rem] text-amber-500">
+            {t.size} : {item.size}
           </span>
         </div>
 
@@ -31,11 +48,12 @@ function CartItem({ item }) {
           <QuantitySelector
             value={item.quantity}
             min={1}
-            max={item.maxStock}
+            max={99}
             onChange={(qty) => updateQuantity(item.key, qty)}
           />
           <div className="flex items-center gap-4">
-            <span className="font-label text-[0.6875rem] uppercase tracking-[0.05rem] text-secondary font-semibold">
+            <span className="font-label text-[0.6875rem] uppercase tracking-[0.05rem]
+                             text-amber-500 font-bold">
               {(item.price * item.quantity).toLocaleString('fr-DZ')} DZD
             </span>
             <button

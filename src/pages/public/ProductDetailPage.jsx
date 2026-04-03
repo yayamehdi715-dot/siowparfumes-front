@@ -9,6 +9,18 @@ import toast from 'react-hot-toast'
 
 const PARFUM_CATS = ['Parfums', 'Parfums Saoudiens']
 
+// URL Cloudinary optimisée pour la galerie détail (1200px max, auto qualité/format)
+function getDetailUrl(url) {
+  if (!url || !url.includes('cloudinary.com')) return url
+  return url.replace('/upload/', '/upload/w_1200,c_limit,q_auto:good,f_auto/')
+}
+
+// URL Cloudinary optimisée pour les miniatures de la galerie (120px)
+function getThumbUrl(url) {
+  if (!url || !url.includes('cloudinary.com')) return url
+  return url.replace('/upload/', '/upload/w_120,h_160,c_fill,q_auto:good,f_auto/')
+}
+
 function ProductDetailPage() {
   const { id }        = useParams()
   const navigate      = useNavigate()
@@ -43,13 +55,14 @@ function ProductDetailPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-surface flex items-center justify-center pt-20">
-      <div className="w-8 h-8 border border-outline-variant border-t-amber-400 rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
     </div>
   )
   if (!product) return null
 
   const isParfum    = PARFUM_CATS.includes(product.category)
-  const images      = product.images?.length > 0 ? product.images : ['/placeholder.jpg']
+  const rawImages   = product.images?.length > 0 ? product.images : []
+  const images      = rawImages.length > 0 ? rawImages : ['/placeholder.jpg']
   const extraits    = product.extraits ?? []
   const hasExtraits = extraits.length > 0
 
@@ -57,7 +70,6 @@ function ProductDetailPage() {
     ? (achatMode === 'extrait' && selectedExtrait ? selectedExtrait.price : product.price)
     : product.price
 
-  // Ajouter au panier sans redirection
   const handleAddToCart = () => {
     if (isParfum) {
       if (achatMode === 'flacon') {
@@ -75,7 +87,6 @@ function ProductDetailPage() {
     toast.success(t.toastAdded(product.name))
   }
 
-  // Acheter directement → panier puis checkout
   const handleBuyNow = () => {
     if (isParfum) {
       if (achatMode === 'flacon') {
@@ -113,11 +124,15 @@ function ProductDetailPage() {
           {/* ── Galerie ──────────────────────────────────────── */}
           <div className="flex flex-col gap-3 lg:sticky lg:top-32 lg:self-start">
             <div className="relative aspect-[3/4] bg-surface-container overflow-hidden group">
-              <img src={images[currentImage]} alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img
+                src={getDetailUrl(images[currentImage])}
+                alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
 
-              {/* Accent doré en bas de l'image */}
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-amber-400/0 via-amber-400/60 to-amber-400/0" />
+              {/* Accent doré bas */}
+              <div className="absolute bottom-0 left-0 right-0 h-[3px]
+                              bg-gradient-to-r from-amber-400/0 via-amber-400/60 to-amber-400/0" />
 
               <div className="absolute top-4 left-4">
                 <span className="stitch-label bg-surface-container-lowest/90 px-3 py-1.5 text-on-surface">
@@ -153,7 +168,7 @@ function ProductDetailPage() {
                                 ${i === currentImage
                                   ? 'border-amber-400'
                                   : 'border-transparent opacity-60 hover:opacity-100'}`}>
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={getThumbUrl(img)} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </button>
                 ))}
               </div>
@@ -171,8 +186,6 @@ function ProductDetailPage() {
                              font-bold leading-tight tracking-tighter mb-5">
                 {product.name}
               </h1>
-
-              {/* Prix avec accent doré */}
               <div className="flex items-baseline gap-2">
                 <span className="text-amber-400 text-[0.6rem] font-bold uppercase tracking-widest">DZD</span>
                 <p className="font-label text-[1.5rem] lg:text-[1.75rem] tracking-tight
@@ -182,10 +195,9 @@ function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Ligne décorative dorée */}
             <div className="h-px bg-gradient-to-r from-amber-400/40 via-amber-400/10 to-transparent" />
 
-            {/* ── Sélection PARFUMS ───────────────────────────── */}
+            {/* ── PARFUMS ─────────────────────────────────────── */}
             {isParfum ? (
               <>
                 {hasExtraits && (
@@ -258,7 +270,6 @@ function ProductDetailPage() {
                 )}
               </>
             ) : (
-              /* ── Sélection MONTRES / ESSENTIELS ──────────────── */
               <div>
                 <p className="stitch-label mb-4">
                   {t.size}
@@ -281,17 +292,14 @@ function ProductDetailPage() {
               <QuantitySelector value={quantity} min={1} max={99} onChange={setQuantity} />
             </div>
 
-            {/* ── Boutons d'action ─────────────────────────────── */}
+            {/* Boutons */}
             <div className="flex flex-col gap-3">
-              {/* Ajouter au panier */}
               <button onClick={handleAddToCart}
                 className="btn-primary w-full py-4 justify-center text-sm lg:text-base">
                 <span className="material-symbols-outlined text-[18px]"
                   style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>shopping_bag</span>
                 {t.addToCart}
               </button>
-
-              {/* Acheter directement — bouton doré */}
               <button onClick={handleBuyNow}
                 className="w-full py-4 flex items-center justify-center gap-2
                            bg-amber-400 hover:bg-amber-300 active:scale-[0.98]
@@ -315,9 +323,7 @@ function ProductDetailPage() {
               </>
             )}
 
-            {/* Info livraison avec accent doré */}
-            <div className="bg-surface-container-low p-5 flex items-start gap-4
-                            border-l-2 border-amber-400/30">
+            <div className="bg-surface-container-low p-5 flex items-start gap-4 border-l-2 border-amber-400/30">
               <span className="material-symbols-outlined text-amber-400/70 mt-0.5"
                 style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>local_shipping</span>
               <div>
