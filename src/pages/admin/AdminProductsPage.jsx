@@ -4,6 +4,8 @@ import api from '../../utils/api'
 import AdminProductForm from '../../Components/admin/AdminProductForm'
 import toast from 'react-hot-toast'
 
+const PARFUM_CATS = ['Parfums', 'Parfums Saoudiens']
+
 function AdminProductsPage() {
   const [products, setProducts]       = useState([])
   const [loading, setLoading]         = useState(true)
@@ -73,7 +75,7 @@ function AdminProductsPage() {
       {/* Grid */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 size={28} className="animate-spin text-white/20" />
+          <Loader2 size={28} className="animate-spin text-amber-400/30" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="admin-card text-center py-20">
@@ -83,11 +85,22 @@ function AdminProductsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((product) => {
-            const totalStock = product.sizes?.reduce((s, x) => s + x.stock, 0) || 0
+            const isParfum = PARFUM_CATS.includes(product.category)
+
+            // Pour parfums : afficher les volumes
+            const volumes = isParfum
+              ? product.extraits?.map((e) => `${e.ml}ml`).join(' · ') || 'Flacon'
+              : null
+
+            // Pour montres/essentiels : afficher les tailles
+            const tailles = !isParfum
+              ? product.sizes?.map((s) => s.size).join(' · ') || null
+              : null
+
             return (
               <div key={product._id} className="admin-card group relative overflow-hidden">
                 {/* Image */}
-                <div className="h-44 -mx-6 -mt-6 mb-4 overflow-hidden bg-white/5">
+                <div className="h-44 -mx-6 -mt-6 mb-4 overflow-hidden bg-white/5 relative">
                   {product.images?.[0]
                     ? <img src={product.images[0]} alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -96,6 +109,10 @@ function AdminProductsPage() {
                           style={{ fontVariationSettings: "'FILL' 0, 'wght' 100" }}>image</span>
                       </div>
                   }
+                  {/* Ligne dorée en bas de l'image */}
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px]
+                                  bg-gradient-to-r from-amber-400/0 via-amber-400/50 to-amber-400/0
+                                  opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
                 {/* Badges */}
@@ -106,14 +123,8 @@ function AdminProductsPage() {
                   </span>
                   {product.bestSeller && (
                     <span className="font-label text-[0.6rem] uppercase tracking-[0.1rem]
-                                     px-2 py-1 bg-[#8C495F]/20 text-[#8C495F]">
+                                     px-2 py-1 bg-amber-400/15 text-amber-400">
                       Best Seller
-                    </span>
-                  )}
-                  {product.featured && (
-                    <span className="font-label text-[0.6rem] uppercase tracking-[0.1rem]
-                                     px-2 py-1 bg-amber-400/15 text-amber-400/80">
-                      Mis en avant
                     </span>
                   )}
                 </div>
@@ -130,23 +141,28 @@ function AdminProductsPage() {
                   </h3>
                 </div>
 
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-headline text-xl text-white">
+                <div className="flex items-center justify-between mb-4 gap-2">
+                  {/* Prix */}
+                  <span className="font-headline text-xl text-amber-400 font-bold">
                     {(product.price ?? 0).toLocaleString('fr-DZ')}
                     <span className="text-xs text-white/30 font-body ml-1">DZD</span>
                   </span>
-                  <span className={`font-label text-[0.6rem] uppercase tracking-[0.1rem]
-                    ${totalStock === 0 ? 'text-red-400' : totalStock <= 5 ? 'text-amber-400' : 'text-white/30'}`}>
-                    {totalStock === 0 ? 'Épuisé' : `${totalStock} en stock`}
-                  </span>
+
+                  {/* Tailles ou volumes — remplace le badge "Épuisé" */}
+                  {(volumes || tailles) && (
+                    <span className="font-label text-[0.6rem] text-white/30 truncate max-w-[120px]"
+                          title={volumes || tailles}>
+                      {volumes || tailles}
+                    </span>
+                  )}
                 </div>
 
                 {/* Actions */}
                 <div className="flex gap-2">
                   <button onClick={() => openEdit(product)}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5
-                               border border-white/10 text-white/40 hover:border-white/30
-                               hover:text-white transition-colors
+                               border border-white/10 text-white/40 hover:border-amber-400/30
+                               hover:text-amber-400 transition-colors
                                font-label text-[0.6rem] uppercase tracking-[0.1rem]">
                     <Edit2 size={11} /> Modifier
                   </button>
