@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState } from 'react'
 
 const translations = {
   ar: {
@@ -15,29 +15,22 @@ const translations = {
     cartLabel: 'السلة',
     aboutLabel: 'من نحن',
 
-    // Category labels (Arabic)
-    categoryLabels: {
-      'Watches':     'ساعات',
-      'Fragrances':  'عطور',
-      'Saudi Coll.': 'العطور السعودية',
-      'Essentials':  'أساسيات',
-    },
-
     // Footer
     footerTagline: 'عطور راقية باستثناء. مجموعة حصرية من العطور النادرة لأهل الذوق الرفيع.',
     navigation: 'التنقل',
     categories: 'الفئات',
     contact: 'التواصل',
-    deliveryInfo: 'الجزائر — التوصيل في 69 ولاية',
-    paymentInfo: 'الدفع عند الاستلام',
+    deliveryInfo: 'الجزائر — التوصيل لكل الولايات الـ 58',
+    paymentInfo: 'الدفع عند الاستلام · CIB · Edahabia',
 
     // HomePage
-    heroTitle: 'سحر\nالعطور',
+    collection2024: 'مجموعة 2024',
+    heroTitle: 'أناقتك تبدأ\nمن هنا',
     heroDesc: 'مجموعة حصرية من القطع الاستثنائية، بين الأناقة الخالدة والمعاصرة المتقنة.',
     discoverAtelier: 'اكتشف المجموعة',
     scroll: 'مرر',
     nouveautes: 'الجديد',
-    selection2024: 'الأحدث',
+    selection2024: 'اختيارات 2024',
     seeAll: 'عرض الكل',
     bestSellers: 'الأكثر مبيعاً',
     mostPopular: 'الأكثر شعبية',
@@ -66,12 +59,6 @@ const translations = {
     shippingInfo: 'معلومات التوصيل',
     cartArticleCount: (n) => `${n} ${n === 1 ? 'منتج' : 'منتجات'}`,
 
-    // Modal confirmation commande
-    confirmModalTitle: 'تحقق من معلوماتك',
-    confirmModalYourInfo: 'معلوماتك',
-    confirmModalWarning: 'تأكد من صحة رقم هاتفك وعنوانك. الطلبيات الكاذبة تضر بالبائع وتعيق التوصيل للعملاء الجادين.',
-    confirmModalEdit: 'تعديل',
-
     // CheckoutForm
     firstName: 'الاسم الأول',
     lastName: 'اللقب',
@@ -83,14 +70,22 @@ const translations = {
     paymentMode: 'طريقة الدفع',
     payDelivery: 'الدفع عند الاستلام',
     payDeliveryDesc: 'نقداً عند الاستلام',
+    payCIB: 'بطاقة CIB',
+    payCIBDesc: 'دفع آمن',
+    payEdahabia: 'بطاقة Edahabia',
+    payEdahabiaDesc: 'عبر بطاقتك',
+    chargilyNotice: 'سيتم توجيهك إلى منصة الدفع الآمنة Chargily ePay لإتمام عملية الدفع.',
     confirmOrder: 'تأكيد الطلب',
+    payNow: 'ادفع الآن',
     processing: 'جاري المعالجة...',
+    // Validation errors
     errFirstName: 'الاسم الأول مطلوب',
     errLastName: 'اللقب مطلوب',
     errPhone: 'الهاتف مطلوب',
     errPhoneInvalid: 'رقم غير صالح (مثال: 0551234567)',
     errWilaya: 'الولاية مطلوبة',
     errCommune: 'البلدية مطلوبة',
+    // Toast
     toastEmptyCart: 'سلة التسوق فارغة',
     toastPaymentUrlError: 'تعذر الحصول على رابط الدفع.',
     toastOrderError: 'حدث خطأ أثناء تقديم الطلب.',
@@ -122,9 +117,8 @@ const translations = {
     back: 'رجوع',
     purchaseMode: 'طريقة الشراء',
     fullBottle: 'قارورة كاملة',
-    extraits: 'تقسيمات',
+    extraits: 'مقتطفات',
     chooseVolume: 'اختر الحجم',
-    buyNow: 'شراء مباشر',
     size: 'المقاس',
     quantity: 'الكمية',
     addToCart: 'أضف إلى السلة',
@@ -169,28 +163,26 @@ const translations = {
     about: 'À Propos',
     cart: 'Panier',
     cartWithCount: (n) => `Panier (${n})`,
+
     home: 'Accueil',
     catalog: 'Catalogue',
     cartLabel: 'Panier',
     aboutLabel: 'À Propos',
-    categoryLabels: {
-      'Watches':     'Watches',
-      'Fragrances':  'Fragrances',
-      'Saudi Coll.': 'Saudi Coll.',
-      'Essentials':  'Essentials',
-    },
+
     footerTagline: "Haute parfumerie d'exception. Curation exclusive de fragrances rares pour les connaisseurs les plus exigeants.",
     navigation: 'Navigation',
     categories: 'Catégories',
     contact: 'Contact',
-    deliveryInfo: 'Algérie — Livraison dans les 69 wilayas',
-    paymentInfo: 'Paiement à la livraison',
+    deliveryInfo: 'Algérie — Livraison dans les 58 wilayas',
+    paymentInfo: 'Paiement à la livraison · CIB · Edahabia',
+
+    collection2024: 'Collection 2024',
     heroTitle: "L'ÉVEIL\nDES SENS",
     heroDesc: "Une curation exclusive de pièces d'exception, entre élégance intemporelle et contemporanéité maîtrisée.",
     discoverAtelier: "Découvrir l'Atelier",
     scroll: 'Scroll',
     nouveautes: 'Nouveautés',
-    selection2024: 'Dernières arrivées',
+    selection2024: 'Sélection Archive 2024',
     seeAll: 'Voir tout',
     bestSellers: 'Best Sellers',
     mostPopular: 'Les plus populaires',
@@ -198,6 +190,7 @@ const translations = {
     explore: 'Explorer →',
     outOfStock: 'Épuisé',
     addToCartShort: '+ Panier',
+
     shop: 'Boutique',
     fullCatalog: 'Catalogue Complet',
     all: 'Tous',
@@ -205,6 +198,7 @@ const translations = {
     searchMobile: 'Rechercher...',
     articleCount: (n) => `${n} article${n !== 1 ? 's' : ''}`,
     emptyCategory: 'Aucun article dans cette catégorie.',
+
     myCart: 'Mon Panier',
     continueShopping: 'Continuer les achats',
     emptyCart: 'Panier vide',
@@ -214,12 +208,6 @@ const translations = {
     total: 'Total',
     shippingInfo: 'Informations de livraison',
     cartArticleCount: (n) => `${n} article${n !== 1 ? 's' : ''}`,
-
-    // Modal confirmation commande
-    confirmModalTitle: 'Vérifiez vos informations',
-    confirmModalYourInfo: 'Vos informations',
-    confirmModalWarning: 'Assurez-vous que votre numéro de téléphone et votre adresse sont corrects. Les fausses commandes nuisent au vendeur et retardent la livraison aux vrais clients.',
-    confirmModalEdit: 'Modifier',
 
     firstName: 'Prénom',
     lastName: 'Nom',
@@ -231,7 +219,13 @@ const translations = {
     paymentMode: 'Mode de paiement',
     payDelivery: 'Paiement à la livraison',
     payDeliveryDesc: 'Cash à la réception',
+    payCIB: 'Carte CIB',
+    payCIBDesc: 'Paiement sécurisé',
+    payEdahabia: 'Carte Edahabia',
+    payEdahabiaDesc: 'Via votre carte',
+    chargilyNotice: 'Vous serez redirigé vers la plateforme sécurisée Chargily ePay pour finaliser votre paiement.',
     confirmOrder: 'Confirmer la commande',
+    payNow: 'Payer maintenant',
     processing: 'Traitement...',
     errFirstName: 'Prénom requis',
     errLastName: 'Nom requis',
@@ -248,6 +242,7 @@ const translations = {
     toastFlaconUnavailable: 'Flacon indisponible',
     toastSelectVolume: 'Sélectionnez un volume',
     toastExtraitUnavailable: 'Extrait indisponible',
+
     verifyingPayment: 'Vérification du paiement...',
     paymentFailed: 'Paiement échoué',
     oops: 'Oops !',
@@ -263,12 +258,12 @@ const translations = {
     deliveryDays: "2 à 5 jours ouvrables · Paiement à la livraison",
     continueShoppingBtn: 'Continuer les achats',
     homeBtn: 'Accueil',
+
     back: 'Retour',
     purchaseMode: "Mode d'achat",
     fullBottle: 'Flacon complet',
     extraits: 'Extraits',
     chooseVolume: 'Choisissez votre volume',
-    buyNow: 'Acheter directement',
     size: 'Taille',
     quantity: 'Quantité',
     addToCart: 'Ajouter au Panier',
@@ -276,21 +271,23 @@ const translations = {
     deliveryAlgeria: "Livraison dans toute l'Algérie",
     deliveryDetails: "Paiement à la livraison · 2 à 5 jours ouvrables",
     available: (n) => `${n} disponible${n > 1 ? 's' : ''}`,
+
     ourStory: 'Notre histoire',
     whoWeAre: 'Qui sommes-nous ?',
-    aboutDesc: "SIOW Parfumes, c'est avant tout une passion pour l'excellence.",
+    aboutDesc: "SIOW Parfumes, c'est avant tout une passion pour l'excellence et la curation de pièces rares, proposées aux connaisseurs les plus exigeants d'Algérie.",
     ourMission: 'Notre mission',
     excellenceTitle: "L'excellence au quotidien",
-    missionDesc: "Nous croyons que le parfum est une expression de soi.",
+    missionDesc: "Nous croyons que la mode et le parfum sont une expression de soi. C'est pourquoi nous proposons une sélection soignée de pièces — du quotidien aux occasions spéciales — avec un souci constant de qualité et d'authenticité.",
     ourValues: 'Nos valeurs',
     whatDefinesUs: 'Ce qui nous définit',
     discoverCatalog: 'Découvrir le catalogue',
     values: {
-      Passion:      { title: 'Passion',      desc: 'Chaque pièce est choisie avec soin.' },
-      Qualité:      { title: 'Qualité',      desc: 'Des fragrances soigneusement sélectionnées.' },
-      Livraison:    { title: 'Livraison',    desc: 'Partout en Algérie, rapidement.' },
-      Satisfaction: { title: 'Satisfaction', desc: 'Votre bonheur est notre priorité.' },
+      Passion:      { title: 'Passion',      desc: 'Chaque pièce est choisie avec soin pour votre satisfaction.' },
+      Qualité:      { title: 'Qualité',      desc: 'Des matières et fragrances soigneusement sélectionnées.' },
+      Livraison:    { title: 'Livraison',    desc: 'Partout en Algérie, rapidement et en toute sécurité.' },
+      Satisfaction: { title: 'Satisfaction', desc: 'Votre bonheur est notre priorité absolue.' },
     },
+
     collection: 'Collection',
     backToHome: "Retour à l'accueil",
     comingSoon: 'Collection à venir',
@@ -307,18 +304,7 @@ const translations = {
 const LanguageContext = createContext(null)
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState('ar')
-
-  // ── Applique la police arabe Cairo sur le body quand la langue est AR ──
-  useEffect(() => {
-    if (lang === 'ar') {
-      document.body.classList.add('lang-ar')
-      document.documentElement.setAttribute('lang', 'ar')
-    } else {
-      document.body.classList.remove('lang-ar')
-      document.documentElement.setAttribute('lang', 'fr')
-    }
-  }, [lang])
+  const [lang, setLang] = useState('ar') // Langue par défaut : arabe
 
   const toggleLang = () => setLang((l) => (l === 'ar' ? 'fr' : 'ar'))
   const t = translations[lang]
