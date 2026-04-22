@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useCart } from '../../context/CartContext'
 import { useLanguage } from '../../context/LanguageContext'
 
 const NAV_CATEGORY_SLUGS = [
@@ -32,7 +31,6 @@ function Logo({ className = '' }) {
 }
 
 function Navbar() {
-  const { itemCount } = useCart()
   const navigate      = useNavigate()
   const location      = useLocation()
   const { lang, toggleLang, t } = useLanguage()
@@ -58,7 +56,6 @@ function Navbar() {
   const path      = location.pathname
   const isHome    = path === '/'
   const isCatalog = path.startsWith('/products') || path.startsWith('/tag')
-  const isCart    = path === '/cart'
 
   return (
     <>
@@ -97,23 +94,12 @@ function Navbar() {
           {/* Centre : logo + nom */}
           <Logo />
 
-          {/* Droite : langue + panier */}
+          {/* Droite : langue */}
           <div className="flex items-center gap-3">
             <button onClick={toggleLang}
               className="font-label text-[0.6rem] uppercase tracking-[0.1rem] text-on-surface-variant
                          hover:text-on-surface transition-colors border border-outline-variant px-1.5 py-0.5">
               {lang === 'ar' ? 'FR' : 'AR'}
-            </button>
-            <button onClick={() => navigate('/cart')}
-              className="relative cursor-pointer active:scale-95 transition-transform text-on-surface">
-              <span className="material-symbols-outlined"
-                style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>shopping_bag</span>
-              {itemCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-on-secondary
-                                 text-[9px] font-bold flex items-center justify-center rounded-full">
-                  {itemCount}
-                </span>
-              )}
             </button>
           </div>
         </div>
@@ -164,23 +150,6 @@ function Navbar() {
                            border border-outline-variant px-2 py-1">
                 {lang === 'ar' ? 'FR' : 'AR'}
               </button>
-              <button onClick={() => navigate('/cart')}
-                className="relative flex items-center gap-2 text-on-surface-variant
-                           hover:text-on-surface transition-colors">
-                <span className="material-symbols-outlined text-[20px]"
-                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>shopping_bag</span>
-                {itemCount > 0 && (
-                  <>
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-on-secondary
-                                     text-[9px] font-bold flex items-center justify-center rounded-full">
-                      {itemCount}
-                    </span>
-                    <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">
-                      {t.cartWithCount(itemCount)}
-                    </span>
-                  </>
-                )}
-              </button>
             </div>
           </div>
 
@@ -206,10 +175,9 @@ function Navbar() {
       <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center
                       px-4 pb-8 pt-2 bg-[#F9F9F9]/92 backdrop-blur-2xl border-t border-black/5">
         {[
-          { to: '/',         icon: 'home',         label: t.home,      active: isHome },
-          { to: '/products', icon: 'menu_book',    label: t.catalog,   active: isCatalog },
-          { to: '/cart',     icon: 'shopping_bag', label: t.cartLabel, active: isCart, badge: itemCount },
-        ].map(({ to, icon, label, active, badge }) => (
+          { to: '/',         icon: 'home',      label: t.home,    active: isHome },
+          { to: '/products', icon: 'menu_book', label: t.catalog, active: isCatalog },
+        ].map(({ to, icon, label, active }) => (
           <Link key={to} to={to}
             className={`flex flex-col items-center justify-center pt-2 transition-all duration-300 relative
               ${active
@@ -219,12 +187,6 @@ function Navbar() {
               style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 200" }}>
               {icon}
             </span>
-            {badge > 0 && (
-              <span className="absolute top-1 right-2 w-3.5 h-3.5 bg-secondary text-on-secondary
-                               text-[8px] font-bold flex items-center justify-center rounded-full">
-                {badge}
-              </span>
-            )}
             <span className="font-label text-[0.6875rem] uppercase tracking-[0.1rem]">{label}</span>
           </Link>
         ))}
