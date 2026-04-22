@@ -117,7 +117,7 @@ const translations = {
     back: 'رجوع',
     purchaseMode: 'طريقة الشراء',
     fullBottle: 'قارورة كاملة',
-    extraits: 'مقتطفات',
+    extraits: 'تقسيمات',
     chooseVolume: 'اختر الحجم',
     size: 'المقاس',
     quantity: 'الكمية',
