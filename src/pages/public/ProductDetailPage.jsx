@@ -284,7 +284,7 @@ function ProductDetailPage() {
                            transition-all duration-200 font-bold">
                 <span className="material-symbols-outlined text-[18px]"
                   style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}>bolt</span>
-                Commander
+                {t.commander}
               </button>
             </div>
 
