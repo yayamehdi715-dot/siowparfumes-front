@@ -24,7 +24,7 @@ function getThumbUrl(url) {
 function ProductDetailPage() {
   const { id }        = useParams()
   const navigate      = useNavigate()
-  const { addToCart } = useCart()
+  const { addToCart } = useCart() // utilisé par handleBuyNow
   const { t }         = useLanguage()
   const [product, setProduct]           = useState(null)
   const [loading, setLoading]           = useState(true)
@@ -69,23 +69,6 @@ function ProductDetailPage() {
   const prixAffiche = isParfum
     ? (achatMode === 'extrait' && selectedExtrait ? selectedExtrait.price : product.price)
     : product.price
-
-  const handleAddToCart = () => {
-    if (isParfum) {
-      if (achatMode === 'flacon') {
-        addToCart(product, 'Flacon complet', quantity, { type: 'flacon', price: product.price })
-      } else {
-        if (!selectedExtrait) { toast.error(t.toastSelectVolume); return }
-        addToCart(product, `${selectedExtrait.ml} ml`, quantity, {
-          type: 'extrait', ml: selectedExtrait.ml, price: selectedExtrait.price,
-        })
-      }
-    } else {
-      if (!selectedSize) { toast.error(t.toastSelectSize); return }
-      addToCart(product, selectedSize, quantity)
-    }
-    toast.success(t.toastAdded(product.name))
-  }
 
   const handleBuyNow = () => {
     if (isParfum) {
@@ -292,14 +275,8 @@ function ProductDetailPage() {
               <QuantitySelector value={quantity} min={1} max={99} onChange={setQuantity} />
             </div>
 
-            {/* Boutons */}
+            {/* Bouton */}
             <div className="flex flex-col gap-3">
-              <button onClick={handleAddToCart}
-                className="btn-primary w-full py-4 justify-center text-sm lg:text-base">
-                <span className="material-symbols-outlined text-[18px]"
-                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>shopping_bag</span>
-                {t.addToCart}
-              </button>
               <button onClick={handleBuyNow}
                 className="w-full py-4 flex items-center justify-center gap-2
                            bg-amber-400 hover:bg-amber-300 active:scale-[0.98]
