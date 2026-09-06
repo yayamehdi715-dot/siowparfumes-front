@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useLanguage } from '../../context/LanguageContext'
+import { trackSearch } from '../../utils/pixels'
 
 const NAV_CATEGORY_SLUGS = [
   { slug: 'Watches' },
@@ -47,6 +48,7 @@ function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchVal.trim()) {
+      trackSearch(searchVal)
       navigate(`/products?search=${encodeURIComponent(searchVal)}`)
       setSearchOpen(false)
       setSearchVal('')

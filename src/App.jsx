@@ -6,6 +6,7 @@ import { LanguageProvider } from './context/LanguageContext'
 import Navbar from './Components/ui/Navbar'
 import Footer from './Components/ui/Footer'
 import PrivateRoute from './Components/ui/PrivateRoute'
+import PixelTracker from './Components/ui/PixelTracker'
 import AdminLayout from './Components/admin/AdminLayout'
 import HomePage from './pages/public/HomePage'
 import ProductsPage from './pages/public/ProductsPage'
@@ -35,6 +36,7 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <LanguageProvider>
+            <PixelTracker />
             <Toaster
               position="top-center"
               toastOptions={{

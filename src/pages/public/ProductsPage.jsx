@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import api from '../../utils/api'
+import { trackSearch } from '../../utils/pixels'
 import ProductGrid from '../../Components/public/ProductGrid'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -31,6 +32,19 @@ function ProductsPage() {
       .catch(() => setProducts([]))
       .finally(() => setLoading(false))
   }, [])
+
+  // Search : la barre filtre en direct, on attend donc que la frappe se calme.
+  // La valeur initiale vient de l'URL et a déjà été suivie par la Navbar.
+  const lastSearchTracked = useRef(searchParams.get('search') || '')
+  useEffect(() => {
+    const q = search.trim()
+    if (q.length < 3 || q === lastSearchTracked.current) return
+    const timer = setTimeout(() => {
+      lastSearchTracked.current = q
+      trackSearch(q)
+    }, 900)
+    return () => clearTimeout(timer)
+  }, [search])
 
   const filtered = useMemo(() => products.filter((p) => {
     const isAll = activeCategory === t.all || activeCategory === 'Tous'

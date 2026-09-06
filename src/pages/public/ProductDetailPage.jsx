@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
+import { trackViewContent } from '../../utils/pixels'
 import { useCart } from '../../context/CartContext'
 import { useLanguage } from '../../context/LanguageContext'
 import SizeSelector from '../../Components/public/SizeSelector'
@@ -33,8 +34,16 @@ function ProductDetailPage() {
   const [currentImage, setCurrentImage] = useState(0)
   const [achatMode, setAchatMode]       = useState('flacon')
   const [selectedExtrait, setSelectedExtrait] = useState(null)
+  const viewedId = useRef(null) // évite un double ViewContent (StrictMode)
 
   useEffect(() => { window.scrollTo(0, 0) }, [id])
+
+  // ViewContent : une fois le produit chargé, au prix du flacon complet.
+  useEffect(() => {
+    if (!product?._id || viewedId.current === product._id) return
+    viewedId.current = product._id
+    trackViewContent(product, product.price)
+  }, [product])
 
   useEffect(() => {
     api.get(`/products/${id}`)

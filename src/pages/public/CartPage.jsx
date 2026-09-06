@@ -4,8 +4,14 @@ import CartItem from '../../Components/public/CartItem'
 import CheckoutForm from '../../Components/public/CheckoutForm'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '../../context/LanguageContext'
+import {
+  trackInitiateCheckout,
+  trackAddPaymentInfo,
+  trackPurchase,
+  identifyCustomer,
+} from '../../utils/pixels'
 
 // ─── Modal de confirmation avant commande ─────────────────────────────────────
 function ConfirmOrderModal({ formData, total, onConfirm, onCancel, submitting, t }) {
@@ -119,10 +125,22 @@ function CartPage() {
   const { t }       = useLanguage()
   const [submitting, setSubmitting]     = useState(false)
   const [pendingForm, setPendingForm]   = useState(null) // données en attente de confirmation
+  const checkoutTracked = useRef(false)
+
+  // InitiateCheckout : le formulaire de commande est sur cette page, donc
+  // arriver ici avec un panier rempli = entrer dans le tunnel. Une seule fois
+  // par visite de la page.
+  useEffect(() => {
+    if (checkoutTracked.current || items.length === 0) return
+    checkoutTracked.current = true
+    trackInitiateCheckout(items, total)
+  }, [items, total])
 
   // Étape 1 : CheckoutForm soumet → on ouvre la modale au lieu de commander directement
   const handleFormSubmit = (formData) => {
     setPendingForm(formData)
+    // Coordonnées complètes et validées : dernière étape avant l'achat.
+    trackAddPaymentInfo(items, total)
   }
 
   // Étape 2 : client confirme dans la modale → on passe la commande
@@ -138,7 +156,16 @@ function CartPage() {
     }))
 
     try {
-      await api.post('/orders', { customerInfo: shippingInfo, items: orderItems, total })
+      const { data: order } = await api.post('/orders', {
+        customerInfo: shippingInfo, items: orderItems, total,
+      })
+
+      // Correspondance avancée d'abord (les données enrichissent l'événement
+      // suivant), puis l'achat — avec l'id de commande comme identifiant
+      // d'événement pour éviter tout doublon.
+      identifyCustomer(shippingInfo)
+      trackPurchase({ orderId: order?._id, items, total })
+
       clearCart()
       setPendingForm(null)
       navigate('/confirmation', { replace: true })

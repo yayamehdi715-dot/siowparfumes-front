@@ -1,5 +1,6 @@
 // src/contexts/CartContext.jsx
 import { createContext, useContext, useReducer, useEffect } from 'react'
+import { trackAddToCart } from '../utils/pixels'
 
 const CartContext = createContext(null)
 
@@ -83,8 +84,12 @@ export function CartProvider({ children }) {
   const total     = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  const addToCart      = (product, size, quantity = 1, meta = null) =>
+  // AddToCart est suivi ici plutôt que dans les pages : c'est le seul point de
+  // passage commun à l'ajout rapide de l'accueil et à la fiche produit.
+  const addToCart      = (product, size, quantity = 1, meta = null) => {
     dispatch({ type: ACTIONS.ADD, payload: { product, size, quantity, meta } })
+    trackAddToCart({ product, size, quantity, price: meta?.price ?? product?.price })
+  }
   const removeFromCart = (key)           => dispatch({ type: ACTIONS.REMOVE,     payload: key })
   const updateQuantity = (key, quantity) => dispatch({ type: ACTIONS.UPDATE_QTY, payload: { key, quantity } })
   const clearCart      = ()              => dispatch({ type: ACTIONS.CLEAR })
